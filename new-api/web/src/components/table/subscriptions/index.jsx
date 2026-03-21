@@ -33,7 +33,7 @@ const SubscriptionsPage = () => {
   const subscriptionsData = useSubscriptionsData();
   const isMobile = useIsMobile();
   const [statusState] = useContext(StatusContext);
-  const enableEpay = !!statusState?.status?.enable_online_topup;
+  const enableEpay = !!statusState?.status?.enable_wechatpay_topup;
 
   const {
     showEdit,

@@ -54,7 +54,7 @@ const TopUp = () => {
     statusState?.status?.top_up_link || '',
   );
   const [enableOnlineTopUp, setEnableOnlineTopUp] = useState(
-    statusState?.status?.enable_online_topup || false,
+    statusState?.status?.enable_wechatpay_topup || false,
   );
   const [priceRatio, setPriceRatio] = useState(statusState?.status?.price || 1);
 
@@ -502,7 +502,7 @@ const TopUp = () => {
 
           setPayMethods(payMethods);
           const enableStripeTopUp = data.enable_stripe_topup || false;
-          const enableOnlineTopUp = data.enable_online_topup || false;
+          const enableOnlineTopUp = data.enable_wechatpay_topup || false;
           const enableCreemTopUp = data.enable_creem_topup || false;
           const minTopUpValue = enableOnlineTopUp
             ? data.min_topup

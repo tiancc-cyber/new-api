@@ -18,7 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React, { useState } from 'react';
-import { Button, Space } from '@douyinfe/semi-ui';
+import { Button, Space, Modal, Typography } from '@douyinfe/semi-ui';
 import { showError } from '../../../helpers';
 import CopyTokensModal from './modals/CopyTokensModal';
 import DeleteTokensModal from './modals/DeleteTokensModal';
@@ -34,6 +34,7 @@ const TokensActions = ({
   // Modal states
   const [showCopyModal, setShowCopyModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPythonExample, setShowPythonExample] = useState(false);
 
   // Handle copy selected tokens with options
   const handleCopySelectedTokens = () => {
@@ -93,6 +94,15 @@ const TokensActions = ({
         >
           {t('删除所选令牌')}
         </Button>
+
+        <Button
+          type='secondary'
+          className='flex-1 md:flex-initial'
+          onClick={() => setShowPythonExample(true)}
+          size='small'
+        >
+          {t('Python 示例')}
+        </Button>
       </div>
 
       <CopyTokensModal
@@ -109,6 +119,95 @@ const TokensActions = ({
         selectedKeys={selectedKeys}
         t={t}
       />
+
+      <Modal
+        title={t('OpenAI Python SDK 示例')}
+        visible={showPythonExample}
+        onCancel={() => setShowPythonExample(false)}
+        footer={null}
+        width={800}
+      >
+        <div className='space-y-4'>
+          <Typography.Text type='tertiary'>
+            {t('以下是如何使用 OpenAI Python SDK 调用 NewAPI 的示例代码：')}
+          </Typography.Text>
+          
+          <div className='bg-gray-50 dark:bg-gray-800 p-4 rounded-lg'>
+            <Typography.Text type='tertiary' className='block mb-2'>
+              {t('请先安装 OpenAI SDK：')} <code>pip3 install openai</code>
+            </Typography.Text>
+            
+            <pre className='text-sm overflow-x-auto bg-gray-900 text-gray-100 p-4 rounded-md'>
+{`# 使用 OpenAI Python SDK 调用 NewAPI
+import os
+from openai import OpenAI
+
+# 从环境变量获取 API 密钥
+api_key = os.environ.get("NEWAPI_API_KEY")
+if not api_key:
+    # 或者从 NewAPI 界面获取令牌
+    api_key = "your_token_here"
+
+# 创建客户端，指定 NewAPI 的 base_url
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://your-newapi-domain.com/v1"  # 替换为你的 NewAPI 地址
+)
+
+# 调用聊天接口
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",  # 使用 NewAPI 支持的模型
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello!"},
+    ],
+    stream=False
+)
+
+print(response.choices[0].message.content)
+
+# 流式调用示例
+stream_response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "user", "content": "Write a short poem about AI."},
+    ],
+    stream=True
+)
+
+for chunk in stream_response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)`}
+            </pre>
+            
+            <div className='mt-4 space-y-2'>
+              <Typography.Text strong>{t('使用说明：')}</Typography.Text>
+              <ul className='list-disc pl-5 space-y-1'>
+                <li>
+                  <Typography.Text type='tertiary'>
+                    {t('1. 将')} <code>your_token_here</code> {t('替换为你的 NewAPI 令牌')}
+                  </Typography.Text>
+                </li>
+                <li>
+                  <Typography.Text type='tertiary'>
+                    {t('2. 将')} <code>https://your-newapi-domain.com/v1</code> {t('替换为你的 NewAPI 地址')}
+                  </Typography.Text>
+                </li>
+                <li>
+                  <Typography.Text type='tertiary'>
+                    {t('3. 根据你的 NewAPI 配置选择合适的模型名称')}
+                  </Typography.Text>
+                </li>
+                <li>
+                  <Typography.Text type='tertiary'>
+                    {t('4. 支持流式和非流式调用')}
+                  </Typography.Text>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

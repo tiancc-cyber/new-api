@@ -2,5 +2,5 @@ package setting
 
 var CreemApiKey = ""
 var CreemProducts = "[]"
-var CreemTestMode = true
+var CreemTestMode = false
 var CreemWebhookSecret = ""

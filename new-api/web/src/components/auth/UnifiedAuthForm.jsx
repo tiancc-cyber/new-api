@@ -1110,13 +1110,13 @@ const UnifiedAuthForm = () => {
             {renderMethodTabs()}
             {renderAuthForm()}
             {renderOAuthOptions()}
-            {!status.self_use_mode_enabled && (
-              <div className='mt-6 text-center text-sm'>
-                <Text>
-                  {t('登录与注册已合并在此页面，可直接选择任一方式继续')}
-                </Text>
-              </div>
-            )}
+            {/*{!status.self_use_mode_enabled && (*/}
+            {/*  <div className='mt-6 text-center text-sm'>*/}
+            {/*    <Text>*/}
+            {/*      {t('登录与注册已合并在此页面，可直接选择任一方式继续')}*/}
+            {/*    </Text>*/}
+            {/*  </div>*/}
+            {/*)}*/}
           </div>
         </Card>
 

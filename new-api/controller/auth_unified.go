@@ -161,14 +161,14 @@ func handlePasswordRegister(c *gin.Context, req UnifiedPasswordAuthRequest, user
 		DisplayName: username,
 		Role:        common.RoleCommonUser,
 	}
+	email, emailErr := normalizeAndValidateEmail(req.Email)
+	if emailErr != nil {
+		common.ApiError(c, emailErr)
+		return
+	}
 	if common.EmailVerificationEnabled {
-		email, emailErr := normalizeAndValidateEmail(req.Email)
 		if email == "" || req.VerificationCode == "" {
 			common.ApiErrorI18n(c, i18n.MsgUserEmailVerificationRequired)
-			return
-		}
-		if emailErr != nil {
-			common.ApiError(c, emailErr)
 			return
 		}
 		if err = validateRegistrationEmailRestrictions(email); err != nil {
@@ -192,6 +192,26 @@ func handlePasswordRegister(c *gin.Context, req UnifiedPasswordAuthRequest, user
 			return
 		}
 		common.DeleteKey(email, common.EmailVerificationPurpose)
+		cleanUser.Email = email
+	} else if email != "" {
+		if err = validateRegistrationEmailRestrictions(email); err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		emailExists, checkErr := model.CheckUserExistOrDeleted(cleanUser.Username, email)
+		if checkErr != nil {
+			common.ApiErrorI18n(c, i18n.MsgDatabaseError)
+			return
+		}
+		if emailExists {
+			respondAuthRedirect(c, "邮箱已存在，请直接登录", "/login", gin.H{
+				"redirect_method": "email",
+				"prefill_email":   email,
+			})
+			return
+		}
+		// 未开启邮箱验证时：只要用户在注册时提供了 email（并通过限制/唯一性校验），
+		// 就直接写入 user.Email，使其在“账户绑定”中处于已绑定状态。
 		cleanUser.Email = email
 	}
 

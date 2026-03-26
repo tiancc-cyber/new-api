@@ -34,6 +34,7 @@ const PaymentConfirmModal = ({
   renderQuotaWithAmount,
   amountLoading,
   renderAmount,
+  renderExchangeSavings,
   payWay,
   payMethods,
   // 新增：用于显示折扣明细
@@ -90,6 +91,17 @@ const PaymentConfirmModal = ({
                 </div>
               )}
             </div>
+
+            {!amountLoading && typeof renderExchangeSavings === 'function' && (
+              <div className='flex justify-between items-center'>
+                <Text className='text-slate-500 dark:text-slate-400'>
+                  {t('节省金额')}：
+                </Text>
+                <Text className='text-emerald-600 dark:text-emerald-400'>
+                  {renderExchangeSavings()}
+                </Text>
+              </div>
+            )}
             {hasDiscount && !amountLoading && (
               <>
                 <div className='flex justify-between items-center'>

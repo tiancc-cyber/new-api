@@ -53,7 +53,28 @@ const ChatPage = () => {
 
   const iframeSrc = keys.length > 0 ? comLink(keys[0]) : '';
 
-  return !isLoading && iframeSrc ? (
+  // 注意：这里的“遮罩层”必须只在 loading 阶段出现，否则会阻塞控制台页面的点击/滚动。
+  if (isLoading) {
+    return (
+      <div className='fixed inset-0 w-screen h-screen flex items-center justify-center bg-white/80 z-[1000] mt-[60px]'>
+        <div className='flex flex-col items-center'>
+          <Spin size='large' spinning={true} tip={null} />
+          <span
+            className='whitespace-nowrap mt-2 text-center'
+            style={{ color: 'var(--semi-color-primary)' }}
+          >
+            {t('正在跳转...')}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!iframeSrc) {
+    return null;
+  }
+
+  return (
     <iframe
       src={iframeSrc}
       style={{
@@ -65,18 +86,6 @@ const ChatPage = () => {
       title='Token Frame'
       allow='camera;microphone'
     />
-  ) : (
-    <div className='fixed inset-0 w-screen h-screen flex items-center justify-center bg-white/80 z-[1000] mt-[60px]'>
-      <div className='flex flex-col items-center'>
-        <Spin size='large' spinning={true} tip={null} />
-        <span
-          className='whitespace-nowrap mt-2 text-center'
-          style={{ color: 'var(--semi-color-primary)' }}
-        >
-          {t('正在跳转...')}
-        </span>
-      </div>
-    </div>
   );
 };
 

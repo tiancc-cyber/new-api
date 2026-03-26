@@ -622,7 +622,21 @@ const TopUp = () => {
   }, [statusState?.status]);
 
   const renderAmount = () => {
-    return amount + ' ' + t('元');
+    // 需求：实付 = 充值数量（1:1），并以人民币展示。
+    // 注意：这里只是 UI 展示口径，不影响后端实际计价/下单金额。
+    const paidRmb = Number(topUpCount || 0);
+    return `${paidRmb.toFixed(2)} ${t('元')}`;
+  };
+
+  const renderExchangeSavings = () => {
+    // 节省金额也换算成人民币。
+    // 新口径：充值金额:实付金额=1:1；旧口径：1:7。
+    // 以“当前实付(人民币, 按 1:1) = paidRmb”计，
+    // 旧口径需要支付 paidRmb*7，因此节省 = paidRmb*6。
+    const oldRate = 7;
+    const paidRmb = Number(topUpCount || 0);
+    const savingsRmb = paidRmb * (oldRate - 1);
+    return `${savingsRmb.toFixed(2)} ${t('元')}`;
   };
 
   const getAmount = async (value) => {
@@ -749,6 +763,7 @@ const TopUp = () => {
         renderQuotaWithAmount={renderQuotaWithAmount}
         amountLoading={amountLoading}
         renderAmount={renderAmount}
+        renderExchangeSavings={renderExchangeSavings}
         payWay={payWay}
         payMethods={payMethods}
         amountNumber={amount}

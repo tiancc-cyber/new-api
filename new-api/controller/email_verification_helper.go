@@ -10,6 +10,9 @@ import (
 
 func normalizeAndValidateEmail(email string) (string, error) {
 	email = strings.TrimSpace(email)
+	if email == "" {
+		return "", nil
+	}
 	if err := common.Validate.Var(email, "required,email"); err != nil {
 		return "", errors.New("无效的邮箱地址")
 	}

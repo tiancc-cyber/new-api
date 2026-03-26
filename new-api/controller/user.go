@@ -145,14 +145,14 @@ func Register(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserInputInvalid, map[string]any{"Error": err.Error()})
 		return
 	}
+	email, emailErr := normalizeAndValidateEmail(user.Email)
+	if emailErr != nil {
+		common.ApiError(c, emailErr)
+		return
+	}
 	if common.EmailVerificationEnabled {
-		email, emailErr := normalizeAndValidateEmail(user.Email)
 		if email == "" || user.VerificationCode == "" {
 			common.ApiErrorI18n(c, i18n.MsgUserEmailVerificationRequired)
-			return
-		}
-		if emailErr != nil {
-			common.ApiError(c, emailErr)
 			return
 		}
 		if err = validateRegistrationEmailRestrictions(email); err != nil {
@@ -161,6 +161,12 @@ func Register(c *gin.Context) {
 		}
 		if !common.VerifyCodeWithKey(email, user.VerificationCode, common.EmailVerificationPurpose) {
 			common.ApiErrorI18n(c, i18n.MsgUserVerificationCodeError)
+			return
+		}
+		user.Email = email
+	} else if email != "" {
+		if err = validateRegistrationEmailRestrictions(email); err != nil {
+			common.ApiError(c, err)
 			return
 		}
 		user.Email = email
@@ -185,7 +191,7 @@ func Register(c *gin.Context) {
 		respondAuthRedirect(c, "用户已存在，请直接登录", "/login", redirectPayload)
 		return
 	}
-	if common.EmailVerificationEnabled {
+	if common.EmailVerificationEnabled && user.Email != "" {
 		common.DeleteKey(user.Email, common.EmailVerificationPurpose)
 	}
 	affCode := user.AffCode // this code is the inviter's code, not the user's own code
@@ -197,7 +203,9 @@ func Register(c *gin.Context) {
 		InviterId:   inviterId,
 		Role:        common.RoleCommonUser, // 明确设置角色为普通用户
 	}
-	if common.EmailVerificationEnabled {
+	// 只要注册时提供了 email（并通过限制校验；若开启邮箱验证则也通过验证码校验），
+	// 就直接写入用户邮箱，使其在“账户绑定”中天然处于已绑定状态。
+	if user.Email != "" {
 		cleanUser.Email = user.Email
 	}
 	err = model.DB.Transaction(func(tx *gorm.DB) error {

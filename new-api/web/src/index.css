@@ -1380,23 +1380,37 @@ html.dark .with-pastel-balls::before {
   padding-bottom: 0 !important;
 
   /* Keep auth inputs consistent across light/dark and avoid the “white flash” on first focus */
+  background: var(--semi-color-fill-0) !important;
   border-color: var(--semi-color-border) !important;
  }
 
  .unified-auth-form .semi-input-wrapper:hover,
  .unified-auth-form .semi-input-default:hover {
   background: var(--semi-color-fill-1) !important;
+  border-color: var(--semi-color-border) !important;
  }
 
  .unified-auth-form .semi-input-wrapper-focus,
  .unified-auth-form .semi-input-default-focus {
   background: var(--semi-color-fill-0) !important;
+  border-color: var(--semi-color-border) !important;
 }
 
 .unified-auth-form .semi-input-wrapper input,
 .unified-auth-form .semi-input-default input {
   height: 40px !important;
   line-height: 40px !important;
+  background: transparent !important;
+}
+
+/* Keep hover behavior consistent between password and confirm password inputs.
+   Semi's sibling mode button (eye icon) can trigger hover styling on the inner .semi-input element.
+   We normalize by making the inner .semi-input background always transparent inside auth forms. */
+.unified-auth-form .semi-input {
+  background: transparent !important;
+}
+
+.unified-auth-form .semi-input:hover {
   background: transparent !important;
 }
 
@@ -1441,7 +1455,16 @@ html.dark .with-pastel-balls::before {
   color: #7c3aed !important;
 }
 
+/* Also allow auth-code-button on plain elements like <button> inside agreement copy */
+.auth-code-button {
+  color: #7c3aed !important;
+}
+
 .auth-code-button.semi-button:hover {
+  color: #6d28d9 !important;
+}
+
+.auth-code-button:hover {
   color: #6d28d9 !important;
 }
 

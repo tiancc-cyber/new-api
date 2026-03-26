@@ -67,6 +67,7 @@ import TwoFAVerification from './TwoFAVerification';
 import MarkdownRenderer from '../common/markdown/MarkdownRenderer';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
+import openiapiUserAgreementZhCN from '../../assets/legal/openiapi_user_agreement_zh-CN.md?raw';
 
 const { Text, Title } = Typography;
 
@@ -353,31 +354,59 @@ const UnifiedAuthForm = () => {
     setInputs((prev) => ({ ...prev, [name]: value }));
   };
 
+  const agreementFallbackContent = useMemo(() => {
+    // Kept in a dedicated markdown file for maintainability.
+    // Note: the file is zh-CN content and not run through i18n.
+    return openiapiUserAgreementZhCN || t('加载用户协议内容失败...');
+  }, [t]);
+
+  const buildAgreementContent = (remoteContent = '') => {
+    if (!remoteContent) {
+      return agreementFallbackContent;
+    }
+    // If the remote content already contains a header, don't duplicate.
+    if (remoteContent.includes('OpenIAPI用户协议')) {
+      return remoteContent;
+    }
+    return `${agreementFallbackContent}\n\n${remoteContent}`;
+  };
+
   const loadAgreementContent = async () => {
     if (agreementContent) {
       return agreementContent;
     }
     const cachedContent = localStorage.getItem('user_agreement') || '';
     if (cachedContent) {
-      setAgreementContent(cachedContent);
-      return cachedContent;
+      const merged = buildAgreementContent(cachedContent);
+      setAgreementContent(merged);
+      return merged;
     }
     setAgreementLoading(true);
     try {
-      const res = await API.get('/api/user-agreement');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const res = await API.get('/api/user-agreement', {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
       const { success, data, message } = res.data;
-      if (success && data) {
-        setAgreementContent(data);
-        localStorage.setItem('user_agreement', data);
-        return data;
+      if (success) {
+        const merged = buildAgreementContent(data || '');
+        setAgreementContent(merged);
+        localStorage.setItem('user_agreement', merged);
+        return merged;
       }
       showError(message || t('加载用户协议内容失败...'));
     } catch (error) {
+      // Network errors/timeouts should not block the user from reading the agreement.
       showError(t('加载用户协议内容失败...'));
     } finally {
       setAgreementLoading(false);
     }
-    return '';
+    const fallback = buildAgreementContent('');
+    setAgreementContent(fallback);
+    return fallback;
   };
 
   const ensureTermsAccepted = async (onAccept) => {
@@ -929,25 +958,37 @@ const UnifiedAuthForm = () => {
   );
 
   const renderAgreement = () => {
-    if (!hasUserAgreement) {
-      return null;
-    }
     return (
       <div className='mt-1'>
         <Checkbox
           checked={agreedToTerms}
-          onChange={(e) => setAgreedToTerms(e.target.checked)}
+          onChange={async (e) => {
+            const nextChecked = e.target.checked;
+            if (!nextChecked) {
+              setAgreedToTerms(false);
+              consentGrantedRef.current = false;
+              return;
+            }
+            // When user manually checks, show the agreement and require explicit confirmation.
+            pendingAgreementActionRef.current = null;
+            setShowAgreementModal(true);
+            await loadAgreementContent();
+          }}
         >
-          <Text size='small' className='text-gray-500'>
+          <Text size='small' className='text-[var(--semi-color-text-2)]'>
             {t('我已阅读并同意')}
-            <a
-              href='/user-agreement'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='mx-1 font-medium text-violet-600 hover:text-violet-700'
+            <button
+              type='button'
+              className='mx-1 font-medium bg-transparent border-0 p-0 cursor-pointer auth-code-button'
+              onClick={async (e) => {
+                e.preventDefault();
+                pendingAgreementActionRef.current = null;
+                setShowAgreementModal(true);
+                await loadAgreementContent();
+              }}
             >
               {t('《用户协议》')}
-            </a>
+            </button>
           </Text>
         </Checkbox>
       </div>

@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -46,10 +47,18 @@ func TurnstileCheck() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			defer rawRes.Body.Close()
+			defer func() {
+				if cerr := rawRes.Body.Close(); cerr != nil {
+					common.SysLog(cerr.Error())
+				}
+			}()
 			var res turnstileCheckResponse
-			err = json.NewDecoder(rawRes.Body).Decode(&res)
+			err = common.DecodeJson(rawRes.Body, &res)
 			if err != nil {
+				// Cloudflare could return an empty body or invalid JSON in edge cases.
+				if errors.Is(err, io.EOF) {
+					err = errors.New("Turnstile 返回空响应")
+				}
 				common.SysLog(err.Error())
 				c.JSON(http.StatusOK, gin.H{
 					"success": false,

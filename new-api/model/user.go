@@ -856,6 +856,11 @@ func IncreaseUserQuota(id int, quota int, db bool) (err error) {
 	})
 	if !db && common.BatchUpdateEnabled {
 		addNewRecord(BatchUpdateTypeUserQuota, id, quota)
+		// Best-effort flush to make quota change visible quickly.
+		// Batch update is still kept as a fallback for high throughput deployments.
+		gopool.Go(func() {
+			batchUpdate()
+		})
 		return nil
 	}
 	return increaseUserQuota(id, quota)
@@ -881,6 +886,10 @@ func DecreaseUserQuota(id int, quota int) (err error) {
 	})
 	if common.BatchUpdateEnabled {
 		addNewRecord(BatchUpdateTypeUserQuota, id, -quota)
+		// Best-effort flush to make quota deduction visible quickly.
+		gopool.Go(func() {
+			batchUpdate()
+		})
 		return nil
 	}
 	return decreaseUserQuota(id, quota)

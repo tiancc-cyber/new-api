@@ -257,6 +257,13 @@ func SendEmailVerification(c *gin.Context) {
 		"<p>验证码 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, code, common.VerificationValidMinutes)
 	err = common.SendEmail(subject, email, content)
 	if err != nil {
+		common.SysLog(fmt.Sprintf("send verification email failed, smtp_server=%s smtp_port=%d smtp_ssl_enabled=%v smtp_account=%s smtp_from=%s, err=%v", common.SMTPServer, common.SMTPPort, common.SMTPSSLEnabled, common.SMTPAccount, common.SMTPFrom, err))
+		// Some SMTP/network stacks may return an opaque "EOF".
+		// Convert it to a more actionable message for end users.
+		if strings.Contains(err.Error(), "EOF") {
+			common.ApiError(c, fmt.Errorf("邮件发送失败：SMTP 服务端连接异常（EOF），请检查 SMTP 配置/网络连通性"))
+			return
+		}
 		common.ApiError(c, err)
 		return
 	}

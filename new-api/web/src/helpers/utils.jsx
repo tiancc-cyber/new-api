@@ -123,6 +123,12 @@ export function showError(error) {
   console.error(error);
   if (error.message) {
     if (error.name === 'AxiosError') {
+      // Network / CORS / proxy errors may not have a response object.
+      if (!error.response) {
+        const hint = error.__newapi_hint ? `（${error.__newapi_hint}）` : '';
+        Toast.error('错误：网络异常或服务器无响应' + hint);
+        return;
+      }
       switch (error.response.status) {
         case 401:
           // 清除用户状态

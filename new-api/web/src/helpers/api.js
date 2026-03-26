@@ -83,9 +83,22 @@ export function updateAPI() {
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Some proxies / middleware can return an empty body for 200/4xx responses.
+    // Axios may surface it as "Unexpected end of JSON input" (sometimes shown as EOF in console).
+    // Keep the error handler resilient and avoid spamming the user with opaque messages.
+    const message = String(error?.message || '');
+    const isEmptyJsonError =
+      message.includes('Unexpected end of JSON input') || message === 'EOF';
+
     // 如果请求配置中显式要求跳过全局错误处理，则不弹出默认错误提示
     if (error.config && error.config.skipErrorHandler) {
       return Promise.reject(error);
+    }
+
+    if (isEmptyJsonError) {
+      // Attach a more actionable hint for debugging.
+      error.__newapi_hint =
+        '服务器返回了空响应或响应被截断（可能是反代/中间件/Turnstile 校验失败），请在 Network 面板检查该请求的 Response。';
     }
     showError(error);
     return Promise.reject(error);

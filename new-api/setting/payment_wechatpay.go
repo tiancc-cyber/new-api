@@ -1,6 +1,6 @@
 package setting
 
-var WeChatPayMchID = "aaa"
+var WeChatPayMchID = "1742213424"
 var WeChatPayAppID = "aaa"
 var WeChatPayAPIv3Key = "aaa"
 var WeChatPayPrivateKey = "aaa"

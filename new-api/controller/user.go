@@ -146,14 +146,24 @@ func Register(c *gin.Context) {
 		return
 	}
 	if common.EmailVerificationEnabled {
-		if user.Email == "" || user.VerificationCode == "" {
+		email, emailErr := normalizeAndValidateEmail(user.Email)
+		if email == "" || user.VerificationCode == "" {
 			common.ApiErrorI18n(c, i18n.MsgUserEmailVerificationRequired)
 			return
 		}
-		if !common.VerifyCodeWithKey(user.Email, user.VerificationCode, common.EmailVerificationPurpose) {
+		if emailErr != nil {
+			common.ApiError(c, emailErr)
+			return
+		}
+		if err = validateRegistrationEmailRestrictions(email); err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		if !common.VerifyCodeWithKey(email, user.VerificationCode, common.EmailVerificationPurpose) {
 			common.ApiErrorI18n(c, i18n.MsgUserVerificationCodeError)
 			return
 		}
+		user.Email = email
 	}
 	exist, err := model.CheckUserExistOrDeleted(user.Username, user.Email)
 	if err != nil {
@@ -162,8 +172,21 @@ func Register(c *gin.Context) {
 		return
 	}
 	if exist {
-		common.ApiErrorI18n(c, i18n.MsgUserExists)
+		redirectPayload := gin.H{
+			"redirect_method":  "password",
+			"prefill_username": user.Username,
+		}
+		if user.Email != "" {
+			redirectPayload["prefill_email"] = user.Email
+		}
+		if user.Email != "" && model.IsEmailAlreadyTaken(user.Email) {
+			redirectPayload["redirect_method"] = "email"
+		}
+		respondAuthRedirect(c, "用户已存在，请直接登录", "/login", redirectPayload)
 		return
+	}
+	if common.EmailVerificationEnabled {
+		common.DeleteKey(user.Email, common.EmailVerificationPurpose)
 	}
 	affCode := user.AffCode // this code is the inviter's code, not the user's own code
 	inviterId, _ := model.GetUserIdByAffCode(affCode)

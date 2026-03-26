@@ -234,55 +234,18 @@ func GetHomePageContent(c *gin.Context) {
 }
 
 func SendEmailVerification(c *gin.Context) {
-	email := c.Query("email")
-	if err := common.Validate.Var(email, "required,email"); err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"success": false,
-			"message": "无效的参数",
-		})
-		return
-	}
-	parts := strings.Split(email, "@")
-	if len(parts) != 2 {
-		c.JSON(http.StatusOK, gin.H{
-			"success": false,
-			"message": "无效的邮箱地址",
-		})
-		return
-	}
-	localPart := parts[0]
-	domainPart := parts[1]
-	if common.EmailDomainRestrictionEnabled {
-		allowed := false
-		for _, domain := range common.EmailDomainWhitelist {
-			if domainPart == domain {
-				allowed = true
-				break
-			}
-		}
-		if !allowed {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": "The administrator has enabled the email domain name whitelist, and your email address is not allowed due to special symbols or it's not in the whitelist.",
+	email, err := validateNewRegistrationEmail(c.Query("email"))
+	if err != nil {
+		if err.Error() == "邮箱地址已被占用" {
+			respondAuthRedirect(c, "该邮箱已注册，请直接登录", "/login", gin.H{
+				"redirect_method": "email",
+				"prefill_email":   strings.TrimSpace(c.Query("email")),
 			})
 			return
 		}
-	}
-	if common.EmailAliasRestrictionEnabled {
-		containsSpecialSymbols := strings.Contains(localPart, "+") || strings.Contains(localPart, ".")
-		if containsSpecialSymbols {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": "管理员已启用邮箱地址别名限制，您的邮箱地址由于包含特殊符号而被拒绝。",
-			})
-			return
-		}
-	}
-
-	if model.IsEmailAlreadyTaken(email) {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "邮箱地址已被占用",
+			"message": err.Error(),
 		})
 		return
 	}
@@ -292,7 +255,7 @@ func SendEmailVerification(c *gin.Context) {
 	content := fmt.Sprintf("<p>您好，你正在进行%s邮箱验证。</p>"+
 		"<p>您的验证码为: <strong>%s</strong></p>"+
 		"<p>验证码 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, code, common.VerificationValidMinutes)
-	err := common.SendEmail(subject, email, content)
+	err = common.SendEmail(subject, email, content)
 	if err != nil {
 		common.ApiError(c, err)
 		return

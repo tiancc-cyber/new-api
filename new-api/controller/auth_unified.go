@@ -15,6 +15,7 @@ import (
 )
 
 type UnifiedPasswordAuthRequest struct {
+	Mode             string `json:"mode,omitempty"`
 	Username         string `json:"username"`
 	Password         string `json:"password"`
 	Email            string `json:"email,omitempty"`
@@ -23,6 +24,7 @@ type UnifiedPasswordAuthRequest struct {
 }
 
 type UnifiedCodeAuthRequest struct {
+	Mode        string `json:"mode,omitempty"`
 	Channel     string `json:"channel"`
 	Email       string `json:"email,omitempty"`
 	CountryCode string `json:"country_code,omitempty"`
@@ -78,6 +80,19 @@ func PasswordLoginOrRegister(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
+	mode := strings.ToLower(strings.TrimSpace(req.Mode))
+	if mode == "register" {
+		handlePasswordRegister(c, req, username, password)
+		return
+	}
+	handlePasswordLogin(c, username, password)
+}
+
+func handlePasswordLogin(c *gin.Context, username string, password string) {
+	if !common.PasswordLoginEnabled {
+		common.ApiErrorI18n(c, i18n.MsgUserPasswordLoginDisabled)
+		return
+	}
 
 	loginUser := model.User{Username: username, Password: password}
 	if err := loginUser.ValidateAndFill(); err == nil {
@@ -111,12 +126,32 @@ func PasswordLoginOrRegister(c *gin.Context) {
 		common.ApiError(c, errors.New("用户名或密码错误，或用户已被封禁"))
 		return
 	}
+	respondAuthRedirect(c, "账号不存在，请先注册", "/register", gin.H{
+		"redirect_method":  "password",
+		"prefill_username": username,
+	})
+}
+
+func handlePasswordRegister(c *gin.Context, req UnifiedPasswordAuthRequest, username string, password string) {
 	if !common.RegisterEnabled {
 		common.ApiErrorI18n(c, i18n.MsgUserRegisterDisabled)
 		return
 	}
 	if !common.PasswordRegisterEnabled {
 		common.ApiErrorI18n(c, i18n.MsgUserPasswordRegisterDisabled)
+		return
+	}
+
+	exists, err := model.CheckUserExistOrDeleted(username, "")
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgDatabaseError)
+		return
+	}
+	if exists {
+		respondAuthRedirect(c, "账号已存在，请直接登录", "/login", gin.H{
+			"redirect_method":  "password",
+			"prefill_username": username,
+		})
 		return
 	}
 
@@ -127,13 +162,17 @@ func PasswordLoginOrRegister(c *gin.Context) {
 		Role:        common.RoleCommonUser,
 	}
 	if common.EmailVerificationEnabled {
-		email := strings.TrimSpace(req.Email)
+		email, emailErr := normalizeAndValidateEmail(req.Email)
 		if email == "" || req.VerificationCode == "" {
 			common.ApiErrorI18n(c, i18n.MsgUserEmailVerificationRequired)
 			return
 		}
-		if err = common.Validate.Var(email, "required,email"); err != nil {
-			common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		if emailErr != nil {
+			common.ApiError(c, emailErr)
+			return
+		}
+		if err = validateRegistrationEmailRestrictions(email); err != nil {
+			common.ApiError(c, err)
 			return
 		}
 		if !common.VerifyCodeWithKey(email, req.VerificationCode, common.EmailVerificationPurpose) {
@@ -146,9 +185,13 @@ func PasswordLoginOrRegister(c *gin.Context) {
 			return
 		}
 		if emailExists {
-			common.ApiErrorI18n(c, i18n.MsgUserExists)
+			respondAuthRedirect(c, "邮箱已存在，请直接登录", "/login", gin.H{
+				"redirect_method": "email",
+				"prefill_email":   email,
+			})
 			return
 		}
+		common.DeleteKey(email, common.EmailVerificationPurpose)
 		cleanUser.Email = email
 	}
 
@@ -156,7 +199,7 @@ func PasswordLoginOrRegister(c *gin.Context) {
 }
 
 func LoginOrRegisterWithCode(c *gin.Context) {
-	if !common.RegisterEnabled && !common.IsEmailAuthEnabled() && !common.IsSMSAuthEnabled() {
+	if !common.IsEmailAuthEnabled() && !common.IsSMSAuthEnabled() {
 		common.ApiError(c, errors.New("验证码登录未启用"))
 		return
 	}
@@ -174,26 +217,27 @@ func LoginOrRegisterWithCode(c *gin.Context) {
 
 	switch channel {
 	case "email":
-		handleEmailCodeAuth(c, strings.TrimSpace(req.Email), code, getInviterIDByAffCode(req.AffCode))
+		handleEmailCodeAuth(c, strings.TrimSpace(req.Email), code)
 	case "sms":
 		phone, err := common.NormalizePhoneNumber(req.CountryCode, req.Phone)
 		if err != nil {
 			common.ApiError(c, err)
 			return
 		}
-		handleSMSCodeAuth(c, phone, code, getInviterIDByAffCode(req.AffCode))
+		handleSMSCodeAuth(c, phone, code)
 	default:
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 	}
 }
 
-func handleEmailCodeAuth(c *gin.Context, email string, code string, inviterID int) {
+func handleEmailCodeAuth(c *gin.Context, email string, code string) {
 	if !common.IsEmailAuthEnabled() {
 		common.ApiError(c, errors.New("邮箱验证码登录未启用"))
 		return
 	}
-	if err := common.Validate.Var(email, "required,email"); err != nil {
-		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+	email, err := normalizeAndValidateEmail(email)
+	if err != nil {
+		common.ApiError(c, err)
 		return
 	}
 	if !common.VerifyCodeWithKey(email, code, common.EmailAuthPurpose) {
@@ -210,29 +254,13 @@ func handleEmailCodeAuth(c *gin.Context, email string, code string, inviterID in
 		common.ApiErrorI18n(c, i18n.MsgDatabaseError)
 		return
 	}
-	if model.IsEmailAlreadyTaken(email) {
-		common.ApiError(c, errors.New("该邮箱对应用户不可用"))
-		return
-	}
-	if !common.RegisterEnabled {
-		common.ApiErrorI18n(c, i18n.MsgUserRegisterDisabled)
-		return
-	}
-	username, err := model.GenerateAutoUsername("email")
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	cleanUser := model.User{
-		Username:    username,
-		DisplayName: email,
-		Email:       email,
-		Role:        common.RoleCommonUser,
-	}
-	createRegisteredUserAndLogin(c, &cleanUser, inviterID)
+	respondAuthRedirect(c, "该邮箱尚未注册，请先注册账号", "/register", gin.H{
+		"redirect_method": "password",
+		"prefill_email":   email,
+	})
 }
 
-func handleSMSCodeAuth(c *gin.Context, phone string, code string, inviterID int) {
+func handleSMSCodeAuth(c *gin.Context, phone string, code string) {
 	if !common.IsSMSAuthEnabled() {
 		common.ApiError(c, errors.New("短信验证码登录未启用"))
 		return
@@ -252,26 +280,9 @@ func handleSMSCodeAuth(c *gin.Context, phone string, code string, inviterID int)
 		common.ApiErrorI18n(c, i18n.MsgDatabaseError)
 		return
 	}
-	if model.IsPhoneAlreadyTaken(phone) {
-		common.ApiError(c, errors.New("该手机号对应用户不可用"))
-		return
-	}
-	if !common.RegisterEnabled {
-		common.ApiErrorI18n(c, i18n.MsgUserRegisterDisabled)
-		return
-	}
-	username, err := model.GenerateAutoUsername("phone")
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	cleanUser := model.User{
-		Username:    username,
-		DisplayName: phone,
-		Role:        common.RoleCommonUser,
-	}
-	cleanUser.SetPhone(phone)
-	createRegisteredUserAndLogin(c, &cleanUser, inviterID)
+	respondAuthRedirect(c, "该手机号尚未注册，请先注册账号", "/register", gin.H{
+		"redirect_method": "password",
+	})
 }
 
 func SendSMSVerification(c *gin.Context) {
@@ -297,16 +308,23 @@ func SendSMSVerification(c *gin.Context) {
 }
 
 func SendEmailAuthVerification(c *gin.Context) {
-	email := strings.TrimSpace(c.Query("email"))
-	if err := common.Validate.Var(email, "required,email"); err != nil {
-		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+	email, err := normalizeAndValidateEmail(c.Query("email"))
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if !model.IsEmailAlreadyTaken(email) {
+		respondAuthRedirect(c, "该邮箱尚未注册，请先前往注册页面", "/register", gin.H{
+			"redirect_method": "password",
+			"prefill_email":   email,
+		})
 		return
 	}
 	code := common.GenerateVerificationCode(6)
 	common.RegisterVerificationCodeWithKey(email, code, common.EmailAuthPurpose)
 	subject := fmt.Sprintf("%s登录验证码", common.SystemName)
-	content := fmt.Sprintf("<p>您好，你正在进行%s登录/注册验证。</p><p>您的验证码为: <strong>%s</strong></p><p>验证码 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, code, common.VerificationValidMinutes)
-	if err := common.SendEmail(subject, email, content); err != nil {
+	content := fmt.Sprintf("<p>您好，你正在进行%s登录验证。</p><p>您的验证码为: <strong>%s</strong></p><p>验证码 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, code, common.VerificationValidMinutes)
+	if err = common.SendEmail(subject, email, content); err != nil {
 		common.ApiError(c, err)
 		return
 	}

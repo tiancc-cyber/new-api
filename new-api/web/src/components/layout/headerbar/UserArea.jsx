@@ -145,18 +145,31 @@ const UserArea = ({
     const showRegisterButton = !isSelfUseMode;
 
     return (
-      <div className='home-header-auth-group flex items-center'>
+      <div className='home-header-auth-group flex items-center gap-2'>
         <Link to='/login' className='flex'>
           <Button
-            theme='solid'
-            type='primary'
-            className='home-header-auth-button home-header-auth-button-unified flex items-center justify-center !rounded-full !py-[10px] !px-3'
+            theme='light'
+            type='tertiary'
+            className='home-header-auth-button home-header-auth-button-login flex items-center justify-center !rounded-full !py-[10px] !px-3'
           >
             <span className='!text-xs !text-white !font-medium !px-1'>
-              {showRegisterButton ? t('注册/登录') : t('登录')}
+              {t('登录')}
             </span>
           </Button>
         </Link>
+        {showRegisterButton && (
+          <Link to='/register' className='flex'>
+            <Button
+              theme='solid'
+              type='primary'
+              className='home-header-auth-button home-header-auth-button-register flex items-center justify-center !rounded-full !py-[10px] !px-3'
+            >
+              <span className='!text-xs !text-white !font-medium !px-1'>
+                {t('注册')}
+              </span>
+            </Button>
+          </Link>
+        )}
       </div>
     );
   }

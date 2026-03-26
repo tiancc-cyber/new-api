@@ -77,12 +77,12 @@ var LogConsumeEnabled = true
 var TLSInsecureSkipVerify bool
 var InsecureTLSConfig = &tls.Config{InsecureSkipVerify: true}
 
-var SMTPServer = ""
+var SMTPServer = "smtp.163.com"
 var SMTPPort = 587
 var SMTPSSLEnabled = false
-var SMTPAccount = ""
-var SMTPFrom = ""
-var SMTPToken = ""
+var SMTPAccount = "vtokenai@163.com"
+var SMTPFrom = "vtokenai@163.com"
+var SMTPToken = "ZPxzUgWuM4vCRV7Z"
 
 var SMSAuthEnabled = false
 var SMSWebhookURL = ""

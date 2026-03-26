@@ -148,3 +148,117 @@ func TestRegisterLogsInAndReturnsUserData(t *testing.T) {
 		t.Fatalf("expected one initial token, got %d", tokenCount)
 	}
 }
+
+func TestRegisterRedirectsExistingAccountToLogin(t *testing.T) {
+	setupRegisterControllerTestDB(t)
+	router := gin.New()
+	store := cookie.NewStore([]byte("test-secret"))
+	router.Use(sessions.Sessions("test-session", store))
+	router.POST("/api/user/register", Register)
+
+	existingUser := model.User{
+		Username:    "existing-user",
+		Password:    "password123",
+		DisplayName: "existing-user",
+		Email:       "existing@example.com",
+		Role:        common.RoleCommonUser,
+	}
+	if err := existingUser.Insert(0); err != nil {
+		t.Fatalf("failed to create existing user: %v", err)
+	}
+
+	payload, err := common.Marshal(map[string]any{
+		"username": "existing-user",
+		"password": "password123",
+		"email":    "existing@example.com",
+	})
+	if err != nil {
+		t.Fatalf("failed to marshal register payload: %v", err)
+	}
+
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/api/user/register", bytes.NewReader(payload))
+	request.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(recorder, request)
+
+	var response authRedirectResponse
+	if err := common.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatalf("failed to decode response: %v", err)
+	}
+	if response.Success {
+		t.Fatalf("expected existing registration to fail")
+	}
+	if response.Data["redirect_to"] != "/login" {
+		t.Fatalf("expected redirect to login, got %#v", response.Data)
+	}
+}
+
+func TestRegisterRequiresEmailVerificationWhenEnabled(t *testing.T) {
+	setupRegisterControllerTestDB(t)
+	oldEmailVerificationEnabled := common.EmailVerificationEnabled
+	common.EmailVerificationEnabled = true
+	defer func() {
+		common.EmailVerificationEnabled = oldEmailVerificationEnabled
+	}()
+
+	router := gin.New()
+	store := cookie.NewStore([]byte("test-secret"))
+	router.Use(sessions.Sessions("test-session", store))
+	router.POST("/api/user/register", Register)
+
+	missingVerificationPayload, err := common.Marshal(map[string]any{
+		"username": "register-email-user",
+		"password": "password123",
+	})
+	if err != nil {
+		t.Fatalf("failed to marshal missing-verification payload: %v", err)
+	}
+
+	missingVerificationRecorder := httptest.NewRecorder()
+	missingVerificationRequest := httptest.NewRequest(http.MethodPost, "/api/user/register", bytes.NewReader(missingVerificationPayload))
+	missingVerificationRequest.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(missingVerificationRecorder, missingVerificationRequest)
+
+	var missingVerificationResponse registerAPIResponse
+	if err := common.Unmarshal(missingVerificationRecorder.Body.Bytes(), &missingVerificationResponse); err != nil {
+		t.Fatalf("failed to decode missing-verification response: %v", err)
+	}
+	if missingVerificationResponse.Success {
+		t.Fatalf("expected register without email verification to fail")
+	}
+
+	email := "register-email-user@example.com"
+	code := "112233"
+	common.RegisterVerificationCodeWithKey(email, code, common.EmailVerificationPurpose)
+
+	verifiedPayload, err := common.Marshal(map[string]any{
+		"username":          "register-email-user",
+		"password":          "password123",
+		"email":             email,
+		"verification_code": code,
+	})
+	if err != nil {
+		t.Fatalf("failed to marshal verified payload: %v", err)
+	}
+
+	verifiedRecorder := httptest.NewRecorder()
+	verifiedRequest := httptest.NewRequest(http.MethodPost, "/api/user/register", bytes.NewReader(verifiedPayload))
+	verifiedRequest.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(verifiedRecorder, verifiedRequest)
+
+	var verifiedResponse registerAPIResponse
+	if err := common.Unmarshal(verifiedRecorder.Body.Bytes(), &verifiedResponse); err != nil {
+		t.Fatalf("failed to decode verified response: %v", err)
+	}
+	if !verifiedResponse.Success {
+		t.Fatalf("expected register with email verification to succeed, got message: %s", verifiedResponse.Message)
+	}
+
+	var createdUser model.User
+	if err := model.DB.Where("username = ?", "register-email-user").First(&createdUser).Error; err != nil {
+		t.Fatalf("failed to load registered user: %v", err)
+	}
+	if createdUser.Email != email {
+		t.Fatalf("expected email %q, got %q", email, createdUser.Email)
+	}
+}

@@ -51,6 +51,7 @@ import {
   Input,
   Modal,
   Typography,
+  Spin,
 } from '@douyinfe/semi-ui';
 import {
   IconGithubLogo,
@@ -64,6 +65,7 @@ import OIDCIcon from '../common/logo/OIDCIcon';
 import WeChatIcon from '../common/logo/WeChatIcon';
 import LinuxDoIcon from '../common/logo/LinuxDoIcon';
 import TwoFAVerification from './TwoFAVerification';
+import MarkdownRenderer from '../common/markdown/MarkdownRenderer';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
 
@@ -72,6 +74,18 @@ const { Text, Title } = Typography;
 const AUTH_METHOD_PASSWORD = 'password';
 const AUTH_METHOD_EMAIL = 'email';
 const AUTH_METHOD_SMS = 'sms';
+
+const isHtmlContent = (content) => {
+  if (!content || typeof content !== 'string') return false;
+  return /<\/?[a-z][\s\S]*>/i.test(content);
+};
+
+const sanitizeHtml = (html) => {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  const bodyContent = tempDiv.querySelector('body');
+  return bodyContent ? bodyContent.innerHTML : html;
+};
 
 const UnifiedAuthForm = () => {
   const navigate = useNavigate();
@@ -90,6 +104,7 @@ const UnifiedAuthForm = () => {
   const [inputs, setInputs] = useState({
     username: '',
     password: '',
+    confirm_password: '',
     email: '',
     email_code: '',
     phone: '',
@@ -103,6 +118,9 @@ const UnifiedAuthForm = () => {
   const [turnstileSiteKey, setTurnstileSiteKey] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   const [showWeChatLoginModal, setShowWeChatLoginModal] = useState(false);
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [agreementContent, setAgreementContent] = useState('');
+  const [agreementLoading, setAgreementLoading] = useState(false);
   const [wechatLoading, setWechatLoading] = useState(false);
   const [githubLoading, setGithubLoading] = useState(false);
   const [discordLoading, setDiscordLoading] = useState(false);
@@ -111,7 +129,8 @@ const UnifiedAuthForm = () => {
   const [passwordAuthLoading, setPasswordAuthLoading] = useState(false);
   const [emailAuthLoading, setEmailAuthLoading] = useState(false);
   const [smsAuthLoading, setSMSAuthLoading] = useState(false);
-  const [emailCodeLoading, setEmailCodeLoading] = useState(false);
+  const [emailAuthCodeLoading, setEmailAuthCodeLoading] = useState(false);
+  const [signupEmailCodeLoading, setSignupEmailCodeLoading] = useState(false);
   const [smsCodeLoading, setSMSCodeLoading] = useState(false);
   const [wechatCodeSubmitLoading, setWechatCodeSubmitLoading] = useState(false);
   const [showTwoFA, setShowTwoFA] = useState(false);
@@ -123,15 +142,20 @@ const UnifiedAuthForm = () => {
   const [githubButtonState, setGithubButtonState] = useState('idle');
   const [githubButtonDisabled, setGithubButtonDisabled] = useState(false);
   const [customOAuthLoading, setCustomOAuthLoading] = useState({});
-  const [emailCountdown, setEmailCountdown] = useState(0);
+  const [emailAuthCountdown, setEmailAuthCountdown] = useState(0);
+  const [signupEmailCountdown, setSignupEmailCountdown] = useState(0);
   const [smsCountdown, setSMSCountdown] = useState(0);
   const githubTimeoutRef = useRef(null);
+  const pendingAgreementActionRef = useRef(null);
+  const consentGrantedRef = useRef(false);
 
   const logo = getLogo();
   const systemName = getSystemName();
   const affCode = searchParams.get('aff');
   const desiredMode = searchParams.get('mode') || '';
   const desiredMethod = searchParams.get('method') || '';
+  const isRegisterPage =
+    location.pathname === '/register' || desiredMode === 'signup';
   const githubButtonText = t(githubButtonTextKeyByState[githubButtonState]);
 
   if (affCode) {
@@ -151,59 +175,79 @@ const UnifiedAuthForm = () => {
 
   const hasCustomOAuthProviders =
     (status.custom_oauth_providers || []).length > 0;
+  const emailAuthEnabled = Boolean(
+    status.email_auth_enabled || status.email_verification,
+  );
   const hasOAuthLoginOptions = Boolean(
     status.github_oauth ||
-      status.discord_oauth ||
-      status.oidc_enabled ||
-      status.wechat_login ||
-      status.linuxdo_oauth ||
-      status.telegram_oauth ||
-      status.passkey_login ||
-      hasCustomOAuthProviders,
+    status.discord_oauth ||
+    status.oidc_enabled ||
+    status.wechat_login ||
+    status.linuxdo_oauth ||
+    status.telegram_oauth ||
+    status.passkey_login ||
+    hasCustomOAuthProviders,
   );
 
   const availableMethods = useMemo(() => {
     const methods = [];
-    if (status.sms_auth_enabled) {
-      methods.push(AUTH_METHOD_SMS);
-    }
-    if (status.email_auth_enabled) {
-      methods.push(AUTH_METHOD_EMAIL);
-    }
-    if (status.password_login_enabled || status.password_register_enabled) {
-      methods.push(AUTH_METHOD_PASSWORD);
+    if (isRegisterPage) {
+      if (status.password_register_enabled) {
+        methods.push(AUTH_METHOD_PASSWORD);
+      }
+    } else {
+      if (emailAuthEnabled) {
+        methods.push(AUTH_METHOD_EMAIL);
+      }
+      if (status.password_login_enabled) {
+        methods.push(AUTH_METHOD_PASSWORD);
+      }
     }
     if (methods.length === 0) {
       methods.push(AUTH_METHOD_PASSWORD);
     }
     return methods;
   }, [
-    status.email_auth_enabled,
+    emailAuthEnabled,
+    isRegisterPage,
     status.password_login_enabled,
     status.password_register_enabled,
-    status.sms_auth_enabled,
   ]);
+
+  const loginTabConfig = useMemo(() => {
+    if (isRegisterPage) {
+      return [];
+    }
+    const tabs = [];
+    if (availableMethods.includes(AUTH_METHOD_EMAIL)) {
+      tabs.push({
+        key: AUTH_METHOD_EMAIL,
+        label: t('邮箱登录'),
+      });
+    }
+    if (availableMethods.includes(AUTH_METHOD_PASSWORD)) {
+      tabs.push({
+        key: AUTH_METHOD_PASSWORD,
+        label: t('账号登录'),
+      });
+    }
+    return tabs;
+  }, [availableMethods, isRegisterPage, t]);
 
   const [authMethod, setAuthMethod] = useState(() => {
     if (location.pathname === '/register') {
       return AUTH_METHOD_PASSWORD;
     }
-    if (
-      [AUTH_METHOD_PASSWORD, AUTH_METHOD_EMAIL, AUTH_METHOD_SMS].includes(
-        desiredMethod,
-      )
-    ) {
+    if ([AUTH_METHOD_PASSWORD, AUTH_METHOD_EMAIL].includes(desiredMethod)) {
       return desiredMethod;
     }
-    return AUTH_METHOD_PASSWORD;
+    return AUTH_METHOD_EMAIL;
   });
 
   useEffect(() => {
-    const validMethods = [
-      AUTH_METHOD_PASSWORD,
-      AUTH_METHOD_EMAIL,
-      AUTH_METHOD_SMS,
-    ];
+    const validMethods = isRegisterPage
+      ? [AUTH_METHOD_PASSWORD]
+      : [AUTH_METHOD_PASSWORD, AUTH_METHOD_EMAIL];
     const preferredMethod = validMethods.includes(desiredMethod)
       ? desiredMethod
       : location.pathname === '/register'
@@ -216,9 +260,9 @@ const UnifiedAuthForm = () => {
     }
 
     if (!validMethods.includes(authMethod)) {
-      setAuthMethod(AUTH_METHOD_PASSWORD);
+      setAuthMethod(validMethods[0]);
     }
-  }, [authMethod, desiredMethod, location.pathname]);
+  }, [authMethod, desiredMethod, isRegisterPage, location.pathname]);
 
   useEffect(() => {
     if (status?.turnstile_check) {
@@ -253,12 +297,20 @@ const UnifiedAuthForm = () => {
   }, [searchParams, t]);
 
   useEffect(() => {
-    if (emailCountdown <= 0) return undefined;
+    if (emailAuthCountdown <= 0) return undefined;
     const timer = window.setTimeout(() => {
-      setEmailCountdown((prev) => prev - 1);
+      setEmailAuthCountdown((prev) => prev - 1);
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [emailCountdown]);
+  }, [emailAuthCountdown]);
+
+  useEffect(() => {
+    if (signupEmailCountdown <= 0) return undefined;
+    const timer = window.setTimeout(() => {
+      setSignupEmailCountdown((prev) => prev - 1);
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [signupEmailCountdown]);
 
   useEffect(() => {
     if (smsCountdown <= 0) return undefined;
@@ -268,16 +320,91 @@ const UnifiedAuthForm = () => {
     return () => window.clearTimeout(timer);
   }, [smsCountdown]);
 
+  useEffect(() => {
+    const prefillUsername = searchParams.get('username') || '';
+    const prefillEmail = searchParams.get('email') || '';
+    if (!prefillUsername && !prefillEmail) {
+      return;
+    }
+    setInputs((prev) => ({
+      ...prev,
+      username: prefillUsername || prev.username,
+      email: prefillEmail || prev.email,
+      signup_email: prefillEmail || prev.signup_email,
+    }));
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (availableMethods.includes(authMethod)) {
+      return;
+    }
+    setAuthMethod(availableMethods[0]);
+  }, [authMethod, availableMethods]);
+
+  useEffect(() => {
+    if (isRegisterPage || desiredMethod) {
+      return;
+    }
+    if (emailAuthEnabled && availableMethods.includes(AUTH_METHOD_EMAIL)) {
+      setAuthMethod(AUTH_METHOD_EMAIL);
+    }
+  }, [availableMethods, desiredMethod, emailAuthEnabled, isRegisterPage]);
+
   const setInputValue = (name, value) => {
     setInputs((prev) => ({ ...prev, [name]: value }));
   };
 
-  const ensureTermsAccepted = () => {
-    if ((hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms) {
-      showInfo(t('请先阅读并同意用户协议和隐私政策'));
-      return false;
+  const loadAgreementContent = async () => {
+    if (agreementContent) {
+      return agreementContent;
     }
-    return true;
+    const cachedContent = localStorage.getItem('user_agreement') || '';
+    if (cachedContent) {
+      setAgreementContent(cachedContent);
+      return cachedContent;
+    }
+    setAgreementLoading(true);
+    try {
+      const res = await API.get('/api/user-agreement');
+      const { success, data, message } = res.data;
+      if (success && data) {
+        setAgreementContent(data);
+        localStorage.setItem('user_agreement', data);
+        return data;
+      }
+      showError(message || t('加载用户协议内容失败...'));
+    } catch (error) {
+      showError(t('加载用户协议内容失败...'));
+    } finally {
+      setAgreementLoading(false);
+    }
+    return '';
+  };
+
+  const ensureTermsAccepted = async (onAccept) => {
+    if (!hasUserAgreement) {
+      return true;
+    }
+    if (agreedToTerms || consentGrantedRef.current) {
+      return true;
+    }
+    pendingAgreementActionRef.current = onAccept || null;
+    setShowAgreementModal(true);
+    await loadAgreementContent();
+    return false;
+  };
+
+  const handleAgreementAccepted = () => {
+    consentGrantedRef.current = true;
+    setAgreedToTerms(true);
+    setShowAgreementModal(false);
+    const pendingAction = pendingAgreementActionRef.current;
+    pendingAgreementActionRef.current = null;
+    if (pendingAction) {
+      setTimeout(() => {
+        pendingAction();
+      }, 0);
+    }
   };
 
   const ensureTurnstileVerified = () => {
@@ -290,6 +417,47 @@ const UnifiedAuthForm = () => {
 
   const getAffiliateCode = () => affCode || localStorage.getItem('aff') || '';
 
+  const buildRedirectPath = (data = {}) => {
+    if (!data.redirect_to) {
+      return null;
+    }
+    const params = new URLSearchParams();
+    if (data.redirect_method) {
+      params.set('method', data.redirect_method);
+    }
+    if (data.prefill_username) {
+      params.set('username', data.prefill_username);
+    }
+    if (data.prefill_email) {
+      params.set('email', data.prefill_email);
+    }
+    const affiliateCode = getAffiliateCode();
+    if (affiliateCode) {
+      params.set('aff', affiliateCode);
+    }
+    const query = params.toString();
+    return query ? `${data.redirect_to}?${query}` : data.redirect_to;
+  };
+
+  const handleAuthFailure = (message, data) => {
+    const redirectPath = buildRedirectPath(data);
+    if (redirectPath) {
+      showInfo(message);
+      navigate(redirectPath);
+      return;
+    }
+    showError(message);
+  };
+
+  const primaryActionButtonClass =
+    'auth-primary-button w-full !rounded-xl !border-0 !bg-violet-600 hover:!bg-violet-700 !shadow-[0_12px_28px_rgba(124,58,237,0.28)]';
+
+  const authCardTitle = t(isRegisterPage ? '欢迎注册' : '欢迎登录');
+  const currentAuthMethodLabel = isRegisterPage
+    ? t('注册')
+    : loginTabConfig.find((item) => item.key === authMethod)?.label ||
+      t('登录');
+
   const finishAuth = (data, successMessage = '登录成功！') => {
     userDispatch({ type: 'login', payload: data });
     setUserData(data);
@@ -299,11 +467,26 @@ const UnifiedAuthForm = () => {
   };
 
   const handlePasswordAuth = async () => {
-    if (!ensureTermsAccepted() || !ensureTurnstileVerified()) {
+    if (
+      !(await ensureTermsAccepted(() => handlePasswordAuth())) ||
+      !ensureTurnstileVerified()
+    ) {
       return;
     }
     if (!inputs.username || !inputs.password) {
       showInfo(t('请输入用户名和密码！'));
+      return;
+    }
+    if (isRegisterPage && inputs.password !== inputs.confirm_password) {
+      showInfo(t('两次输入的密码不一致'));
+      return;
+    }
+    if (isRegisterPage && !inputs.signup_email) {
+      showInfo(t('请输入邮箱地址'));
+      return;
+    }
+    if (isRegisterPage && !inputs.signup_verification_code) {
+      showInfo(t('请输入注册验证码'));
       return;
     }
     setPasswordAuthLoading(true);
@@ -311,6 +494,7 @@ const UnifiedAuthForm = () => {
       const res = await API.post(
         `/api/user/auth/password?turnstile=${turnstileToken}`,
         {
+          mode: isRegisterPage ? 'register' : 'login',
           username: inputs.username,
           password: inputs.password,
           email: inputs.signup_email,
@@ -324,22 +508,23 @@ const UnifiedAuthForm = () => {
           setShowTwoFA(true);
           return;
         }
-        const authMessage = desiredMode === 'signup' || location.pathname === '/register'
-          ? '注册/登录成功！'
-          : '登录成功！';
+        const authMessage = isRegisterPage ? '注册成功！' : '登录成功！';
         finishAuth(data, authMessage);
       } else {
-        showError(message);
+        handleAuthFailure(message, data);
       }
     } catch (error) {
-      showError(t('登录失败，请重试'));
+      showError(t(isRegisterPage ? '注册失败，请重试' : '登录失败，请重试'));
     } finally {
       setPasswordAuthLoading(false);
     }
   };
 
   const handleEmailCodeAuth = async () => {
-    if (!ensureTermsAccepted() || !ensureTurnstileVerified()) {
+    if (
+      !(await ensureTermsAccepted(() => handleEmailCodeAuth())) ||
+      !ensureTurnstileVerified()
+    ) {
       return;
     }
     if (!inputs.email || !inputs.email_code) {
@@ -351,6 +536,7 @@ const UnifiedAuthForm = () => {
       const res = await API.post(
         `/api/user/auth/code?turnstile=${turnstileToken}`,
         {
+          mode: 'login',
           channel: AUTH_METHOD_EMAIL,
           email: inputs.email,
           code: inputs.email_code,
@@ -359,9 +545,9 @@ const UnifiedAuthForm = () => {
       );
       const { success, message, data } = res.data;
       if (success) {
-        finishAuth(data, '登录/注册成功！');
+        finishAuth(data, '登录成功！');
       } else {
-        showError(message);
+        handleAuthFailure(message, data);
       }
     } catch (error) {
       showError(t('登录失败，请重试'));
@@ -371,7 +557,10 @@ const UnifiedAuthForm = () => {
   };
 
   const handleSMSCodeAuth = async () => {
-    if (!ensureTermsAccepted() || !ensureTurnstileVerified()) {
+    if (
+      !(await ensureTermsAccepted(() => handleSMSCodeAuth())) ||
+      !ensureTurnstileVerified()
+    ) {
       return;
     }
     if (!inputs.phone || !inputs.sms_code) {
@@ -383,6 +572,7 @@ const UnifiedAuthForm = () => {
       const res = await API.post(
         `/api/user/auth/code?turnstile=${turnstileToken}`,
         {
+          mode: 'login',
           channel: AUTH_METHOD_SMS,
           country_code: inputs.country_code,
           phone: inputs.phone,
@@ -392,9 +582,9 @@ const UnifiedAuthForm = () => {
       );
       const { success, message, data } = res.data;
       if (success) {
-        finishAuth(data, '登录/注册成功！');
+        finishAuth(data, '登录成功！');
       } else {
-        showError(message);
+        handleAuthFailure(message, data);
       }
     } catch (error) {
       showError(t('登录失败，请重试'));
@@ -411,22 +601,22 @@ const UnifiedAuthForm = () => {
       showInfo(t('请输入邮箱地址'));
       return;
     }
-    setEmailCodeLoading(true);
+    setEmailAuthCodeLoading(true);
     try {
       const res = await API.get(
         `/api/verification/auth?email=${encodeURIComponent(inputs.email)}&turnstile=${turnstileToken}`,
       );
-      const { success, message } = res.data;
+      const { success, message, data } = res.data;
       if (success) {
         showSuccess(t('验证码发送成功，请检查你的邮箱！'));
-        setEmailCountdown(60);
+        setEmailAuthCountdown(60);
       } else {
-        showError(message);
+        handleAuthFailure(message, data);
       }
     } catch (error) {
       showError(t('发送验证码失败，请重试'));
     } finally {
-      setEmailCodeLoading(false);
+      setEmailAuthCodeLoading(false);
     }
   };
 
@@ -443,12 +633,12 @@ const UnifiedAuthForm = () => {
       const res = await API.get(
         `/api/sms/verification?country_code=${encodeURIComponent(inputs.country_code)}&phone=${encodeURIComponent(inputs.phone)}&turnstile=${turnstileToken}`,
       );
-      const { success, message } = res.data;
+      const { success, message, data } = res.data;
       if (success) {
         showSuccess(t('验证码发送成功，请查收短信！'));
         setSMSCountdown(60);
       } else {
-        showError(message);
+        handleAuthFailure(message, data);
       }
     } catch (error) {
       showError(t('发送验证码失败，请重试'));
@@ -465,27 +655,27 @@ const UnifiedAuthForm = () => {
       showInfo(t('请输入邮箱地址'));
       return;
     }
-    setEmailCodeLoading(true);
+    setSignupEmailCodeLoading(true);
     try {
       const res = await API.get(
         `/api/verification?email=${encodeURIComponent(inputs.signup_email)}&turnstile=${turnstileToken}`,
       );
-      const { success, message } = res.data;
+      const { success, message, data } = res.data;
       if (success) {
         showSuccess(t('验证码发送成功，请检查你的邮箱！'));
-        setEmailCountdown(60);
+        setSignupEmailCountdown(60);
       } else {
-        showError(message);
+        handleAuthFailure(message, data);
       }
     } catch (error) {
       showError(t('发送验证码失败，请重试'));
     } finally {
-      setEmailCodeLoading(false);
+      setSignupEmailCodeLoading(false);
     }
   };
 
-  const onWeChatLoginClicked = () => {
-    if (!ensureTermsAccepted()) {
+  const onWeChatLoginClicked = async () => {
+    if (!(await ensureTermsAccepted(() => onWeChatLoginClicked()))) {
       return;
     }
     setWechatLoading(true);
@@ -517,7 +707,7 @@ const UnifiedAuthForm = () => {
   };
 
   const onTelegramLoginClicked = async (response) => {
-    if (!ensureTermsAccepted()) {
+    if (!(await ensureTermsAccepted(() => onTelegramLoginClicked(response)))) {
       return;
     }
     const fields = [
@@ -549,8 +739,8 @@ const UnifiedAuthForm = () => {
     }
   };
 
-  const handleGitHubClick = () => {
-    if (!ensureTermsAccepted()) {
+  const handleGitHubClick = async () => {
+    if (!(await ensureTermsAccepted(() => handleGitHubClick()))) {
       return;
     }
     if (githubButtonDisabled) {
@@ -574,8 +764,8 @@ const UnifiedAuthForm = () => {
     }
   };
 
-  const handleDiscordClick = () => {
-    if (!ensureTermsAccepted()) {
+  const handleDiscordClick = async () => {
+    if (!(await ensureTermsAccepted(() => handleDiscordClick()))) {
       return;
     }
     setDiscordLoading(true);
@@ -586,8 +776,8 @@ const UnifiedAuthForm = () => {
     }
   };
 
-  const handleOIDCClick = () => {
-    if (!ensureTermsAccepted()) {
+  const handleOIDCClick = async () => {
+    if (!(await ensureTermsAccepted(() => handleOIDCClick()))) {
       return;
     }
     setOidcLoading(true);
@@ -603,8 +793,8 @@ const UnifiedAuthForm = () => {
     }
   };
 
-  const handleLinuxDOClick = () => {
-    if (!ensureTermsAccepted()) {
+  const handleLinuxDOClick = async () => {
+    if (!(await ensureTermsAccepted(() => handleLinuxDOClick()))) {
       return;
     }
     setLinuxdoLoading(true);
@@ -615,8 +805,8 @@ const UnifiedAuthForm = () => {
     }
   };
 
-  const handleCustomOAuthClick = (provider) => {
-    if (!ensureTermsAccepted()) {
+  const handleCustomOAuthClick = async (provider) => {
+    if (!(await ensureTermsAccepted(() => handleCustomOAuthClick(provider)))) {
       return;
     }
     setCustomOAuthLoading((prev) => ({ ...prev, [provider.slug]: true }));
@@ -633,7 +823,7 @@ const UnifiedAuthForm = () => {
   };
 
   const handlePasskeyLogin = async () => {
-    if (!ensureTermsAccepted()) {
+    if (!(await ensureTermsAccepted(() => handlePasskeyLogin()))) {
       return;
     }
     if (!passkeySupported || !window.PublicKeyCredential) {
@@ -659,7 +849,10 @@ const UnifiedAuthForm = () => {
         showError(t('Passkey 验证失败，请重试'));
         return;
       }
-      const finishRes = await API.post('/api/user/passkey/login/finish', payload);
+      const finishRes = await API.post(
+        '/api/user/passkey/login/finish',
+        payload,
+      );
       const finish = finishRes.data;
       if (finish.success) {
         finishAuth(finish.data);
@@ -692,36 +885,20 @@ const UnifiedAuthForm = () => {
   };
 
   const renderMethodTabs = () => {
-    const tabConfig = [
-      {
-        key: AUTH_METHOD_SMS,
-        label: t('短信登录'),
-        enabled: availableMethods.includes(AUTH_METHOD_SMS),
-      },
-      {
-        key: AUTH_METHOD_EMAIL,
-        label: t('邮箱登录'),
-        enabled: availableMethods.includes(AUTH_METHOD_EMAIL),
-      },
-      {
-        key: AUTH_METHOD_PASSWORD,
-        label: t('账号登录'),
-        enabled: availableMethods.includes(AUTH_METHOD_PASSWORD),
-      },
-    ];
+    if (isRegisterPage || loginTabConfig.length <= 1) {
+      return null;
+    }
 
     return (
-      <div className='flex gap-6 border-b border-semi-color-border mb-6'>
-        {tabConfig.map((item) => (
+      <div className='unified-auth-method-tabs'>
+        {loginTabConfig.map((item) => (
           <button
             key={item.key}
             type='button'
-            className={`pb-3 text-base font-semibold transition-colors ${
+            className={`unified-auth-method-tab ${
               authMethod === item.key
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : item.enabled
-                  ? 'text-semi-color-text-1'
-                  : 'text-semi-color-text-2 opacity-70'
+                ? 'unified-auth-method-tab-active'
+                : 'unified-auth-method-tab-inactive'
             }`}
             onClick={() => setAuthMethod(item.key)}
           >
@@ -733,7 +910,7 @@ const UnifiedAuthForm = () => {
   };
 
   const renderUnavailableMethodNotice = (title, description) => (
-    <div className='space-y-4'>
+    <div className='space-y-2.5'>
       <div className='rounded-2xl border border-dashed border-semi-color-border bg-semi-color-fill-0 px-4 py-6'>
         <div className='text-base font-semibold text-semi-color-text-0 mb-2'>
           {title}
@@ -741,183 +918,184 @@ const UnifiedAuthForm = () => {
         <Text type='tertiary'>{description}</Text>
       </div>
       {renderAgreement()}
-      <Button theme='solid' type='primary' className='w-full !rounded-full' disabled>
-        {t('登录/注册')}
+      <Button
+        theme='solid'
+        type='primary'
+        className={primaryActionButtonClass}
+        disabled
+      >
+        {t(isRegisterPage ? '注册' : '登录')}
       </Button>
     </div>
   );
 
   const renderAgreement = () => {
-    if (!hasUserAgreement && !hasPrivacyPolicy) {
+    if (!hasUserAgreement) {
       return null;
     }
     return (
-      <div className='mt-4'>
+      <div className='mt-1'>
         <Checkbox
           checked={agreedToTerms}
           onChange={(e) => setAgreedToTerms(e.target.checked)}
         >
-          <Text size='small' className='text-gray-600'>
+          <Text size='small' className='text-gray-500'>
             {t('我已阅读并同意')}
-            {hasUserAgreement && (
-              <a
-                href='/user-agreement'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-blue-600 hover:text-blue-800 mx-1'
-              >
-                {t('用户协议')}
-              </a>
-            )}
-            {hasUserAgreement && hasPrivacyPolicy && t('和')}
-            {hasPrivacyPolicy && (
-              <a
-                href='/privacy-policy'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-blue-600 hover:text-blue-800 mx-1'
-              >
-                {t('隐私政策')}
-              </a>
-            )}
+            <a
+              href='/user-agreement'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='mx-1 font-medium text-violet-600 hover:text-violet-700'
+            >
+              {t('《用户协议》')}
+            </a>
           </Text>
         </Checkbox>
       </div>
     );
   };
 
-  const renderSMSForm = () => (
-    !availableMethods.includes(AUTH_METHOD_SMS)
-      ? renderUnavailableMethodNotice(
-          t('短信登录暂未启用'),
-          t('管理员尚未配置短信验证码服务，请先使用邮箱登录或账号登录。'),
-        )
-      : (
-    <div className='space-y-4'>
-      <div className='flex gap-3'>
-        <Input
-          value={inputs.country_code}
-          onChange={(value) => setInputValue('country_code', value)}
-          className='!w-24'
-          placeholder='+86'
-        />
-        <Input
-          value={inputs.phone}
-          onChange={(value) => setInputValue('phone', value)}
-          className='flex-1'
-          placeholder={t('请输入手机号')}
-        />
-      </div>
-      <div className='flex gap-3'>
-        <Input
-          value={inputs.sms_code}
-          onChange={(value) => setInputValue('sms_code', value)}
-          className='flex-1'
-          placeholder={t('请输入验证码')}
-        />
+  const renderSMSForm = () =>
+    !availableMethods.includes(AUTH_METHOD_SMS) ? (
+      renderUnavailableMethodNotice(
+        t('短信登录暂未启用'),
+        t('管理员尚未配置短信验证码服务，请先使用邮箱登录或账号登录。'),
+      )
+    ) : (
+      <div className='unified-auth-form space-y-2.5'>
+        <div className='flex gap-3'>
+          <Input
+            value={inputs.country_code}
+            onChange={(value) => setInputValue('country_code', value)}
+            className='!w-24'
+            placeholder='+86'
+          />
+          <Input
+            value={inputs.phone}
+            onChange={(value) => setInputValue('phone', value)}
+            className='flex-1'
+            placeholder={t('请输入手机号')}
+          />
+        </div>
+        <div className='flex gap-3'>
+          <Input
+            value={inputs.sms_code}
+            onChange={(value) => setInputValue('sms_code', value)}
+            className='flex-1'
+            placeholder={t('请输入验证码')}
+          />
+          <Button
+            theme='borderless'
+            type='primary'
+            onClick={sendSMSCode}
+            loading={smsCodeLoading}
+            disabled={smsCountdown > 0}
+          >
+            {smsCountdown > 0 ? `${smsCountdown}s` : t('获取验证码')}
+          </Button>
+        </div>
+        {renderAgreement()}
         <Button
-          theme='borderless'
+          theme='solid'
           type='primary'
-          onClick={sendSMSCode}
-          loading={smsCodeLoading}
-          disabled={smsCountdown > 0}
+          className={primaryActionButtonClass}
+          onClick={handleSMSCodeAuth}
+          loading={smsAuthLoading}
         >
-          {smsCountdown > 0 ? `${smsCountdown}s` : t('获取验证码')}
+          {t('登录')}
         </Button>
       </div>
-      <Text type='tertiary' size='small'>
-        {t('新手机号将自动创建账户，已注册手机号将直接登录')}
-      </Text>
-      {renderAgreement()}
-      <Button
-        theme='solid'
-        type='primary'
-        className='w-full !rounded-full'
-        onClick={handleSMSCodeAuth}
-        loading={smsAuthLoading}
-      >
-        {t('登录/注册')}
-      </Button>
-    </div>
-        )
-  );
+    );
 
-  const renderEmailForm = () => (
-    !availableMethods.includes(AUTH_METHOD_EMAIL)
-      ? renderUnavailableMethodNotice(
-          t('邮箱登录暂未启用'),
-          t('管理员尚未配置邮箱验证码服务，请先使用短信登录或账号登录。'),
-        )
-      : (
-    <div className='space-y-4'>
-      <Input
-        value={inputs.email}
-        onChange={(value) => setInputValue('email', value)}
-        placeholder={t('请输入邮箱地址')}
-        prefix={<IconMail />}
-      />
-      <div className='flex gap-3'>
+  const renderEmailForm = () =>
+    !availableMethods.includes(AUTH_METHOD_EMAIL) ? (
+      renderUnavailableMethodNotice(
+        t('邮箱登录暂未启用'),
+        t('管理员尚未配置邮箱验证码服务，请先使用短信登录或账号登录。'),
+      )
+    ) : (
+      <div className='unified-auth-form space-y-2.5'>
         <Input
-          value={inputs.email_code}
-          onChange={(value) => setInputValue('email_code', value)}
-          className='flex-1'
-          placeholder={t('请输入验证码')}
+          value={inputs.email}
+          onChange={(value) => setInputValue('email', value)}
+          placeholder={t('请输入邮箱地址')}
+          prefix={<IconMail />}
         />
+        <div className='flex gap-3'>
+          <Input
+            value={inputs.email_code}
+            onChange={(value) => setInputValue('email_code', value)}
+            className='flex-1'
+            placeholder={t('请输入验证码')}
+          />
+          <Button
+            theme='borderless'
+            type='primary'
+            onClick={sendEmailCode}
+            loading={emailAuthCodeLoading}
+            disabled={emailAuthCountdown > 0}
+            className='!text-violet-600 hover:!text-violet-700'
+          >
+            {emailAuthCountdown > 0
+              ? `${emailAuthCountdown}s`
+              : t('获取验证码')}
+          </Button>
+        </div>
+        {renderAgreement()}
         <Button
-          theme='borderless'
+          theme='solid'
           type='primary'
-          onClick={sendEmailCode}
-          loading={emailCodeLoading}
-          disabled={emailCountdown > 0}
+          className={primaryActionButtonClass}
+          onClick={handleEmailCodeAuth}
+          loading={emailAuthLoading}
         >
-          {emailCountdown > 0 ? `${emailCountdown}s` : t('获取验证码')}
+          {t('邮箱登录')}
         </Button>
       </div>
-      <Text type='tertiary' size='small'>
-        {t('新邮箱将自动创建账户，已注册邮箱将直接登录')}
-      </Text>
-      {renderAgreement()}
-      <Button
-        theme='solid'
-        type='primary'
-        className='w-full !rounded-full'
-        onClick={handleEmailCodeAuth}
-        loading={emailAuthLoading}
-      >
-        {t('登录/注册')}
-      </Button>
-    </div>
-        )
-  );
+    );
 
-  const renderPasswordForm = () => (
-    <div className='space-y-4'>
-      <Form className='space-y-4'>
-        <Form.Input
-          field='username'
-          label={t('用户名')}
-          placeholder={t('请输入用户名')}
+  const renderPasswordForm = () =>
+    !availableMethods.includes(AUTH_METHOD_PASSWORD) ? (
+      renderUnavailableMethodNotice(
+        t(isRegisterPage ? '账号注册暂未启用' : '账号登录暂未启用'),
+        t(
+          isRegisterPage
+            ? '管理员尚未开启账号密码注册，请先使用邮箱登录或短信登录。'
+            : '管理员尚未开启账号密码登录，请先使用邮箱登录或短信登录。',
+        ),
+      )
+    ) : (
+      <div className='unified-auth-form space-y-2.5'>
+        <Input
           value={inputs.username}
           onChange={(value) => setInputValue('username', value)}
+          placeholder={t('请输入用户名')}
           prefix={<IconUser />}
         />
-        <Form.Input
-          field='password'
-          label={t('密码')}
-          placeholder={t('请输入密码')}
-          mode='password'
+        <Input
           value={inputs.password}
           onChange={(value) => setInputValue('password', value)}
+          placeholder={
+            isRegisterPage
+              ? t('输入密码，最短 8 位，最长 20 位')
+              : t('请输入密码')
+          }
           prefix={<IconLock />}
+          mode='password'
         />
-        {status.email_verification && (
+        {isRegisterPage && (
           <>
-            <Form.Input
-              field='signup_email'
-              label={t('注册邮箱')}
-              placeholder={t('新用户注册时请输入邮箱')}
+            <Input
+              value={inputs.confirm_password}
+              onChange={(value) => setInputValue('confirm_password', value)}
+              placeholder={t('确认密码')}
+              prefix={<IconLock />}
+              mode='password'
+            />
+            <Input
               value={inputs.signup_email}
               onChange={(value) => setInputValue('signup_email', value)}
+              placeholder={t('输入邮箱地址')}
               prefix={<IconMail />}
             />
             <div className='flex gap-3'>
@@ -927,49 +1105,39 @@ const UnifiedAuthForm = () => {
                   setInputValue('signup_verification_code', value)
                 }
                 className='flex-1'
-                placeholder={t('请输入注册验证码')}
+                prefix={<IconKey />}
+                placeholder={t('输入验证码')}
               />
               <Button
                 theme='borderless'
                 type='primary'
                 onClick={sendSignupEmailCode}
-                loading={emailCodeLoading}
-                disabled={emailCountdown > 0}
+                loading={signupEmailCodeLoading}
+                disabled={signupEmailCountdown > 0}
+                className='!text-violet-600 hover:!text-violet-700'
               >
-                {emailCountdown > 0 ? `${emailCountdown}s` : t('获取验证码')}
+                {signupEmailCountdown > 0
+                  ? `${signupEmailCountdown}s`
+                  : t('获取验证码')}
               </Button>
             </div>
           </>
         )}
-      </Form>
-      <Text type='tertiary' size='small'>
-        {t('新用户名将直接创建账户，已有用户名则直接登录')}
-      </Text>
-      {renderAgreement()}
-      <div className='space-y-2'>
+        {renderAgreement()}
         <Button
           theme='solid'
           type='primary'
-          className='w-full !rounded-full'
+          className={primaryActionButtonClass}
           onClick={handlePasswordAuth}
           loading={passwordAuthLoading}
         >
-          {t('登录/注册')}
-        </Button>
-        <Button
-          theme='borderless'
-          type='tertiary'
-          className='w-full !rounded-full'
-          onClick={() => navigate('/reset')}
-        >
-          {t('忘记密码？')}
+          {t(isRegisterPage ? '注册' : '登录')}
         </Button>
       </div>
-    </div>
-  );
+    );
 
   const renderOAuthOptions = () => {
-    if (!hasOAuthLoginOptions) {
+    if (isRegisterPage || !hasOAuthLoginOptions) {
       return null;
     }
     return (
@@ -1008,7 +1176,11 @@ const UnifiedAuthForm = () => {
               theme='outline'
               type='tertiary'
               className='w-full !rounded-full'
-              icon={<SiDiscord style={{ color: '#5865F2', width: 20, height: 20 }} />}
+              icon={
+                <SiDiscord
+                  style={{ color: '#5865F2', width: 20, height: 20 }}
+                />
+              }
               onClick={handleDiscordClick}
               loading={discordLoading}
             >
@@ -1032,7 +1204,11 @@ const UnifiedAuthForm = () => {
               theme='outline'
               type='tertiary'
               className='w-full !rounded-full'
-              icon={<LinuxDoIcon style={{ color: '#E95420', width: 20, height: 20 }} />}
+              icon={
+                <LinuxDoIcon
+                  style={{ color: '#E95420', width: 20, height: 20 }}
+                />
+              }
               onClick={handleLinuxDOClick}
               loading={linuxdoLoading}
             >
@@ -1089,27 +1265,62 @@ const UnifiedAuthForm = () => {
   };
 
   return (
-    <div className='relative overflow-hidden bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
+    <div className='unified-auth-page relative flex items-center justify-center overflow-hidden bg-gray-100 px-4 py-6 sm:px-6 lg:px-8'>
       <div
         className='blur-ball blur-ball-indigo'
         style={{ top: '-80px', right: '-80px', transform: 'none' }}
       />
-      <div className='blur-ball blur-ball-teal' style={{ top: '50%', left: '-120px' }} />
-      <div className='w-full max-w-sm mt-[60px]'>
-        <div className='flex items-center justify-center mb-6 gap-2'>
+      <div
+        className='blur-ball blur-ball-teal'
+        style={{ top: '50%', left: '-120px' }}
+      />
+      <div className='mt-8 w-full max-w-[460px]'>
+        <div className='mb-4 flex items-center justify-center gap-2'>
           <img src={logo} alt='Logo' className='h-10 rounded-full' />
-          <Title heading={3} className='!text-gray-800'>
+          <Title heading={3} className='auth-page-brand-title'>
             {systemName}
           </Title>
         </div>
-        <Card className='border-0 !rounded-2xl overflow-hidden'>
-          <div className='px-6 pt-6 pb-8'>
-            <Title heading={2} className='!mb-6 !text-gray-800'>
-              {t('欢迎注册/登录')}
+        <Card className='unified-auth-card overflow-hidden border-0 !rounded-2xl'>
+          <div className='unified-auth-card-shell'>
+            <Title heading={2} className='unified-auth-card-title'>
+              {authCardTitle}
             </Title>
             {renderMethodTabs()}
-            {renderAuthForm()}
-            {renderOAuthOptions()}
+
+            <div className='unified-auth-card-body'>
+              {renderAuthForm()}
+              {renderOAuthOptions()}
+            </div>
+
+            <div className='unified-auth-card-footer'>
+              <div className='auth-secondary-actions'>
+                {!isRegisterPage && (
+                  <Button
+                    theme='borderless'
+                    type='tertiary'
+                    className='auth-secondary-link'
+                    onClick={() => navigate('/reset')}
+                  >
+                    {t('忘记密码？')}
+                  </Button>
+                )}
+                <Button
+                  theme='borderless'
+                  type='tertiary'
+                  className='auth-secondary-link'
+                  onClick={() =>
+                    navigate(
+                      isRegisterPage
+                        ? `/login${getAffiliateCode() ? `?aff=${getAffiliateCode()}` : ''}`
+                        : `/register${getAffiliateCode() ? `?aff=${getAffiliateCode()}` : ''}`,
+                    )
+                  }
+                >
+                  {t(isRegisterPage ? '已有账号？去登录' : '没有账号？去注册')}
+                </Button>
+              </div>
+            </div>
             {/*{!status.self_use_mode_enabled && (*/}
             {/*  <div className='mt-6 text-center text-sm'>*/}
             {/*    <Text>*/}
@@ -1119,6 +1330,39 @@ const UnifiedAuthForm = () => {
             {/*)}*/}
           </div>
         </Card>
+
+        <Modal
+          title={t('用户协议')}
+          visible={showAgreementModal}
+          centered
+          maskClosable={false}
+          width={760}
+          onCancel={() => setShowAgreementModal(false)}
+          okText={t('同意并继续')}
+          cancelText={t('取消')}
+          onOk={handleAgreementAccepted}
+          okButtonProps={{}}
+          bodyStyle={{ maxHeight: '65vh', overflowY: 'auto', padding: '20px' }}
+        >
+          {agreementLoading ? (
+            <div className='flex min-h-[240px] items-center justify-center'>
+              <Spin size='large' />
+            </div>
+          ) : isHtmlContent(agreementContent) ? (
+            <div
+              className='prose max-w-none text-sm leading-7 text-[var(--semi-color-text-0)]'
+              dangerouslySetInnerHTML={{
+                __html: sanitizeHtml(agreementContent),
+              }}
+            />
+          ) : (
+            <div className='prose max-w-none text-sm leading-7 text-[var(--semi-color-text-0)]'>
+              <MarkdownRenderer
+                content={agreementContent || t('加载用户协议内容失败...')}
+              />
+            </div>
+          )}
+        </Modal>
 
         <Modal
           title={t('微信扫码登录')}
@@ -1134,11 +1378,17 @@ const UnifiedAuthForm = () => {
             <img src={status.wechat_qrcode} alt='微信二维码' className='mb-4' />
           </div>
           <div className='text-center mb-4'>
-            <p>{t('微信扫码关注公众号，输入「验证码」获取验证码（三分钟内有效）')}</p>
+            <p>
+              {t(
+                '微信扫码关注公众号，输入「验证码」获取验证码（三分钟内有效）',
+              )}
+            </p>
           </div>
           <Input
             value={inputs.wechat_verification_code}
-            onChange={(value) => setInputValue('wechat_verification_code', value)}
+            onChange={(value) =>
+              setInputValue('wechat_verification_code', value)
+            }
             placeholder={t('验证码')}
           />
         </Modal>
@@ -1147,7 +1397,11 @@ const UnifiedAuthForm = () => {
           title={
             <div className='flex items-center'>
               <div className='w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3'>
-                <svg className='w-4 h-4 text-green-600 dark:text-green-400' fill='currentColor' viewBox='0 0 20 20'>
+                <svg
+                  className='w-4 h-4 text-green-600 dark:text-green-400'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
                   <path
                     fillRule='evenodd'
                     d='M6 8a2 2 0 11-4 0 2 2 0 014 0zM8 7a1 1 0 100 2h8a1 1 0 100-2H8zM6 14a2 2 0 11-4 0 2 2 0 014 0zM8 13a1 1 0 100 2h8a1 1 0 100-2H8z'
@@ -1187,4 +1441,3 @@ const UnifiedAuthForm = () => {
 };
 
 export default UnifiedAuthForm;
-

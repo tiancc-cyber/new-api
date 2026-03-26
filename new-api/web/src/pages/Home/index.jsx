@@ -994,13 +994,7 @@ func main() {
                 >
                   <div className='home-hero-badge'>
                     <BadgeCheck size={16} className='text-violet-500' />
-                    <span>{t('企业级 AI API 网关 · 深浅色自适应')}</span>
-                    <span className='home-badge-divider' />
-                    <span>
-                      {actualTheme === 'dark'
-                        ? t('当前深色界面')
-                        : t('当前浅色界面')}
-                    </span>
+                    <span>{t('企业级 AI API 网关')}</span>
                   </div>
 
                   <h1

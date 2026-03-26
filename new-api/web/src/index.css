@@ -1125,10 +1125,17 @@ html.dark .with-pastel-balls::before {
   min-height: 48px;
 }
 
+.home-header-logo,
+.home-header-logo:hover {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
 .home-header-logo-mark {
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.54);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+  background: transparent;
+  box-shadow: none;
 }
 
 .home-header-logo-image {
@@ -1361,8 +1368,8 @@ html.dark .home-header-auth-button:hover {
 }
 
 html.dark .home-header-logo-mark {
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: transparent;
+  box-shadow: none;
 }
 
 html.dark .home-header-mode-tag {

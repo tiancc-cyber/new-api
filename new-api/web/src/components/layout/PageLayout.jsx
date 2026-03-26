@@ -95,7 +95,7 @@ const PageLayout = () => {
         document.title = 'OpenAiTools';
         const linkElement = document.querySelector("link[rel~='icon']");
         if (linkElement) {
-          linkElement.href = '/logo-1.svg';
+          linkElement.href = '/logo-icon.svg';
         }
       } else {
         showError('Unable to connect to server');

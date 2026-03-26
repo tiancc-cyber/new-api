@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg
+  version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="873.8 412.4 180 180"
+  width="180"
+  height="180"
+  aria-hidden="true"
+>
+  <defs>
+    <linearGradient id="logo-icon-gradient" gradientUnits="userSpaceOnUse" x1="963.8025" y1="591.166" x2="963.8025" y2="413.6802">
+      <stop offset="0.0006647012" style="stop-color:#5019BC" />
+      <stop offset="0.2244" style="stop-color:#5C1DBF" />
+      <stop offset="0.6232" style="stop-color:#7A27C6" />
+      <stop offset="0.9993" style="stop-color:#9D32CE" />
+    </linearGradient>
+  </defs>
+  <path
+    fill="url(#logo-icon-gradient)"
+    d="M963.8,413.68l-80.9,33.17v110.68l80.88,33.64l80.92-33.18V446.85L963.8,413.68z M1022.79,450.83
+      l-58.99,23.84l-58.99-23.84l58.99-24.18L1022.79,450.83z M894.9,459.77l62.9,25.42v90.49l-62.9-26.16V459.77z M1032.7,549.94
+      l-62.9,25.79v-2.79l45.7-40.03l17.19-73.14l-62.9,25.42l0,0l62.9-25.42l0,0V549.94z"
+  />
+</svg>
+

@@ -46,7 +46,6 @@ import {
   Card,
   Checkbox,
   Divider,
-  Form,
   Icon,
   Input,
   Modal,
@@ -1034,7 +1033,7 @@ const UnifiedAuthForm = () => {
             onClick={sendEmailCode}
             loading={emailAuthCodeLoading}
             disabled={emailAuthCountdown > 0}
-            className='!text-violet-600 hover:!text-violet-700'
+            className='auth-code-button'
           >
             {emailAuthCountdown > 0
               ? `${emailAuthCountdown}s`
@@ -1114,7 +1113,7 @@ const UnifiedAuthForm = () => {
                 onClick={sendSignupEmailCode}
                 loading={signupEmailCodeLoading}
                 disabled={signupEmailCountdown > 0}
-                className='!text-violet-600 hover:!text-violet-700'
+                className='auth-code-button'
               >
                 {signupEmailCountdown > 0
                   ? `${signupEmailCountdown}s`

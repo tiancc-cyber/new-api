@@ -1171,12 +1171,12 @@ html.dark .with-pastel-balls::before {
 .home-header-auth-button-login {
   background: linear-gradient(
     135deg,
-    rgba(167, 139, 250, 0.98) 0%,
-    rgba(124, 58, 237, 0.96) 52%,
-    rgba(109, 40, 217, 0.96) 100%
+    rgba(221, 214, 254, 0.98) 0%,
+    rgba(167, 139, 250, 0.96) 55%,
+    rgba(124, 58, 237, 0.96) 100%
   ) !important;
   border-color: transparent !important;
-  box-shadow: 0 16px 34px rgba(109, 40, 217, 0.2);
+  box-shadow: 0 16px 34px rgba(124, 58, 237, 0.18);
 }
 
 .home-header-auth-button-register {
@@ -1420,6 +1420,34 @@ html.dark .with-pastel-balls::before {
 
 .auth-primary-button {
   height: 42px !important;
+}
+
+/* Auth: purple primary actions (login/register) */
+.auth-primary-button.semi-button,
+.auth-primary-button.semi-button-primary {
+  border: 0 !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 45%, #4c1d95 100%) !important;
+  box-shadow: 0 14px 30px rgba(124, 58, 237, 0.3) !important;
+}
+
+.auth-primary-button.semi-button:hover,
+.auth-primary-button.semi-button-primary:hover {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #5b21b6 100%) !important;
+  box-shadow: 0 18px 40px rgba(124, 58, 237, 0.36) !important;
+}
+
+/* Auth: purple “get code” buttons */
+.auth-code-button.semi-button {
+  color: #7c3aed !important;
+}
+
+.auth-code-button.semi-button:hover {
+  color: #6d28d9 !important;
+}
+
+.auth-code-button.semi-button:disabled,
+.auth-code-button.semi-button-disabled {
+  color: rgba(124, 58, 237, 0.45) !important;
 }
 
 .auth-secondary-link {

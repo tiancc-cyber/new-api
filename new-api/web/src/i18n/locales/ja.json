@@ -3229,6 +3229,26 @@
     "5m缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 5m缓存创建倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}": "5m キャッシュ作成: {{tokens}} / 1M * モデル倍率 {{modelRatio}} * 5m キャッシュ作成倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}",
     "1h缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 1h缓存创建倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}": "1h キャッシュ作成: {{tokens}} / 1M * モデル倍率 {{modelRatio}} * 1h キャッシュ作成倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}",
     "输出：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 输出倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}": "出力: {{tokens}} / 1M * モデル倍率 {{modelRatio}} * 出力倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}",
-    "空": "空"
+    "空": "空",
+    "令牌请求审计": "トークンリクエスト監査",
+    "查看令牌请求与响应审计记录": "トークンのリクエスト/レスポンス監査記録を表示",
+    "审计时间": "監査時刻",
+    "审计记录详情": "監査記録の詳細",
+    "总记录数": "総記録数",
+    "当前页条数": "現在ページの件数",
+    "请求方式": "リクエストメソッド",
+    "请求体": "リクエストボディ",
+    "响应体": "レスポンスボディ",
+    "请求体大小": "リクエストボディサイズ",
+    "响应体大小": "レスポンスボディサイズ",
+    "请求体编码": "リクエストボディエンコーディング",
+    "响应体编码": "レスポンスボディエンコーディング",
+    "请求分片数": "リクエスト分割数",
+    "响应分片数": "レスポンス分割数",
+    "是否流式": "ストリーミング",
+    "非流式": "非ストリーミング",
+    "用户邮箱": "ユーザーメール",
+    "令牌 ID": "トークン ID",
+    "令牌键掩码": "マスク済みトークンキー"
   }
 }

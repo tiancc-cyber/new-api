@@ -22,8 +22,7 @@ import { Route, Routes, useLocation, useParams } from 'react-router-dom';
 import Loading from './components/common/ui/Loading';
 import User from './pages/User';
 import { AuthRedirect, PrivateRoute, AdminRoute } from './helpers';
-import RegisterForm from './components/auth/RegisterForm';
-import LoginForm from './components/auth/LoginForm';
+import UnifiedAuthForm from './components/auth/UnifiedAuthForm';
 import NotFound from './pages/NotFound';
 import Forbidden from './pages/Forbidden';
 import Setting from './pages/Setting';
@@ -45,6 +44,7 @@ import ModelPage from './pages/Model';
 import ModelDeploymentPage from './pages/ModelDeployment';
 import Playground from './pages/Playground';
 import Subscription from './pages/Subscription';
+import TokenRequestAuditPage from './pages/TokenRequestAudit';
 import OAuth2Callback from './components/auth/OAuth2Callback';
 import PersonalSetting from './components/settings/PersonalSetting';
 import Setup from './pages/Setup';
@@ -132,6 +132,14 @@ function App() {
           }
         />
         <Route
+          path='/console/token-request-audit'
+          element={
+            <AdminRoute>
+              <TokenRequestAuditPage />
+            </AdminRoute>
+          }
+        />
+        <Route
           path='/console/channel'
           element={
             <AdminRoute>
@@ -184,7 +192,7 @@ function App() {
           element={
             <Suspense fallback={<Loading></Loading>} key={location.pathname}>
               <AuthRedirect>
-                <LoginForm />
+                <UnifiedAuthForm />
               </AuthRedirect>
             </Suspense>
           }
@@ -194,7 +202,7 @@ function App() {
           element={
             <Suspense fallback={<Loading></Loading>} key={location.pathname}>
               <AuthRedirect>
-                <RegisterForm />
+                <UnifiedAuthForm />
               </AuthRedirect>
             </Suspense>
           }

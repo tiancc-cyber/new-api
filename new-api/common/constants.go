@@ -12,9 +12,9 @@ import (
 
 var StartTime = time.Now().Unix() // unit: second
 var Version = "v0.0.0"            // this hard coding will be replaced automatically when building, no need to manually change
-var SystemName = "New API"
+var SystemName = "OpenAiTools"
 var Footer = ""
-var Logo = ""
+var Logo = "/logo-1.svg"
 var TopUpLink = ""
 
 // var ChatLink = ""
@@ -83,6 +83,12 @@ var SMTPSSLEnabled = false
 var SMTPAccount = ""
 var SMTPFrom = ""
 var SMTPToken = ""
+
+var SMSAuthEnabled = false
+var SMSWebhookURL = ""
+var SMSWebhookAuthorization = ""
+var SMSDefaultCountryCode = "+86"
+var SMSRequestTimeoutSeconds = 10
 
 var GitHubClientId = ""
 var GitHubClientSecret = ""

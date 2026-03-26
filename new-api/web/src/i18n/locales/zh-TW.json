@@ -2906,6 +2906,26 @@
     "5m缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 5m缓存创建倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}": "5m快取建立：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 5m快取建立倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}",
     "1h缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 1h缓存创建倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}": "1h快取建立：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 1h快取建立倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}",
     "输出：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 输出倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}": "輸出：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 輸出倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}",
-    "空": "空"
+    "空": "空",
+    "令牌请求审计": "令牌請求審計",
+    "查看令牌请求与响应审计记录": "查看令牌請求與回應審計記錄",
+    "审计时间": "審計時間",
+    "审计记录详情": "審計記錄詳情",
+    "总记录数": "總記錄數",
+    "当前页条数": "當前頁條數",
+    "请求方式": "請求方式",
+    "请求体": "請求體",
+    "响应体": "回應體",
+    "请求体大小": "請求體大小",
+    "响应体大小": "回應體大小",
+    "请求体编码": "請求體編碼",
+    "响应体编码": "回應體編碼",
+    "请求分片数": "請求分片數",
+    "响应分片数": "回應分片數",
+    "是否流式": "是否串流",
+    "非流式": "非串流",
+    "用户邮箱": "使用者信箱",
+    "令牌 ID": "令牌 ID",
+    "令牌键掩码": "令牌鍵遮罩"
   }
 }

@@ -258,6 +258,8 @@ func migrateDB() error {
 	err := DB.AutoMigrate(
 		&Channel{},
 		&Token{},
+		&TokenRequestRecord{},
+		&TokenRequestRecordChunk{},
 		&User{},
 		&PasskeyCredential{},
 		&Option{},
@@ -306,6 +308,8 @@ func migrateDBFast() error {
 	}{
 		{&Channel{}, "Channel"},
 		{&Token{}, "Token"},
+		{&TokenRequestRecord{}, "TokenRequestRecord"},
+		{&TokenRequestRecordChunk{}, "TokenRequestRecordChunk"},
 		{&User{}, "User"},
 		{&PasskeyCredential{}, "PasskeyCredential"},
 		{&Option{}, "Option"},
@@ -367,7 +371,7 @@ func migrateDBFast() error {
 
 func migrateLOGDB() error {
 	var err error
-	if err = LOG_DB.AutoMigrate(&Log{}); err != nil {
+	if err = LOG_DB.AutoMigrate(&Log{}, &TokenRequestRecord{}, &TokenRequestRecordChunk{}); err != nil {
 		return err
 	}
 	return nil

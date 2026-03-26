@@ -6,10 +6,15 @@ import (
 	"strings"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/bytedance/gopkg/util/gopool"
 	"gorm.io/gorm"
 )
+
+const rechargeTokenNamePrefix = "充值令牌-"
+const rechargeTokenOrderMarkerLength = 8
+const rechargeTokenRandomSuffixLength = 6
 
 type Token struct {
 	Id                 int            `json:"id"`
@@ -289,6 +294,73 @@ func (token *Token) Insert() error {
 	var err error
 	err = DB.Create(token).Error
 	return err
+}
+
+func buildRechargeTokenOrderMarker(tradeNo string) string {
+	markerBuilder := strings.Builder{}
+	markerBuilder.Grow(len(tradeNo))
+	for i := 0; i < len(tradeNo); i++ {
+		ch := tradeNo[i]
+		if (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') {
+			markerBuilder.WriteByte(ch)
+		}
+	}
+	marker := markerBuilder.String()
+	if len(marker) > rechargeTokenOrderMarkerLength {
+		marker = marker[len(marker)-rechargeTokenOrderMarkerLength:]
+	}
+	if marker == "" {
+		marker = common.GetRandomString(rechargeTokenOrderMarkerLength)
+	}
+	return marker
+}
+
+func buildRechargeTokenName(tradeNo string) string {
+	return rechargeTokenNamePrefix + buildRechargeTokenOrderMarker(tradeNo) + "-" + common.GetRandomString(rechargeTokenRandomSuffixLength)
+}
+
+func buildRechargeToken(userId int, quota int, tradeNo string) (*Token, error) {
+	if userId <= 0 {
+		return nil, errors.New("userId 为空！")
+	}
+	if quota <= 0 {
+		return nil, errors.New("充值额度必须大于 0")
+	}
+	key, err := common.GenerateKey()
+	if err != nil {
+		return nil, err
+	}
+	now := common.GetTimestamp()
+	token := &Token{
+		UserId:             userId,
+		Key:                key,
+		Name:               buildRechargeTokenName(tradeNo),
+		Status:             common.TokenStatusEnabled,
+		CreatedTime:        now,
+		AccessedTime:       now,
+		ExpiredTime:        -1,
+		RemainQuota:        quota,
+		UnlimitedQuota:     false,
+		ModelLimitsEnabled: false,
+	}
+	if setting.DefaultUseAutoGroup {
+		token.Group = "auto"
+	}
+	return token, nil
+}
+
+func CreateRechargeTokenTx(tx *gorm.DB, userId int, quota int, tradeNo string) (*Token, error) {
+	if tx == nil {
+		tx = DB
+	}
+	token, err := buildRechargeToken(userId, quota, tradeNo)
+	if err != nil {
+		return nil, err
+	}
+	if err = tx.Create(token).Error; err != nil {
+		return nil, err
+	}
+	return token, nil
 }
 
 // Update Make sure your token's fields is completed, because this will update non-zero values

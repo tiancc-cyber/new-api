@@ -82,7 +82,7 @@ const RegisterForm = () => {
     wechat_verification_code: '',
   });
   const { username, password, password2 } = inputs;
-  const [userState, userDispatch] = useContext(UserContext);
+  const [, userDispatch] = useContext(UserContext);
   const [statusState] = useContext(StatusContext);
   const [turnstileEnabled, setTurnstileEnabled] = useState(false);
   const [turnstileSiteKey, setTurnstileSiteKey] = useState('');
@@ -215,7 +215,7 @@ const RegisterForm = () => {
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     if (password.length < 8) {
       showInfo('密码长度不得小于 8 位！');
       return;
@@ -239,9 +239,12 @@ const RegisterForm = () => {
           `/api/user/register?turnstile=${turnstileToken}`,
           inputs,
         );
-        const { success, message } = res.data;
+        const { success, message, data } = res.data;
         if (success) {
-          navigate('/login');
+          userDispatch({ type: 'login', payload: data });
+          setUserData(data);
+          updateAPI();
+          navigate('/console');
           showSuccess('注册成功！');
         } else {
           showError(message);

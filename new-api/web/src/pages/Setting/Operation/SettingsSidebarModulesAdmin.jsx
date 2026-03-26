@@ -61,6 +61,7 @@ export default function SettingsSidebarModulesAdmin(props) {
     admin: {
       enabled: true,
       channel: true,
+      token_request_audit: true,
       models: true,
       deployment: true,
       redemption: true,
@@ -122,6 +123,7 @@ export default function SettingsSidebarModulesAdmin(props) {
       admin: {
         enabled: true,
         channel: true,
+        token_request_audit: true,
         models: true,
         deployment: true,
         redemption: true,
@@ -191,6 +193,7 @@ export default function SettingsSidebarModulesAdmin(props) {
           admin: {
             enabled: true,
             channel: true,
+            token_request_audit: true,
             models: true,
             deployment: true,
             redemption: true,
@@ -254,6 +257,11 @@ export default function SettingsSidebarModulesAdmin(props) {
       description: t('系统管理功能'),
       modules: [
         { key: 'channel', title: t('渠道管理'), description: t('API渠道配置') },
+        {
+          key: 'token_request_audit',
+          title: t('令牌请求审计'),
+          description: t('查看令牌请求与响应审计记录'),
+        },
         { key: 'models', title: t('模型管理'), description: t('AI模型配置') },
         {
           key: 'deployment',

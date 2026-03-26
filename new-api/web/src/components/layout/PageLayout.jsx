@@ -92,6 +92,11 @@ const PageLayout = () => {
       if (success) {
         statusDispatch({ type: 'set', payload: data });
         setStatusData(data);
+        document.title = 'OpenAiTools';
+        const linkElement = document.querySelector("link[rel~='icon']");
+        if (linkElement) {
+          linkElement.href = '/logo-1.svg';
+        }
       } else {
         showError('Unable to connect to server');
       }
@@ -149,7 +154,7 @@ const PageLayout = () => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        overflow: isMobile ? 'visible' : 'hidden',
+        overflow: 'visible',
       }}
     >
       <Header
@@ -161,6 +166,7 @@ const PageLayout = () => {
           width: '100%',
           top: 0,
           zIndex: 100,
+          overflow: 'visible',
         }}
       >
         <HeaderBar
@@ -210,7 +216,7 @@ const PageLayout = () => {
           <Content
             style={{
               flex: '1 0 auto',
-              overflowY: isMobile ? 'visible' : 'hidden',
+              overflowY: 'visible',
               WebkitOverflowScrolling: 'touch',
               padding: shouldInnerPadding ? (isMobile ? '5px' : '24px') : '0',
               position: 'relative',

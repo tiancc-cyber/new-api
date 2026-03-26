@@ -58,7 +58,7 @@ const UserArea = ({
           position='bottomRight'
           getPopupContainer={() => dropdownRef.current}
           render={
-            <Dropdown.Menu className='!bg-semi-color-bg-overlay !border-semi-color-border !shadow-lg !rounded-lg dark:!bg-gray-700 dark:!border-gray-600'>
+            <Dropdown.Menu className='home-header-dropdown'>
               <Dropdown.Item
                 onClick={() => {
                   navigate('/console/personal');
@@ -119,7 +119,7 @@ const UserArea = ({
           <Button
             theme='borderless'
             type='tertiary'
-            className='flex items-center gap-1.5 !p-1 !rounded-full hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-700 !bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 dark:hover:!bg-semi-color-fill-2'
+            className='home-header-user-button flex items-center gap-1.5 !p-1 !rounded-full'
           >
             <Avatar
               size='extra-small'
@@ -144,54 +144,19 @@ const UserArea = ({
   } else {
     const showRegisterButton = !isSelfUseMode;
 
-    const commonSizingAndLayoutClass =
-      'flex items-center justify-center !py-[10px] !px-1.5';
-
-    const loginButtonSpecificStyling =
-      '!bg-semi-color-fill-0 dark:!bg-semi-color-fill-1 hover:!bg-semi-color-fill-1 dark:hover:!bg-gray-700 transition-colors';
-    let loginButtonClasses = `${commonSizingAndLayoutClass} ${loginButtonSpecificStyling}`;
-
-    let registerButtonClasses = `${commonSizingAndLayoutClass}`;
-
-    const loginButtonTextSpanClass =
-      '!text-xs !text-semi-color-text-1 dark:!text-gray-300 !p-1.5';
-    const registerButtonTextSpanClass = '!text-xs !text-white !p-1.5';
-
-    if (showRegisterButton) {
-      if (isMobile) {
-        loginButtonClasses += ' !rounded-full';
-      } else {
-        loginButtonClasses += ' !rounded-l-full !rounded-r-none';
-      }
-      registerButtonClasses += ' !rounded-r-full !rounded-l-none';
-    } else {
-      loginButtonClasses += ' !rounded-full';
-    }
-
     return (
-      <div className='flex items-center'>
+      <div className='home-header-auth-group flex items-center'>
         <Link to='/login' className='flex'>
           <Button
-            theme='borderless'
-            type='tertiary'
-            className={loginButtonClasses}
+            theme='solid'
+            type='primary'
+            className='home-header-auth-button home-header-auth-button-unified flex items-center justify-center !rounded-full !py-[10px] !px-3'
           >
-            <span className={loginButtonTextSpanClass}>{t('登录')}</span>
+            <span className='!text-xs !text-white !font-medium !px-1'>
+              {showRegisterButton ? t('注册/登录') : t('登录')}
+            </span>
           </Button>
         </Link>
-        {showRegisterButton && (
-          <div className='hidden md:block'>
-            <Link to='/register' className='flex -ml-px'>
-              <Button
-                theme='solid'
-                type='primary'
-                className={registerButtonClasses}
-              >
-                <span className={registerButtonTextSpanClass}>{t('注册')}</span>
-              </Button>
-            </Link>
-          </div>
-        )}
       </div>
     );
   }

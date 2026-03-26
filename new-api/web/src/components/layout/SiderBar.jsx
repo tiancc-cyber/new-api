@@ -38,6 +38,7 @@ const routerMap = {
   topup: '/console/topup',
   user: '/console/user',
   subscription: '/console/subscription',
+  token_request_audit: '/console/token-request-audit',
   log: '/console/log',
   midjourney: '/console/midjourney',
   setting: '/console/setting',
@@ -157,6 +158,12 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         text: t('订阅管理'),
         itemKey: 'subscription',
         to: '/subscription',
+        className: isAdmin() ? '' : 'tableHiddle',
+      },
+      {
+        text: t('令牌请求审计'),
+        itemKey: 'token_request_audit',
+        to: '/console/token-request-audit',
         className: isAdmin() ? '' : 'tableHiddle',
       },
       {

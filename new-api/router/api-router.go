@@ -32,6 +32,8 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/home_page_content", controller.GetHomePageContent)
 		apiRouter.GET("/pricing", middleware.TryUserAuth(), controller.GetPricing)
 		apiRouter.GET("/verification", middleware.EmailVerificationRateLimit(), middleware.TurnstileCheck(), controller.SendEmailVerification)
+		apiRouter.GET("/verification/auth", middleware.EmailVerificationRateLimit(), middleware.TurnstileCheck(), controller.SendEmailAuthVerification)
+		apiRouter.GET("/sms/verification", middleware.EmailVerificationRateLimit(), middleware.TurnstileCheck(), controller.SendSMSVerification)
 		apiRouter.GET("/reset_password", middleware.CriticalRateLimit(), middleware.TurnstileCheck(), controller.SendPasswordResetEmail)
 		apiRouter.POST("/user/reset", middleware.CriticalRateLimit(), controller.ResetPassword)
 		// OAuth routes - specific routes must come before :provider wildcard
@@ -56,6 +58,8 @@ func SetApiRouter(router *gin.Engine) {
 		{
 			userRoute.POST("/register", middleware.CriticalRateLimit(), middleware.TurnstileCheck(), controller.Register)
 			userRoute.POST("/login", middleware.CriticalRateLimit(), middleware.TurnstileCheck(), controller.Login)
+			userRoute.POST("/auth/password", middleware.CriticalRateLimit(), middleware.TurnstileCheck(), controller.PasswordLoginOrRegister)
+			userRoute.POST("/auth/code", middleware.CriticalRateLimit(), middleware.TurnstileCheck(), controller.LoginOrRegisterWithCode)
 			userRoute.POST("/login/2fa", middleware.CriticalRateLimit(), controller.Verify2FALogin)
 			userRoute.POST("/passkey/login/begin", middleware.CriticalRateLimit(), controller.PasskeyLoginBegin)
 			userRoute.POST("/passkey/login/finish", middleware.CriticalRateLimit(), controller.PasskeyLoginFinish)
@@ -286,6 +290,14 @@ func SetApiRouter(router *gin.Engine) {
 		}
 		logRoute := apiRouter.Group("/log")
 		logRoute.GET("/", middleware.AdminAuth(), controller.GetAllLogs)
+		logRoute.GET("/token_request_record", middleware.AdminAuth(), controller.GetTokenRequestRecords)
+		logRoute.GET("/token_request_record/:id", middleware.AdminAuth(), controller.GetTokenRequestRecordDetail)
+		logRoute.GET("/token_request_records", middleware.AdminAuth(), controller.GetTokenRequestRecords)
+		logRoute.GET("/token_request_records/:id", middleware.AdminAuth(), controller.GetTokenRequestRecordDetail)
+		logRoute.GET("/token-request-record", middleware.AdminAuth(), controller.GetTokenRequestRecords)
+		logRoute.GET("/token-request-record/:id", middleware.AdminAuth(), controller.GetTokenRequestRecordDetail)
+		logRoute.GET("/token-request-records", middleware.AdminAuth(), controller.GetTokenRequestRecords)
+		logRoute.GET("/token-request-records/:id", middleware.AdminAuth(), controller.GetTokenRequestRecordDetail)
 		logRoute.DELETE("/", middleware.AdminAuth(), controller.DeleteHistoryLogs)
 		logRoute.GET("/stat", middleware.AdminAuth(), controller.GetLogsStat)
 		logRoute.GET("/self/stat", middleware.UserAuth(), controller.GetLogsSelfStat)

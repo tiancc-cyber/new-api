@@ -3298,6 +3298,26 @@
     "5m缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 5m缓存创建倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}": "5m cache creation: {{tokens}} / 1M * model ratio {{modelRatio}} * 5m cache creation ratio {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}",
     "1h缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 1h缓存创建倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}": "1h cache creation: {{tokens}} / 1M * model ratio {{modelRatio}} * 1h cache creation ratio {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}",
     "输出：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 输出倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}": "Output: {{tokens}} / 1M * model ratio {{modelRatio}} * output ratio {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}",
-    "空": "Empty"
+    "空": "Empty",
+    "令牌请求审计": "Token Request Audit",
+    "查看令牌请求与响应审计记录": "View token request and response audit records",
+    "审计时间": "Audit Time",
+    "审计记录详情": "Audit Record Details",
+    "总记录数": "Total Records",
+    "当前页条数": "Records on Current Page",
+    "请求方式": "Request Method",
+    "请求体": "Request Body",
+    "响应体": "Response Body",
+    "请求体大小": "Request Body Size",
+    "响应体大小": "Response Body Size",
+    "请求体编码": "Request Body Encoding",
+    "响应体编码": "Response Body Encoding",
+    "请求分片数": "Request Chunk Count",
+    "响应分片数": "Response Chunk Count",
+    "是否流式": "Streaming",
+    "非流式": "Non-streaming",
+    "用户邮箱": "User Email",
+    "令牌 ID": "Token ID",
+    "令牌键掩码": "Masked Token Key"
   }
 }

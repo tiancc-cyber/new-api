@@ -397,7 +397,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true
     },
-    title: 'New API',
+    title: 'OpenAiTools',
     icon: path.join(__dirname, 'icon.png')
   });
 
@@ -436,7 +436,7 @@ function createTray() {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show New API',
+      label: 'Show OpenAiTools',
       click: () => {
         if (mainWindow === null) {
           createWindow();
@@ -458,7 +458,7 @@ function createTray() {
     }
   ]);
 
-  tray.setToolTip('New API');
+  tray.setToolTip('OpenAiTools');
   tray.setContextMenu(contextMenu);
 
   // On macOS, clicking the tray icon shows the window

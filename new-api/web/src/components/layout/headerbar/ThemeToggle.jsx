@@ -66,7 +66,7 @@ const ThemeToggle = ({ theme, onThemeToggle, t }) => {
     <Dropdown
       position='bottomRight'
       render={
-        <Dropdown.Menu>
+        <Dropdown.Menu className='home-header-dropdown'>
           {themeOptions.map((option) => (
             <Dropdown.Item
               key={option.key}
@@ -100,7 +100,7 @@ const ThemeToggle = ({ theme, onThemeToggle, t }) => {
         aria-label={t('切换主题')}
         theme='borderless'
         type='tertiary'
-        className='!p-1.5 !text-current focus:!bg-semi-color-fill-1 !rounded-full !bg-semi-color-fill-0 hover:!bg-semi-color-fill-1'
+        className='home-header-icon-button !p-1.5 !text-current !rounded-full'
       />
     </Dropdown>
   );

@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHeaderBar } from '../../../hooks/common/useHeaderBar';
 import { useNotifications } from '../../../hooks/common/useNotifications';
 import { useNavigation } from '../../../hooks/common/useNavigation';
@@ -51,6 +51,7 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
     handleThemeToggle,
     handleMobileMenuToggle,
     navigate,
+    location,
     t,
   } = useHeaderBar({ onMobileMenuToggle, drawerOpen });
 
@@ -63,9 +64,33 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
   } = useNotifications(statusState);
 
   const { mainNavLinks } = useNavigation(t, docsLink, headerNavModules);
+  const isHomeRoute = location.pathname === '/';
+  const [isHomeScrolled, setIsHomeScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!isHomeRoute) {
+      setIsHomeScrolled(false);
+      return undefined;
+    }
+
+    const updateHeaderState = () => {
+      setIsHomeScrolled(window.scrollY > 56);
+    };
+
+    updateHeaderState();
+    window.addEventListener('scroll', updateHeaderState, { passive: true });
+
+    return () => window.removeEventListener('scroll', updateHeaderState);
+  }, [isHomeRoute]);
 
   return (
-    <header className='text-semi-color-text-0 sticky top-0 z-50 transition-colors duration-300 bg-white/75 dark:bg-zinc-900/75 backdrop-blur-lg'>
+    <header
+      className={`text-semi-color-text-0 sticky top-0 z-50 transition-all duration-300 home-premium-header ${
+        isHomeRoute ? 'home-premium-header-home' : 'home-premium-header-default'
+      } ${isConsoleRoute ? 'home-premium-header-console' : ''} ${
+        isHomeScrolled ? 'home-premium-header-scrolled' : ''
+      }`}
+    >
       <NoticeModal
         visible={noticeVisible}
         onClose={handleNoticeClose}
@@ -74,9 +99,10 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
         unreadKeys={getUnreadKeys()}
       />
 
-      <div className='w-full px-2'>
-        <div className='flex items-center justify-between h-16'>
-          <div className='flex items-center'>
+      <div className='home-premium-header-shell w-full'>
+        <div className='home-premium-header-glow' />
+        <div className='home-premium-header-body flex items-center justify-between h-16'>
+          <div className='home-premium-header-left flex items-center'>
             <MobileMenuButton
               isConsoleRoute={isConsoleRoute}
               isMobile={isMobile}

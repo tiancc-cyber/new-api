@@ -200,7 +200,7 @@ func WeChatPayNotify(c *gin.Context) {
 		return
 	}
 
-	if topUp.Status == "success" {
+	if topUp.Status == common.TopUpStatusSuccess {
 		c.String(200, "SUCCESS")
 		return
 	}
@@ -208,28 +208,15 @@ func WeChatPayNotify(c *gin.Context) {
 	// TODO: 修复支付状态检查
 	// if *notifyResp.TradeState == "SUCCESS" {
 	if true { // 临时修复
-		topUp.Status = "success"
-		topUp.CompleteTime = time.Now().Unix()
-		// topUp.TransactionId = transactionId
 		topUp.Money = totalAmount
-
 		if err := topUp.Update(); err != nil {
-			logger.LogError(c.Request.Context(), "更新订单状态失败: "+err.Error())
+			logger.LogError(c.Request.Context(), "更新订单金额失败: "+err.Error())
 			c.String(500, "FAIL")
 			return
 		}
 
-		user, err := model.GetUserById(topUp.UserId, false)
-		if err != nil {
-			logger.LogError(c.Request.Context(), "获取用户信息失败: "+err.Error())
-			c.String(500, "FAIL")
-			return
-		}
-
-		user.Quota += int(topUp.Amount)
-		err = user.Update(false)
-		if err != nil {
-			logger.LogError(c.Request.Context(), "更新用户配额失败: "+err.Error())
+		if err := model.ManualCompleteTopUp(tradeNo); err != nil {
+			logger.LogError(c.Request.Context(), "完成微信支付充值失败: "+err.Error())
 			c.String(500, "FAIL")
 			return
 		}

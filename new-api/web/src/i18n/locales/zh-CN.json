@@ -2913,6 +2913,26 @@
     "5m缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 5m缓存创建倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}": "5m缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 5m缓存创建倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}",
     "1h缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 1h缓存创建倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}": "1h缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 1h缓存创建倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}",
     "输出：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 输出倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}": "输出：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 输出倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}",
-    "空": "空"
+    "空": "空",
+    "令牌请求审计": "令牌请求审计",
+    "查看令牌请求与响应审计记录": "查看令牌请求与响应审计记录",
+    "审计时间": "审计时间",
+    "审计记录详情": "审计记录详情",
+    "总记录数": "总记录数",
+    "当前页条数": "当前页条数",
+    "请求方式": "请求方式",
+    "请求体": "请求体",
+    "响应体": "响应体",
+    "请求体大小": "请求体大小",
+    "响应体大小": "响应体大小",
+    "请求体编码": "请求体编码",
+    "响应体编码": "响应体编码",
+    "请求分片数": "请求分片数",
+    "响应分片数": "响应分片数",
+    "是否流式": "是否流式",
+    "非流式": "非流式",
+    "用户邮箱": "用户邮箱",
+    "令牌 ID": "令牌 ID",
+    "令牌键掩码": "令牌键掩码"
   }
 }

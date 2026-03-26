@@ -107,6 +107,11 @@ func InitEnv() {
 	// Initialize string variables with GetEnvOrDefaultString
 	GeminiSafetySetting = GetEnvOrDefaultString("GEMINI_SAFETY_SETTING", "BLOCK_NONE")
 	CohereSafetySetting = GetEnvOrDefaultString("COHERE_SAFETY_SETTING", "NONE")
+	SMSWebhookURL = GetEnvOrDefaultString("SMS_WEBHOOK_URL", "")
+	SMSWebhookAuthorization = GetEnvOrDefaultString("SMS_WEBHOOK_AUTHORIZATION", "")
+	SMSDefaultCountryCode = GetEnvOrDefaultString("SMS_DEFAULT_COUNTRY_CODE", "+86")
+	SMSAuthEnabled = GetEnvOrDefaultBool("SMS_AUTH_ENABLED", SMSWebhookURL != "")
+	SMSRequestTimeoutSeconds = GetEnvOrDefault("SMS_REQUEST_TIMEOUT_SECONDS", 10)
 
 	// Initialize rate limit variables
 	GlobalApiRateLimitEnable = GetEnvOrDefaultBool("GLOBAL_API_RATE_LIMIT_ENABLE", true)

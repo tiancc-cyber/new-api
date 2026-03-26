@@ -3801,6 +3801,25 @@
     "5m缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 5m缓存创建倍率 {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}": "Tạo bộ nhớ đệm 5m: {{tokens}} / 1M * hệ số mô hình {{modelRatio}} * hệ số tạo bộ nhớ đệm 5m {{cacheCreationRatio5m}} * {{ratioType}} {{ratio}} = {{amount}}",
     "1h缓存创建：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 1h缓存创建倍率 {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}": "Tạo bộ nhớ đệm 1h: {{tokens}} / 1M * hệ số mô hình {{modelRatio}} * hệ số tạo bộ nhớ đệm 1h {{cacheCreationRatio1h}} * {{ratioType}} {{ratio}} = {{amount}}",
     "输出：{{tokens}} / 1M * 模型倍率 {{modelRatio}} * 输出倍率 {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}": "Đầu ra: {{tokens}} / 1M * hệ số mô hình {{modelRatio}} * hệ số đầu ra {{completionRatio}} * {{ratioType}} {{ratio}} = {{amount}}",
-    "空": "Trống"
+    "空": "Trống",
+    "令牌请求审计": "Kiểm toán yêu cầu token",
+    "查看令牌请求与响应审计记录": "Xem bản ghi kiểm toán yêu cầu và phản hồi token",
+    "审计时间": "Thời gian kiểm toán",
+    "审计记录详情": "Chi tiết bản ghi kiểm toán",
+    "总记录数": "Tổng số bản ghi",
+    "当前页条数": "Số bản ghi trên trang hiện tại",
+    "请求方式": "Phương thức yêu cầu",
+    "响应体": "Nội dung phản hồi",
+    "请求体大小": "Kích thước nội dung yêu cầu",
+    "响应体大小": "Kích thước nội dung phản hồi",
+    "请求体编码": "Mã hóa nội dung yêu cầu",
+    "响应体编码": "Mã hóa nội dung phản hồi",
+    "请求分片数": "Số mảnh yêu cầu",
+    "响应分片数": "Số mảnh phản hồi",
+    "是否流式": "Luồng",
+    "非流式": "Không luồng",
+    "用户邮箱": "Email người dùng",
+    "令牌 ID": "ID token",
+    "令牌键掩码": "Khóa token đã che"
   }
 }

@@ -38,13 +38,16 @@ const HeaderLogo = ({
   }
 
   return (
-    <Link to='/' className='group flex items-center gap-2'>
-      <div className='relative w-8 h-8 md:w-8 md:h-8'>
+    <Link
+      to='/'
+      className='home-header-logo home-header-brand group flex items-center gap-3 rounded-full px-2 py-1'
+    >
+      <div className='home-header-logo-mark relative w-10 h-10 md:w-11 md:h-11 overflow-hidden shrink-0'>
         <SkeletonWrapper loading={isLoading || !logoLoaded} type='image' />
         <img
           src={logo}
           alt='logo'
-          className={`absolute inset-0 w-full h-full transition-all duration-200 group-hover:scale-110 rounded-full ${!isLoading && logoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`home-header-logo-image absolute inset-0 w-full h-full object-contain transition-all duration-200 group-hover:scale-105 ${!isLoading && logoLoaded ? 'opacity-100' : 'opacity-0'}`}
         />
       </div>
       <div className='hidden md:flex items-center gap-2'>
@@ -52,12 +55,12 @@ const HeaderLogo = ({
           <SkeletonWrapper
             loading={isLoading}
             type='title'
-            width={120}
-            height={24}
+            width={150}
+            height={30}
           >
             <Typography.Title
               heading={4}
-              className='!text-lg !font-semibold !mb-0'
+              className='home-header-title !text-xl !font-semibold !mb-0'
             >
               {systemName}
             </Typography.Title>
@@ -65,7 +68,7 @@ const HeaderLogo = ({
           {(isSelfUseMode || isDemoSiteMode) && !isLoading && (
             <Tag
               color={isSelfUseMode ? 'purple' : 'blue'}
-              className='text-xs px-1.5 py-0.5 rounded whitespace-nowrap shadow-sm'
+              className='home-header-mode-tag text-xs px-1.5 py-0.5 rounded whitespace-nowrap shadow-sm'
               size='small'
               shape='circle'
             >

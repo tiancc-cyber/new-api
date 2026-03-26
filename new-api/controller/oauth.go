@@ -286,14 +286,19 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 				return err
 			}
 
+			if err := model.ApplyRegisteredUserOnboardingTx(tx, user, inviterId); err != nil {
+				return err
+			}
+
 			return nil
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		// Perform post-transaction tasks (logs, sidebar config, inviter rewards)
-		user.FinalizeOAuthUserCreation(inviterId)
+		if err := model.FinalizeRegisteredUserOnboarding(user.Id, inviterId); err != nil {
+			return nil, err
+		}
 	} else {
 		// Built-in provider: create user and update provider ID in a transaction
 		err := model.DB.Transaction(func(tx *gorm.DB) error {
@@ -315,14 +320,19 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 				return err
 			}
 
+			if err := model.ApplyRegisteredUserOnboardingTx(tx, user, inviterId); err != nil {
+				return err
+			}
+
 			return nil
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		// Perform post-transaction tasks
-		user.FinalizeOAuthUserCreation(inviterId)
+		if err := model.FinalizeRegisteredUserOnboarding(user.Id, inviterId); err != nil {
+			return nil, err
+		}
 	}
 
 	return user, nil

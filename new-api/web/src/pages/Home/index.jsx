@@ -1505,7 +1505,7 @@ func main() {
                 </h2>
                 <p className='home-panel-body mt-5 text-base md:text-lg leading-8'>
                   {t(
-                    '无论你是在寻找稳定的模型网关、可运营的用户面板，还是面向团队的多渠道接入能力，这里都可以作为你的统一入口，并在浅色与深色模式下都保持一致的科技氛围。',
+                    '无论你是在寻找稳定的模型网关、可运营的用户面板，还是面向团队的多渠道接入能力，这里都可以作为你的统一入口。',
                   )}
                 </p>
                 <div className='mt-6 flex flex-wrap gap-2'>

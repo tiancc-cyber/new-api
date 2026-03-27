@@ -429,9 +429,6 @@ const NotificationSettings = ({
                   rules={[{ required: true, message: t('请选择通知方式') }]}
                 >
                   <Radio value='email'>{t('邮件通知')}</Radio>
-                  <Radio value='webhook'>{t('Webhook通知')}</Radio>
-                  <Radio value='bark'>{t('Bark通知')}</Radio>
-                  <Radio value='gotify'>{t('Gotify通知')}</Radio>
                 </Form.RadioGroup>
 
                 <Form.AutoComplete
@@ -471,120 +468,7 @@ const NotificationSettings = ({
                   ]}
                 />
 
-                {isAdminOrRoot && (
-                  <Form.Switch
-                    field='upstreamModelUpdateNotifyEnabled'
-                    label={t('接收上游模型更新通知')}
-                    checkedText={t('开')}
-                    uncheckedText={t('关')}
-                    onChange={(value) =>
-                      handleFormChange('upstreamModelUpdateNotifyEnabled', value)
-                    }
-                    extraText={t(
-                      '仅管理员可用。开启后，当系统定时检测全部渠道发现上游模型变更或检测异常时，将按你选择的通知方式发送汇总通知；渠道或模型过多时会自动省略部分明细。',
-                    )}
-                  />
-                )}
-
-                {/* 邮件通知设置 */}
-                {notificationSettings.warningType === 'email' && (
-                  <Form.Input
-                    field='notificationEmail'
-                    label={t('通知邮箱')}
-                    placeholder={t('留空则使用账号绑定的邮箱')}
-                    onChange={(val) =>
-                      handleFormChange('notificationEmail', val)
-                    }
-                    prefix={<IconMail />}
-                    extraText={t(
-                      '设置用于接收额度预警的邮箱地址，不填则使用账号绑定的邮箱',
-                    )}
-                    showClear
-                  />
-                )}
-
-                {/* Webhook通知设置 */}
-                {notificationSettings.warningType === 'webhook' && (
-                  <>
-                    <Form.Input
-                      field='webhookUrl'
-                      label={t('Webhook地址')}
-                      placeholder={t(
-                        '请输入Webhook地址，例如: https://example.com/webhook',
-                      )}
-                      onChange={(val) => handleFormChange('webhookUrl', val)}
-                      prefix={<IconLink />}
-                      extraText={t(
-                        '只支持HTTPS，系统将以POST方式发送通知，请确保地址可以接收POST请求',
-                      )}
-                      showClear
-                      rules={[
-                        {
-                          required:
-                            notificationSettings.warningType === 'webhook',
-                          message: t('请输入Webhook地址'),
-                        },
-                        {
-                          pattern: /^https:\/\/.+/,
-                          message: t('Webhook地址必须以https://开头'),
-                        },
-                      ]}
-                    />
-
-                    <Form.Input
-                      field='webhookSecret'
-                      label={t('接口凭证')}
-                      placeholder={t('请输入密钥')}
-                      onChange={(val) => handleFormChange('webhookSecret', val)}
-                      prefix={<IconKey />}
-                      extraText={t(
-                        '密钥将以Bearer方式添加到请求头中，用于验证webhook请求的合法性',
-                      )}
-                      showClear
-                    />
-
-                    <Form.Slot label={t('Webhook请求结构说明')}>
-                      <div>
-                        <div style={{ height: '200px', marginBottom: '12px' }}>
-                          <CodeViewer
-                            content={{
-                              type: 'quota_exceed',
-                              title: '额度预警通知',
-                              content:
-                                '您的额度即将用尽，当前剩余额度为 {{value}}',
-                              values: ['$0.99'],
-                              timestamp: 1739950503,
-                            }}
-                            title='webhook'
-                            language='json'
-                          />
-                        </div>
-                        <div className='text-xs text-gray-500 leading-relaxed'>
-                          <div>
-                            <strong>type:</strong>{' '}
-                            {t('通知类型 (quota_exceed: 额度预警)')}{' '}
-                          </div>
-                          <div>
-                            <strong>title:</strong> {t('通知标题')}
-                          </div>
-                          <div>
-                            <strong>content:</strong>{' '}
-                            {t('通知内容，支持 {{value}} 变量占位符')}
-                          </div>
-                          <div>
-                            <strong>values:</strong>{' '}
-                            {t('按顺序替换content中的变量占位符')}
-                          </div>
-                          <div>
-                            <strong>timestamp:</strong> {t('Unix时间戳')}
-                          </div>
-                        </div>
-                      </div>
-                    </Form.Slot>
-                  </>
-                )}
-
-                {/* Bark推送设置 */}
+                {/* 仅保留邮件通知。历史支持的 webhook/bark/gotify 配置暂不展示，避免用户误操作。 */}
                 {notificationSettings.warningType === 'bark' && (
                   <>
                     <Form.Input

@@ -3319,6 +3319,29 @@ html.dark .home-cta-secondary-button {
   color: #fff !important;
 }
 
+/* Contact Us (About -> Contact) page */
+.contact-hero-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(248, 240, 255, 0.96) 40%,
+    rgba(255, 255, 255, 0.96) 100%
+  );
+}
+
+html.dark .contact-hero-panel {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(
+    135deg,
+    #5b21b6 0%,
+    #7c3aed 36%,
+    #9333ea 68%,
+    #ec4899 100%
+  );
+  box-shadow: 0 28px 100px rgba(91, 33, 182, 0.34);
+  color: #fff;
+}
+
 @keyframes home-orb-float {
   from {
     transform: translate3d(0, 0, 0) scale(1);

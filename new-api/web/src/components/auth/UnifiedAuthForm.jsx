@@ -145,6 +145,9 @@ const UnifiedAuthForm = () => {
   const [emailAuthCountdown, setEmailAuthCountdown] = useState(0);
   const [signupEmailCountdown, setSignupEmailCountdown] = useState(0);
   const [smsCountdown, setSMSCountdown] = useState(0);
+  const [showAuthRedirectModal, setShowAuthRedirectModal] = useState(false);
+  const [authRedirectModalMessage, setAuthRedirectModalMessage] = useState('');
+  const [authRedirectModalPath, setAuthRedirectModalPath] = useState('');
   const githubTimeoutRef = useRef(null);
   const pendingAgreementActionRef = useRef(null);
   const consentGrantedRef = useRef(false);
@@ -410,12 +413,13 @@ const UnifiedAuthForm = () => {
   };
 
   const ensureTermsAccepted = async (onAccept) => {
-    if (!hasUserAgreement) {
-      return true;
-    }
+    // 需求：用户协议勾选框必须勾选后才能登录/注册。
+    // 为避免开关/状态未加载导致绕过，这里不再根据 hasUserAgreement 放行。
     if (agreedToTerms || consentGrantedRef.current) {
       return true;
     }
+    // 必须勾选并同意用户协议后才能登录/注册
+    showInfo(t('请先勾选并同意用户协议'));
     pendingAgreementActionRef.current = onAccept || null;
     setShowAgreementModal(true);
     await loadAgreementContent();
@@ -470,6 +474,14 @@ const UnifiedAuthForm = () => {
   const handleAuthFailure = (message, data) => {
     const redirectPath = buildRedirectPath(data);
     if (redirectPath) {
+      if (isRegisterPage) {
+        setAuthRedirectModalMessage(
+          message || t('账号已存在，是否前往登录？'),
+        );
+        setAuthRedirectModalPath(redirectPath);
+        setShowAuthRedirectModal(true);
+        return;
+      }
       showInfo(message);
       navigate(redirectPath);
       return;
@@ -962,17 +974,10 @@ const UnifiedAuthForm = () => {
       <div className='mt-1'>
         <Checkbox
           checked={agreedToTerms}
-          onChange={async (e) => {
+          onChange={(e) => {
             const nextChecked = e.target.checked;
-            if (!nextChecked) {
-              setAgreedToTerms(false);
-              consentGrantedRef.current = false;
-              return;
-            }
-            // When user manually checks, show the agreement and require explicit confirmation.
-            pendingAgreementActionRef.current = null;
-            setShowAgreementModal(true);
-            await loadAgreementContent();
+            setAgreedToTerms(nextChecked);
+            consentGrantedRef.current = nextChecked;
           }}
         >
           <Text size='small' className='text-[var(--semi-color-text-2)]'>
@@ -1402,6 +1407,26 @@ const UnifiedAuthForm = () => {
               />
             </div>
           )}
+        </Modal>
+
+        <Modal
+          title={t('提示')}
+          visible={showAuthRedirectModal}
+          centered
+          maskClosable={true}
+          onCancel={() => setShowAuthRedirectModal(false)}
+          onOk={() => {
+            setShowAuthRedirectModal(false);
+            if (authRedirectModalPath) {
+              navigate(authRedirectModalPath);
+            }
+          }}
+          okText={t('去登录')}
+          cancelText={t('取消')}
+        >
+          <div style={{ lineHeight: 1.6 }}>
+            {authRedirectModalMessage || t('账号已存在，是否前往登录？')}
+          </div>
         </Modal>
 
         <Modal

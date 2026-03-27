@@ -149,7 +149,8 @@ const PersonalSetting = () => {
     if (userState?.user?.setting) {
       const settings = JSON.parse(userState.user.setting);
       setNotificationSettings({
-        warningType: settings.notify_type || 'email',
+        // 通知方式仅保留邮件通知（兼容历史数据：强制回退到 email）
+        warningType: 'email',
         warningThreshold: settings.quota_warning_threshold || 500000,
         webhookUrl: settings.webhook_url || '',
         webhookSecret: settings.webhook_secret || '',

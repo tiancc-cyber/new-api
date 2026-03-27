@@ -60,7 +60,7 @@ export const useNavigation = (t, docsLink, headerNavModules) => {
           ]
         : []),
       {
-        text: t('关于'),
+        text: t('联系我们'),
         itemKey: 'about',
         to: '/about',
       },

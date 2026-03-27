@@ -1,0 +1,20 @@
+# Build & run a single all-in-one image from local source (backend + bundled frontend).
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
+
+services:
+  new-api:
+    image: new-api-local:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # If you want to ensure you always get the latest local build:
+    # pull_policy: never
+    environment:
+      # Use the external MySQL you configured in docker-compose.yml.
+      # NOTE: password contains special chars; keep it quoted.
+      SQL_DSN: "root:1qaz%40WSX@tcp(10.254.15.6:3306)/lxzp_evaluate_data?parseTime=true"
+      TZ: "Asia/Shanghai"
+      ERROR_LOG_ENABLED: "true"
+      BATCH_UPDATE_ENABLED: "true"
+

@@ -1,8 +1,8 @@
-FROM oven/bun:latest AS builder
+FROM oven/bun:1.1.38 AS builder
 
 WORKDIR /build
 COPY web/package.json .
-COPY web/bun.lock .
+COPY web/bun.lock* .
 RUN bun install
 COPY ./web .
 COPY ./VERSION .

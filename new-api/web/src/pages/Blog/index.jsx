@@ -87,7 +87,7 @@ const FeaturedCard = ({ post, t }) => {
               <Text type='tertiary'>{fmtDate(post.published_at)}</Text>
               <div className='flex gap-2 flex-wrap'>
                 {tags.map((tag) => (
-                  <Tag key={tag} size='small' color='orange'>
+                  <Tag key={tag} size='small' color='purple'>
                     {tag}
                   </Tag>
                 ))}
@@ -151,7 +151,7 @@ const GridCard = ({ post, t }) => {
             </Text>
             <div className='flex gap-2 flex-wrap'>
               {tags.map((tag) => (
-                <Tag key={tag} size='small' color='orange'>
+                <Tag key={tag} size='small' color='purple'>
                   {tag}
                 </Tag>
               ))}

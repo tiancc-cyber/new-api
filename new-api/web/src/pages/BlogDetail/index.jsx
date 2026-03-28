@@ -322,14 +322,13 @@ const BlogDetail = () => {
               <div className='blog-detail-meta'>{fmtDate(post.published_at)}</div>
               <div className='blog-detail-tags'>
                 {tags.map((tag) => (
-                  <Tag key={tag} size='small' color='orange'>
+                  <Tag key={tag} size='small' color='purple'>
                     {tag}
                   </Tag>
                 ))}
               </div>
 
               <div className='blog-detail-title'>{post.title}</div>
-              {post.intro ? <div className='blog-detail-intro'>{post.intro}</div> : null}
               <div className='blog-detail-divider' />
             </div>
 

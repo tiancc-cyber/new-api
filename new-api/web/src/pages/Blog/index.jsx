@@ -83,9 +83,9 @@ const FeaturedCard = ({ post, t }) => {
             )}
           </div>
           <div className='p-5 flex flex-col gap-3'>
-            <div className='flex items-center justify-between gap-3 flex-wrap'>
+            <div>
               <Text type='tertiary'>{fmtDate(post.published_at)}</Text>
-              <div className='flex gap-2 flex-wrap'>
+              <div className='flex gap-2 flex-wrap mt-2'>
                 {tags.map((tag) => (
                   <Tag key={tag} size='small' color='purple'>
                     {tag}
@@ -145,11 +145,11 @@ const GridCard = ({ post, t }) => {
           <Paragraph type='tertiary' style={{ margin: 0 }} ellipsis={{ rows: 2 }}>
             {post.intro || t('暂无简介')}
           </Paragraph>
-          <div className='flex items-center justify-between gap-3 flex-wrap mt-1'>
+          <div className='mt-1'>
             <Text type='tertiary' size='small'>
               {fmtDate(post.published_at)}
             </Text>
-            <div className='flex gap-2 flex-wrap'>
+            <div className='flex gap-2 flex-wrap mt-2'>
               {tags.map((tag) => (
                 <Tag key={tag} size='small' color='purple'>
                   {tag}

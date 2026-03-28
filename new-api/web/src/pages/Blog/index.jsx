@@ -21,7 +21,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API, showError } from '../../helpers';
-import { Empty, Skeleton, Tag, Typography } from '@douyinfe/semi-ui';
+import { Empty, Popover, Skeleton, Tag, Tooltip, Typography } from '@douyinfe/semi-ui';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -38,18 +38,126 @@ function fmtDate(ts) {
   }
 }
 
-function splitTags(tags) {
+function normalizeTags(tags) {
   if (!tags) return [];
-  return String(tags)
+  const arr = String(tags)
     .split(',')
     .map((t) => t.trim())
     .filter(Boolean)
-    .slice(0, 6);
+    .slice(0, 12);
+
+  // De-duplicate while preserving order
+  return Array.from(new Set(arr));
 }
+
+const TagRow = ({ tags }) => {
+  const allTags = normalizeTags(tags);
+  const maxShown = 4;
+  const shown = allTags.slice(0, maxShown);
+  const hidden = allTags.slice(maxShown);
+
+  const moreContent = (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, maxWidth: 420 }}>
+      {hidden.map((t) => (
+        <Tag key={t} size='small' color='purple'>
+          {t}
+        </Tag>
+      ))}
+    </div>
+  );
+
+  return (
+    <div
+      className='flex gap-2 items-center'
+      style={{
+        height: 26,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {/* Always reserve one line; if empty show a hidden placeholder */}
+      {shown.length ? (
+        <div
+          className='flex gap-2 items-center'
+          style={{
+            overflow: 'hidden',
+            flex: '1 1 auto',
+            minWidth: 0,
+          }}
+        >
+          {shown.map((tag) => (
+            <Tag
+              key={tag}
+              size='small'
+              color='purple'
+              style={{
+                // Do not ellipsis tags; show full text.
+                maxWidth: 'unset',
+              }}
+            >
+              {tag}
+            </Tag>
+          ))}
+
+          {hidden.length > 0 && (
+            <Popover
+              content={moreContent}
+              position='top'
+              trigger='hover'
+              showArrow={false}
+              style={{
+                padding: '10px 12px',
+                borderRadius: 10,
+              }}
+            >
+              <Tag
+                size='small'
+                color='grey'
+                style={{
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                }}
+              >
+                +{hidden.length} more
+              </Tag>
+            </Popover>
+          )}
+        </div>
+      ) : (
+        <span style={{ visibility: 'hidden' }}>-</span>
+      )}
+    </div>
+  );
+};
+
+const AlwaysTooltip = ({ content, children }) => {
+  const tooltipProps = {
+    content,
+    position: 'top',
+    showArrow: false,
+    style: {
+      maxWidth: 520,
+      padding: '10px 12px',
+      borderRadius: 10,
+      background: 'rgba(30, 30, 36, 0.92)',
+      color: '#fff',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
+      whiteSpace: 'pre-wrap',
+      wordBreak: 'break-word',
+    },
+  };
+
+  // Semi Tooltip requires a single element child.
+  return (
+    <Tooltip {...tooltipProps}>
+      <span>{children}</span>
+    </Tooltip>
+  );
+};
 
 const FeaturedCard = ({ post, t }) => {
   if (!post) return null;
-  const tags = splitTags(post.tags);
+  const tags = post.tags;
 
   return (
     <Link
@@ -85,20 +193,24 @@ const FeaturedCard = ({ post, t }) => {
           <div className='p-5 flex flex-col gap-3'>
             <div>
               <Text type='tertiary'>{fmtDate(post.published_at)}</Text>
-              <div className='flex gap-2 flex-wrap mt-2'>
-                {tags.map((tag) => (
-                  <Tag key={tag} size='small' color='purple'>
-                    {tag}
-                  </Tag>
-                ))}
+              <div className='mt-2'>
+                <TagRow tags={tags} />
               </div>
             </div>
             <Title heading={2} style={{ margin: 0 }}>
               {post.title}
             </Title>
-            <Paragraph type='tertiary' style={{ margin: 0 }} ellipsis={{ rows: 3 }}>
-              {post.intro || t('暂无简介')}
-            </Paragraph>
+            <div style={{ height: 72, overflow: 'hidden' }}>
+              <AlwaysTooltip content={post.intro || t('暂无简介')}>
+                <Paragraph
+                  type='tertiary'
+                  style={{ margin: 0, lineHeight: '24px' }}
+                  ellipsis={{ rows: 3 }}
+                >
+                  {post.intro || t('暂无简介')}
+                </Paragraph>
+              </AlwaysTooltip>
+            </div>
           </div>
         </div>
       </div>
@@ -107,7 +219,7 @@ const FeaturedCard = ({ post, t }) => {
 };
 
 const GridCard = ({ post, t }) => {
-  const tags = splitTags(post.tags);
+  const tags = post.tags;
   return (
     <Link
       to={`/blog/${post.md5}`}
@@ -142,19 +254,23 @@ const GridCard = ({ post, t }) => {
           <Title heading={4} style={{ margin: 0 }} ellipsis={{ showTooltip: true }}>
             {post.title}
           </Title>
-          <Paragraph type='tertiary' style={{ margin: 0 }} ellipsis={{ rows: 2 }}>
-            {post.intro || t('暂无简介')}
-          </Paragraph>
+          <div style={{ height: 54, overflow: 'hidden' }}>
+            <AlwaysTooltip content={post.intro || t('暂无简介')}>
+              <Paragraph
+                type='tertiary'
+                style={{ margin: 0, lineHeight: '27px' }}
+                ellipsis={{ rows: 2 }}
+              >
+                {post.intro || t('暂无简介')}
+              </Paragraph>
+            </AlwaysTooltip>
+          </div>
           <div className='mt-1'>
             <Text type='tertiary' size='small'>
               {fmtDate(post.published_at)}
             </Text>
-            <div className='flex gap-2 flex-wrap mt-2'>
-              {tags.map((tag) => (
-                <Tag key={tag} size='small' color='purple'>
-                  {tag}
-                </Tag>
-              ))}
+            <div className='mt-2'>
+              <TagRow tags={tags} />
             </div>
           </div>
         </div>

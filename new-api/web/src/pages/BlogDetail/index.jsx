@@ -17,15 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API, showError } from '../../helpers';
 import { Button, Skeleton, Tag, Typography } from '@douyinfe/semi-ui';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+import MarkdownRenderer from '../../components/common/markdown/MarkdownRenderer';
+import GithubSlugger from 'github-slugger';
+import './blogDetail.css';
 
 const { Title, Text } = Typography;
 
@@ -47,11 +46,84 @@ function splitTags(tags) {
     .slice(0, 12);
 }
 
+function extractTocFromMarkdown(content) {
+  if (!content) return [];
+  const slugger = new GithubSlugger();
+  const lines = String(content).split(/\r?\n/);
+
+  // Handle ATX headings only (#, ##, ...). Plenty for blog TOC.
+  const toc = [];
+  for (const raw of lines) {
+    const m = raw.match(/^(#{1,6})\s+(.+?)\s*$/);
+    if (!m) continue;
+    const level = m[1].length;
+    if (level < 2 || level > 4) continue; // keep TOC compact (h2~h4)
+
+    let text = m[2]
+      // remove trailing closing hashes: "Title ###"
+      .replace(/\s+#+\s*$/, '')
+      // strip inline code/backticks
+      .replace(/`([^`]+)`/g, '$1')
+      // strip emphasis markers
+      .replace(/[\\*_~]/g, '')
+      // strip markdown links [text](url)
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1')
+      .trim();
+
+    if (!text) continue;
+    toc.push({ level, text, id: slugger.slug(text) });
+    if (toc.length >= 40) break;
+  }
+  return toc;
+}
+
+// Same idea as 通用设置「公告」: support Markdown & HTML.
+function isHtmlContent(content) {
+  if (!content || typeof content !== 'string') return false;
+  const htmlTagRegex = /<\/?[a-z][\s\S]*>/i;
+  return htmlTagRegex.test(content);
+}
+
+function sanitizeHtml(html) {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+
+  const styles = Array.from(tempDiv.querySelectorAll('style'))
+    .map((style) => style.innerHTML)
+    .join('\n');
+
+  const bodyContent = tempDiv.querySelector('body');
+  const content = bodyContent ? bodyContent.innerHTML : html;
+  return { content, styles };
+}
+
+function extractTocFromHtml(html) {
+  if (!html) return { toc: [], html: html || '' };
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+
+  const slugger = new GithubSlugger();
+  const toc = [];
+  const headings = tempDiv.querySelectorAll('h2, h3, h4');
+  for (const h of headings) {
+    const level = Number(h.tagName.replace('H', ''));
+    const text = (h.textContent || '').trim();
+    if (!text) continue;
+    if (!h.id) h.id = slugger.slug(text);
+    toc.push({ level, text, id: h.id });
+    if (toc.length >= 40) break;
+  }
+
+  return { toc, html: tempDiv.innerHTML };
+}
+
 const BlogDetail = () => {
   const { t } = useTranslation();
   const { md5 } = useParams();
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState(null);
+  const [activeHeadingId, setActiveHeadingId] = useState('');
+  const articleRef = useRef(null);
 
   const load = async () => {
     setLoading(true);
@@ -79,9 +151,106 @@ const BlogDetail = () => {
   const tags = useMemo(() => splitTags(post?.tags), [post?.tags]);
   const ct = String(post?.content_type || 'markdown').toLowerCase();
 
+  const treatAsHtml = useMemo(() => {
+    if (ct === 'html') return true;
+    return isHtmlContent(post?.content);
+  }, [ct, post?.content]);
+
+  const htmlPayload = useMemo(() => {
+    if (!treatAsHtml) return { content: '', styles: '' };
+    return sanitizeHtml(post?.content || '');
+  }, [treatAsHtml, post?.content]);
+
+  const { toc: tocFromHtml, html: htmlWithHeadingIds } = useMemo(() => {
+    if (!treatAsHtml) return { toc: [], html: '' };
+    return extractTocFromHtml(htmlPayload.content);
+  }, [treatAsHtml, htmlPayload.content]);
+
+  const toc = useMemo(() => {
+    if (!post?.content) return [];
+    return treatAsHtml ? tocFromHtml : extractTocFromMarkdown(post.content);
+  }, [post?.content, treatAsHtml, tocFromHtml]);
+
+  // Inject <style> blocks extracted from HTML content (same behavior as 公告)
+  useEffect(() => {
+    if (!treatAsHtml) return;
+    const styleId = 'blog-detail-html-styles';
+
+    if (htmlPayload.styles) {
+      let styleEl = document.getElementById(styleId);
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        styleEl.type = 'text/css';
+        document.head.appendChild(styleEl);
+      }
+      styleEl.innerHTML = htmlPayload.styles;
+    } else {
+      const el = document.getElementById(styleId);
+      if (el) el.remove();
+    }
+
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) el.remove();
+    };
+  }, [treatAsHtml, htmlPayload.styles]);
+
+  const scrollToHeading = (id) => {
+    if (!id) return;
+    const scroller = articleRef.current;
+    const el = scroller?.querySelector(`#${CSS.escape(id)}`);
+    if (!scroller || !el) return;
+
+    // Compute position relative to the scroller to avoid offset bias from nested elements.
+    const offset = 16;
+    const scrollerTop = scroller.getBoundingClientRect().top;
+    const elTop = el.getBoundingClientRect().top;
+    const y = scroller.scrollTop + (elTop - scrollerTop) - offset;
+    scroller.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  };
+
+  // Highlight current section in TOC.
+  useEffect(() => {
+    if (!toc.length) return;
+    const scroller = articleRef.current;
+    if (!scroller) return;
+
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+
+        // Determine current heading by real-time position in scroller.
+        const offset = 22;
+        const scrollerTop = scroller.getBoundingClientRect().top;
+        let current = '';
+        for (const item of toc) {
+          const el = scroller.querySelector(`#${CSS.escape(item.id)}`);
+          if (!el) continue;
+          const top = el.getBoundingClientRect().top - scrollerTop;
+          if (top - offset <= 0) {
+            current = item.id;
+          } else {
+            break;
+          }
+        }
+        setActiveHeadingId(current);
+      });
+    };
+
+    onScroll();
+    scroller.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      scroller.removeEventListener('scroll', onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [toc]);
+
   return (
-    <div className='mt-[60px] px-3 md:px-6 max-w-4xl mx-auto'>
-      <div className='mb-5 flex items-center justify-between gap-3'>
+    <div className='blog-detail'>
+      <div className='blog-detail-topbar'>
         <Link to='/blog'>
           <Button theme='light' type='tertiary'>
             {t('返回博客')}
@@ -98,64 +267,85 @@ const BlogDetail = () => {
       ) : !post ? (
         <Text type='tertiary'>{t('文章不存在')}</Text>
       ) : (
-        <>
-          <div className='mb-4'>
-            <Title heading={2} style={{ margin: 0 }}>
-              {post.title}
-            </Title>
-            <div className='mt-2 flex items-center justify-between gap-3 flex-wrap'>
-              <Text type='tertiary'>{fmtDate(post.published_at)}</Text>
-              <div className='flex gap-2 flex-wrap'>
+        <div className='blog-detail-layout'>
+          {/* Sidebar: fixed */}
+          <aside className='blog-detail-sidebar'>
+            {toc.length ? (
+              <nav className='blog-detail-toc blog-detail-toc--sidebar' aria-label='Table of contents'>
+                <div className='blog-detail-toc-title'>{t('目录')}</div>
+                <div className='blog-detail-toc-list'>
+                  {toc.map((item) => (
+                    <a
+                      key={`${item.id}-${item.level}`}
+                      href={`#${item.id}`}
+                      className={
+                        'blog-detail-toc-item' +
+                        (activeHeadingId === item.id ? ' is-active' : '')
+                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToHeading(item.id);
+                      }}
+                      style={{
+                        paddingLeft:
+                          item.level === 2
+                            ? 0
+                            : item.level === 3
+                              ? 12
+                              : 22,
+                      }}
+                    >
+                      {item.text}
+                    </a>
+                  ))}
+                </div>
+              </nav>
+            ) : null}
+          </aside>
+
+          {/* Article */}
+          <main className='blog-detail-article'>
+            {/* Make the whole right column the scroll container */}
+            <div className='blog-detail-article-scroll' ref={articleRef}>
+            <div className='blog-detail-hero-main'>
+              {post.image_url ? (
+                <div className='blog-detail-cover'>
+                  <img
+                    src={post.image_url}
+                    alt=''
+                    loading='lazy'
+                    decoding='async'
+                  />
+                </div>
+              ) : null}
+
+              <div className='blog-detail-meta'>{fmtDate(post.published_at)}</div>
+              <div className='blog-detail-tags'>
                 {tags.map((tag) => (
                   <Tag key={tag} size='small' color='orange'>
                     {tag}
                   </Tag>
                 ))}
               </div>
-            </div>
-          </div>
 
-          {post.image_url ? (
-            <div className='w-full overflow-hidden mb-6' style={{ borderRadius: 16 }}>
-              <img
-                src={post.image_url}
-                alt=''
-                loading='lazy'
-                decoding='async'
-                className='w-full h-auto object-cover'
-              />
+              <div className='blog-detail-title'>{post.title}</div>
+              {post.intro ? <div className='blog-detail-intro'>{post.intro}</div> : null}
+              <div className='blog-detail-divider' />
             </div>
-          ) : null}
 
-          <div
-            className='p-4 md:p-6'
-            style={{
-              borderRadius: 16,
-              background: 'var(--semi-color-bg-1)',
-              border: '1px solid var(--semi-color-border)',
-            }}
-          >
-            {ct === 'html' ? (
-              <div
-                className='prose max-w-none'
-                // NOTE: content is sanitized to reduce XSS risk.
-              >
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw, rehypeSanitize]}
-                >
-                  {post.content || ''}
-                </ReactMarkdown>
-              </div>
-            ) : (
-              <div className='prose max-w-none'>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {post.content || ''}
-                </ReactMarkdown>
-              </div>
-            )}
-          </div>
-        </>
+            <div className='blog-detail-content-card blog-detail-content-card--plain'>
+              {treatAsHtml ? (
+                <div
+                  className='markdown-body'
+                  dangerouslySetInnerHTML={{ __html: htmlWithHeadingIds }}
+                />
+              ) : (
+                <MarkdownRenderer content={post.content || ''} data-ct={ct} />
+              )}
+            </div>
+            </div>
+          </main>
+        </div>
       )}
     </div>
   );

@@ -24,6 +24,8 @@ import './markdown.css';
 import RemarkMath from 'remark-math';
 import RemarkBreaks from 'remark-breaks';
 import RehypeKatex from 'rehype-katex';
+import RehypeSlug from 'rehype-slug';
+import RehypeAutolinkHeadings from 'rehype-autolink-headings';
 import RemarkGfm from 'remark-gfm';
 import RehypeHighlight from 'rehype-highlight';
 import { useRef, useState, useEffect, useMemo } from 'react';
@@ -342,7 +344,7 @@ function CustomCode(props) {
 
 function escapeBrackets(text) {
   const pattern =
-    /(```[\s\S]*?```|`.*?`)|\\\[([\s\S]*?[^\\])\\\]|\\\((.*?)\\\)/g;
+    /(```[\s\S]*?```|`.*?`)|\\\[([\s\S]*?[^\\])\\]|\\\((.*?)\\\)/g;
   return text.replace(
     pattern,
     (match, codeBlock, squareBracket, roundBracket) => {
@@ -396,6 +398,16 @@ function _MarkdownContent(props) {
   const rehypePluginsBase = useMemo(() => {
     const base = [
       RehypeKatex,
+      RehypeSlug,
+      [
+        RehypeAutolinkHeadings,
+        {
+          behavior: 'wrap',
+          properties: {
+            className: ['md-heading-anchor'],
+          },
+        },
+      ],
       [
         RehypeHighlight,
         {

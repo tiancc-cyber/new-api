@@ -8,6 +8,35 @@
   word-break: break-word;
 }
 
+/* Heading anchor links (rehype-autolink-headings)
+   behavior: wrap => <h2><a class="md-heading-anchor" href="#...">Title</a></h2>
+*/
+.markdown-body .md-heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.markdown-body .md-heading-anchor:hover {
+  text-decoration: none;
+}
+
+.markdown-body .md-heading-anchor::after {
+  content: ' #';
+  opacity: 0;
+  margin-left: 6px;
+  font-weight: 400;
+  color: var(--semi-color-text-2);
+}
+
+.markdown-body h1:hover .md-heading-anchor::after,
+.markdown-body h2:hover .md-heading-anchor::after,
+.markdown-body h3:hover .md-heading-anchor::after,
+.markdown-body h4:hover .md-heading-anchor::after,
+.markdown-body h5:hover .md-heading-anchor::after,
+.markdown-body h6:hover .md-heading-anchor::after {
+  opacity: 0.8;
+}
+
 /* 用户消息样式 - 白色字体适配蓝色背景 */
 .user-message {
   color: white !important;

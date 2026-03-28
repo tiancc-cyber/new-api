@@ -21,7 +21,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API, showError } from '../../helpers';
-import { Empty, Popover, Skeleton, Tag, Tooltip, Typography } from '@douyinfe/semi-ui';
+import { Empty, Popover, Skeleton, Tag, Typography } from '@douyinfe/semi-ui';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -130,34 +130,19 @@ const TagRow = ({ tags }) => {
   );
 };
 
-const AlwaysTooltip = ({ content, children }) => {
-  const tooltipProps = {
-    content,
+const blogIntroEllipsis = {
+  // Match the "perfect" behavior used by Title: only show tooltip when actually ellipsized.
+  showTooltip: {
     position: 'top',
     showArrow: false,
-    style: {
-      maxWidth: 520,
-      padding: '10px 12px',
-      borderRadius: 10,
-      background: 'rgba(30, 30, 36, 0.92)',
-      color: '#fff',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
-      whiteSpace: 'pre-wrap',
-      wordBreak: 'break-word',
-    },
-  };
-
-  // Semi Tooltip requires a single element child.
-  return (
-    <Tooltip {...tooltipProps}>
-      <span>{children}</span>
-    </Tooltip>
-  );
+    className: 'blog-intro-tooltip',
+  },
 };
 
 const FeaturedCard = ({ post, t }) => {
   if (!post) return null;
   const tags = post.tags;
+  const introText = post.intro || t('暂无简介');
 
   return (
     <Link
@@ -201,15 +186,13 @@ const FeaturedCard = ({ post, t }) => {
               {post.title}
             </Title>
             <div style={{ height: 72, overflow: 'hidden' }}>
-              <AlwaysTooltip content={post.intro || t('暂无简介')}>
-                <Paragraph
-                  type='tertiary'
-                  style={{ margin: 0, lineHeight: '24px' }}
-                  ellipsis={{ rows: 3 }}
-                >
-                  {post.intro || t('暂无简介')}
-                </Paragraph>
-              </AlwaysTooltip>
+              <Paragraph
+                type='tertiary'
+                style={{ margin: 0, lineHeight: '24px' }}
+                ellipsis={{ ...blogIntroEllipsis, rows: 3 }}
+              >
+                {introText}
+              </Paragraph>
             </div>
           </div>
         </div>
@@ -220,6 +203,7 @@ const FeaturedCard = ({ post, t }) => {
 
 const GridCard = ({ post, t }) => {
   const tags = post.tags;
+  const introText = post.intro || t('暂无简介');
   return (
     <Link
       to={`/blog/${post.md5}`}
@@ -255,15 +239,13 @@ const GridCard = ({ post, t }) => {
             {post.title}
           </Title>
           <div style={{ height: 54, overflow: 'hidden' }}>
-            <AlwaysTooltip content={post.intro || t('暂无简介')}>
-              <Paragraph
-                type='tertiary'
-                style={{ margin: 0, lineHeight: '27px' }}
-                ellipsis={{ rows: 2 }}
-              >
-                {post.intro || t('暂无简介')}
-              </Paragraph>
-            </AlwaysTooltip>
+            <Paragraph
+              type='tertiary'
+              style={{ margin: 0, lineHeight: '27px' }}
+              ellipsis={{ ...blogIntroEllipsis, rows: 2 }}
+            >
+              {introText}
+            </Paragraph>
           </div>
           <div className='mt-1'>
             <Text type='tertiary' size='small'>
@@ -313,6 +295,33 @@ const Blog = () => {
 
   return (
     <div className='mt-[60px] px-3 md:px-6 max-w-6xl mx-auto'>
+      <style>{`
+        /* Purple tooltip theme for blog intro; auto-switch via Semi's html[data-theme] */
+        html[data-theme='light'] .blog-intro-tooltip.semi-tooltip-wrapper .semi-tooltip-content {
+          max-width: 520px;
+          padding: 10px 12px;
+          border-radius: 10px;
+          background: rgba(99, 58, 203, 0.92);
+          color: #fff;
+          box-shadow: 0 12px 34px rgba(99, 58, 203, 0.22);
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+
+        html[data-theme='dark'] .blog-intro-tooltip.semi-tooltip-wrapper .semi-tooltip-content {
+          max-width: 520px;
+          padding: 10px 12px;
+          border-radius: 10px;
+          background: rgba(168, 124, 255, 0.15);
+          border: 1px solid rgba(168, 124, 255, 0.35);
+          color: rgba(240, 234, 255, 0.98);
+          box-shadow: 0 16px 46px rgba(0, 0, 0, 0.38);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+      `}</style>
       <div className='mb-5'>
         <Title heading={2} style={{ margin: 0 }}>
           {t('博客')}

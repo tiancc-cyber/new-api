@@ -70,6 +70,23 @@
   overflow: auto;
 }
 
+/* Dark mode: give article area a slightly lighter background for readability */
+html.dark .blog-detail-content-card--plain,
+body[theme-mode='dark'] .blog-detail-content-card--plain {
+  background: #fff;
+  border: 1px solid var(--semi-color-border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  html.dark .blog-detail-content-card--plain,
+  body[theme-mode='dark'] .blog-detail-content-card--plain {
+    padding: 18px 22px;
+  }
+}
+
 @media (min-width: 1024px) {
   .blog-detail-article-scroll {
     height: calc(100vh - (60px + 56px));

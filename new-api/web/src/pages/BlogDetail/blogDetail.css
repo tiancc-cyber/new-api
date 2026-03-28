@@ -4,7 +4,8 @@
 */
 
 .blog-detail {
-  max-width: 1120px;
+  /* Responsive width: widest on large screens, but not hardcoded to one value */
+  max-width: clamp(960px, 92vw, 1600px);
   margin: 60px auto 0;
   padding: 0 12px;
 }
@@ -60,14 +61,18 @@
 @media (min-width: 1024px) {
   .blog-detail-article {
     overflow: hidden;
-    padding-right: 6px; /* keep scrollbar away from content */
-    padding-bottom: 24px;
+    /*padding-right: 6px; !* keep scrollbar away from content *!*/
+    /*padding-bottom: 24px;*/
   }
 }
 
 /* The whole right column scrolls (not just the content card) */
 .blog-detail-article-scroll {
   overflow: auto;
+  border-radius: 16px;
+  /* Prevent the scrollbar from visually cutting off the rounded corner */
+  /*scrollbar-gutter: stable both-edges;*/
+  /*padding-right: 6px; !* keep scrollbar away from content *!*/
 }
 
 /* Dark mode: give article area a slightly lighter background for readability */
@@ -80,6 +85,11 @@ body[theme-mode='dark'] .blog-detail-content-card--plain {
   box-sizing: border-box;
 }
 
+html.dark .blog-detail-article-scroll,
+body[theme-mode='dark'] .blog-detail-article-scroll {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 @media (min-width: 1024px) {
   html.dark .blog-detail-content-card--plain,
   body[theme-mode='dark'] .blog-detail-content-card--plain {
@@ -90,7 +100,7 @@ body[theme-mode='dark'] .blog-detail-content-card--plain {
 @media (min-width: 1024px) {
   .blog-detail-article-scroll {
     height: calc(100vh - (60px + 56px));
-    padding-bottom: 34px;
+    /*padding-bottom: 34px;*/
   }
 }
 

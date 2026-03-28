@@ -168,7 +168,7 @@ const NoticeModal = ({
 
     return (
       <div className='max-h-[55vh] overflow-y-auto pr-2 card-content-scroll'>
-        <Timeline mode='left'>
+        <Timeline mode='alternate'>
           {processedAnnouncements.map((item, idx) => {
             const htmlContent = marked.parse(item.content || '');
             const htmlExtra = item.extra ? marked.parse(item.extra) : '';
@@ -176,7 +176,7 @@ const NoticeModal = ({
               <Timeline.Item
                 key={idx}
                 type={item.type}
-                time={`${item.relative ? item.relative + ' ' : ''}${item.time}`}
+                time={`${item.relative ? item.relative + ' ' : ''}`}
                 extra={
                   item.extra ? (
                     <div

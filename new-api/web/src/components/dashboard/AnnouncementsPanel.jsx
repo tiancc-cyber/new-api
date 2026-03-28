@@ -78,14 +78,14 @@ const AnnouncementsPanel = ({
     >
       <ScrollableContainer maxHeight='24rem'>
         {announcementData.length > 0 ? (
-          <Timeline mode='left'>
+          <Timeline mode='alternate'>
             {announcementData.map((item, idx) => {
               const htmlExtra = item.extra ? marked.parse(item.extra) : '';
               return (
                 <Timeline.Item
                   key={idx}
                   type={item.type || 'default'}
-                  time={`${item.relative ? item.relative + ' ' : ''}${item.time}`}
+                  time={`${item.relative ? item.relative + ' ' : ''}`}
                   extra={
                     item.extra ? (
                       <div

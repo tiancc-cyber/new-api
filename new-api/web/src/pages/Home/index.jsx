@@ -1002,10 +1002,10 @@ func main() {
                       isChinese ? 'lg:tracking-[-0.04em]' : ''
                     }`}
                   >
-                    {t('把多模型接入、运营与控制台')}
+                    {t('Open AI Tools')}
                     <br />
                     <span className='home-gradient-text'>
-                      {t('合成一个更顺手的 AI 网关入口')}
+                      {t('更强模型 更低价格 更易落地')}
                     </span>
                   </h1>
 

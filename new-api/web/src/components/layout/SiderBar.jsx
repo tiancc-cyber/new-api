@@ -38,6 +38,7 @@ const routerMap = {
   topup: '/console/topup',
   user: '/console/user',
   subscription: '/console/subscription',
+  blog_manage: '/console/blog-manage',
   token_request_audit: '/console/token-request-audit',
   log: '/console/log',
   midjourney: '/console/midjourney',
@@ -158,6 +159,12 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         text: t('订阅管理'),
         itemKey: 'subscription',
         to: '/subscription',
+        className: isAdmin() ? '' : 'tableHiddle',
+      },
+      {
+        text: t('博客管理'),
+        itemKey: 'blog_manage',
+        to: '/console/blog-manage',
         className: isAdmin() ? '' : 'tableHiddle',
       },
       {

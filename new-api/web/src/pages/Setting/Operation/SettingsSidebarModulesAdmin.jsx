@@ -67,6 +67,7 @@ export default function SettingsSidebarModulesAdmin(props) {
       redemption: true,
       user: true,
       subscription: true,
+      blog_manage: true,
       setting: true,
     },
   });
@@ -129,6 +130,7 @@ export default function SettingsSidebarModulesAdmin(props) {
         redemption: true,
         user: true,
         subscription: true,
+        blog_manage: true,
         setting: true,
       },
     };
@@ -199,6 +201,7 @@ export default function SettingsSidebarModulesAdmin(props) {
             redemption: true,
             user: true,
             subscription: true,
+            blog_manage: true,
             setting: true,
           },
         };
@@ -272,6 +275,11 @@ export default function SettingsSidebarModulesAdmin(props) {
           key: 'subscription',
           title: t('订阅管理'),
           description: t('订阅套餐管理'),
+        },
+        {
+          key: 'blog_manage',
+          title: t('博客管理'),
+          description: t('博客文章管理'),
         },
         {
           key: 'redemption',

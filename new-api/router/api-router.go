@@ -166,6 +166,18 @@ func SetApiRouter(router *gin.Engine) {
 			subscriptionAdminRoute.DELETE("/user_subscriptions/:id", controller.AdminDeleteUserSubscription)
 		}
 
+		// Blog manage (admin)
+		blogManageAdminRoute := apiRouter.Group("/blog_manage/admin")
+		blogManageAdminRoute.Use(middleware.AdminAuth())
+		{
+			blogManageAdminRoute.GET("/blogs", controller.AdminListBlogManages)
+			blogManageAdminRoute.GET("/blogs/:id", controller.AdminGetBlogManage)
+			blogManageAdminRoute.POST("/blogs", controller.AdminCreateBlogManage)
+			blogManageAdminRoute.PUT("/blogs/:id", controller.AdminUpdateBlogManage)
+			blogManageAdminRoute.PATCH("/blogs/:id/status", controller.AdminUpdateBlogManageStatus)
+			blogManageAdminRoute.DELETE("/blogs/:id", controller.AdminDeleteBlogManage)
+		}
+
 		// Subscription payment callbacks (no auth)
 		apiRouter.POST("/subscription/epay/notify", controller.SubscriptionEpayNotify)
 		apiRouter.GET("/subscription/epay/notify", controller.SubscriptionEpayNotify)

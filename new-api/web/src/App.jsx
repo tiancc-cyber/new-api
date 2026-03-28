@@ -44,6 +44,7 @@ import ModelPage from './pages/Model';
 import ModelDeploymentPage from './pages/ModelDeployment';
 import Playground from './pages/Playground';
 import Subscription from './pages/Subscription';
+import BlogManage from './pages/BlogManage';
 import TokenRequestAuditPage from './pages/TokenRequestAudit';
 import OAuth2Callback from './components/auth/OAuth2Callback';
 import PersonalSetting from './components/settings/PersonalSetting';
@@ -128,6 +129,14 @@ function App() {
           element={
             <AdminRoute>
               <Subscription />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/blog-manage'
+          element={
+            <AdminRoute>
+              <BlogManage />
             </AdminRoute>
           }
         />

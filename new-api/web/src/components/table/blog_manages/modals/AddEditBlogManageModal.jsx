@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Form, SideSheet, Space } from '@douyinfe/semi-ui';
 
 const AddEditBlogManageModal = ({
@@ -33,6 +33,14 @@ const AddEditBlogManageModal = ({
 
   const isEdit = !!editingBlog?.id;
 
+  const initialPublishTime = useMemo(() => {
+    const ts = editingBlog?.published_at;
+    if (!isEdit || !ts) return null;
+    const d = new Date(Number(ts) * 1000);
+    if (Number.isNaN(d.getTime())) return null;
+    return d;
+  }, [editingBlog, isEdit]);
+
   useEffect(() => {
     if (!formApi) return;
 
@@ -45,7 +53,8 @@ const AddEditBlogManageModal = ({
         content: editingBlog?.content || '',
         content_type: editingBlog?.content_type || 'markdown',
         status: editingBlog?.status ?? 0,
-        published_at: editingBlog?.published_at || 0,
+        // Use human-friendly datetime picker in UI; submit as unix seconds.
+        published_time: initialPublishTime,
         pinned: !!editingBlog?.pinned,
       });
     } else {
@@ -54,10 +63,10 @@ const AddEditBlogManageModal = ({
         content_type: 'markdown',
         status: 0,
         pinned: false,
-        published_at: 0,
+        published_time: null,
       });
     }
-  }, [formApi, isEdit, editingBlog]);
+  }, [formApi, isEdit, editingBlog, initialPublishTime]);
 
   const submit = async () => {
     if (!formApi) return;
@@ -72,7 +81,11 @@ const AddEditBlogManageModal = ({
       content_type: values.content_type,
       status: Number(values.status),
       pinned: !!values.pinned,
-      published_at: Number(values.published_at) || 0,
+      // Keep backend contract: Unix seconds.
+      // When left empty, send 0 so backend can auto-set publish time on publish.
+      published_at: values.published_time
+        ? Math.floor(new Date(values.published_time).getTime() / 1000)
+        : 0,
     };
 
     setSubmitting(true);
@@ -139,11 +152,15 @@ const AddEditBlogManageModal = ({
           ]}
         />
         <Form.Switch field='pinned' label={t('置顶')} />
-        <Form.InputNumber
-          field='published_at'
-          label={t('发布时间(Unix秒)')}
-          placeholder={t('不填则发布时自动设置')}
-          min={0}
+        <Form.DatePicker
+          field='published_time'
+          label={t('发布时间(年月日 时分秒)')}
+          extraText={t('不填写则发布时自动设置')}
+          type='dateTime'
+          format='yyyy-MM-dd HH:mm:ss'
+          placeholder={t('请选择发布时间')}
+          style={{ width: '100%' }}
+          clearable
         />
         <Form.TextArea
           field='content'

@@ -42,6 +42,7 @@ export default function SettingsHeaderNavModules(props) {
   const [headerNavModules, setHeaderNavModules] = useState({
     home: true,
     console: true,
+    blog: true,
     pricing: {
       enabled: true,
       requireAuth: false, // 默认不需要登录鉴权
@@ -82,6 +83,7 @@ export default function SettingsHeaderNavModules(props) {
     const defaultModules = {
       home: true,
       console: true,
+      blog: true,
       pricing: {
         enabled: true,
         requireAuth: false,
@@ -148,6 +150,7 @@ export default function SettingsHeaderNavModules(props) {
         const defaultModules = {
           home: true,
           console: true,
+          blog: true,
           pricing: {
             enabled: true,
             requireAuth: false,
@@ -171,6 +174,11 @@ export default function SettingsHeaderNavModules(props) {
       key: 'console',
       title: t('控制台'),
       description: t('用户控制面板，管理账户'),
+    },
+    {
+      key: 'blog',
+      title: t('博客'),
+      description: t('博客文章列表'),
     },
     {
       key: 'pricing',

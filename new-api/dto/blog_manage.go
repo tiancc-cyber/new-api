@@ -39,3 +39,26 @@ type AdminBlogManageListResponse struct {
 	CreatedAt int64 `json:"created_at"`
 	UpdatedAt int64 `json:"updated_at"`
 }
+
+// ---- Public blog DTOs ----
+
+type PublicBlogManageListItem struct {
+	MD5         string `json:"md5"`
+	Title       string `json:"title"`
+	ImageURL    string `json:"image_url"`
+	Intro       string `json:"intro"`
+	Tags        string `json:"tags"`
+	ContentType string `json:"content_type"`
+	PublishedAt int64  `json:"published_at"`
+}
+
+type PublicBlogManageDetail struct {
+	MD5         string `json:"md5"`
+	Title       string `json:"title"`
+	ImageURL    string `json:"image_url"`
+	Intro       string `json:"intro"`
+	Tags        string `json:"tags"`
+	Content     string `json:"content"`
+	ContentType string `json:"content_type"`
+	PublishedAt int64  `json:"published_at"`
+}

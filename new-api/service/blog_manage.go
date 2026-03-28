@@ -39,6 +39,11 @@ type AdminBlogManageListParams struct {
 	Status   *int
 }
 
+type PublicBlogManageListParams struct {
+	Page     int
+	PageSize int
+}
+
 func AdminListBlogManages(params AdminBlogManageListParams) (items []dto.AdminBlogManageListResponse, total int64, err error) {
 	page := params.Page
 	pageSize := params.PageSize
@@ -260,6 +265,69 @@ func AdminUpdateBlogManageStatus(id uint, req dto.AdminBlogManageStatusRequest) 
 
 func AdminDeleteBlogManage(id uint) error {
 	return model.DB.Delete(&model.BlogManage{}, id).Error
+}
+
+// ---- Public APIs ----
+
+func PublicListBlogManages(params PublicBlogManageListParams) (items []dto.PublicBlogManageListItem, total int64, err error) {
+	page := params.Page
+	pageSize := params.PageSize
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+	if pageSize > 50 {
+		pageSize = 50
+	}
+
+	db := model.DB.Model(&model.BlogManage{}).
+		Where("status = ?", 1)
+
+	if err = db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	var rows []model.BlogManage
+	err = db.Order("published_at desc").Order("id desc").
+		Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&rows).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	items = make([]dto.PublicBlogManageListItem, 0, len(rows))
+	for _, r := range rows {
+		items = append(items, dto.PublicBlogManageListItem{
+			MD5:         r.MD5,
+			Title:       r.Title,
+			ImageURL:    r.ImageURL,
+			Intro:       r.Intro,
+			Tags:        r.Tags,
+			ContentType: r.ContentType,
+			PublishedAt: r.PublishedAt,
+		})
+	}
+	return items, total, nil
+}
+
+func PublicGetBlogManageByMD5(md5Str string) (*dto.PublicBlogManageDetail, error) {
+	var row model.BlogManage
+	if err := model.DB.Where("md5 = ? AND status = ?", md5Str, 1).First(&row).Error; err != nil {
+		return nil, err
+	}
+	return &dto.PublicBlogManageDetail{
+		MD5:         row.MD5,
+		Title:       row.Title,
+		ImageURL:    row.ImageURL,
+		Intro:       row.Intro,
+		Tags:        row.Tags,
+		Content:     row.Content,
+		ContentType: row.ContentType,
+		PublishedAt: row.PublishedAt,
+	}, nil
 }
 
 func ptrOrEmpty(s *string) string {

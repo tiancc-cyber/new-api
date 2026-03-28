@@ -178,6 +178,13 @@ func SetApiRouter(router *gin.Engine) {
 			blogManageAdminRoute.DELETE("/blogs/:id", controller.AdminDeleteBlogManage)
 		}
 
+		// Blog manage (public)
+		blogManagePublicRoute := apiRouter.Group("/blog_manage/public")
+		{
+			blogManagePublicRoute.GET("/blogs", controller.PublicListBlogs)
+			blogManagePublicRoute.GET("/blogs/:md5", controller.PublicGetBlogByMD5)
+		}
+
 		// Subscription payment callbacks (no auth)
 		apiRouter.POST("/subscription/epay/notify", controller.SubscriptionEpayNotify)
 		apiRouter.GET("/subscription/epay/notify", controller.SubscriptionEpayNotify)

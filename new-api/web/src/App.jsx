@@ -45,6 +45,8 @@ import ModelDeploymentPage from './pages/ModelDeployment';
 import Playground from './pages/Playground';
 import Subscription from './pages/Subscription';
 import BlogManage from './pages/BlogManage';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 import TokenRequestAuditPage from './pages/TokenRequestAudit';
 import OAuth2Callback from './components/auth/OAuth2Callback';
 import PersonalSetting from './components/settings/PersonalSetting';
@@ -107,6 +109,8 @@ function App() {
             </Suspense>
           }
         />
+        <Route path='/blog' element={<Blog />} />
+        <Route path='/blog/:md5' element={<BlogDetail />} />
         <Route path='/forbidden' element={<Forbidden />} />
         <Route
           path='/console/models'

@@ -21,7 +21,7 @@ For commercial licensing, please contact support@quantumnous.com
 export const CHART_CONFIG = { mode: 'desktop-browser' };
 
 export const CARD_PROPS = {
-  shadows: '',
+  // Semi Card only accepts "hover" or "always"; omit to use default.
   bordered: true,
   headerLine: true,
 };

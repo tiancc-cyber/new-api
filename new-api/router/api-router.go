@@ -185,6 +185,25 @@ func SetApiRouter(router *gin.Engine) {
 			blogManagePublicRoute.GET("/blogs/:md5", controller.PublicGetBlogByMD5)
 		}
 
+		// Scenario tutorial (admin)
+		scenarioTutorialAdminRoute := apiRouter.Group("/scenario_tutorial/admin")
+		scenarioTutorialAdminRoute.Use(middleware.AdminAuth())
+		{
+			scenarioTutorialAdminRoute.GET("/tutorials", controller.AdminListScenarioTutorials)
+			scenarioTutorialAdminRoute.GET("/tutorials/:id", controller.AdminGetScenarioTutorial)
+			scenarioTutorialAdminRoute.POST("/tutorials", controller.AdminCreateScenarioTutorial)
+			scenarioTutorialAdminRoute.PUT("/tutorials/:id", controller.AdminUpdateScenarioTutorial)
+			scenarioTutorialAdminRoute.PATCH("/tutorials/:id/status", controller.AdminUpdateScenarioTutorialStatus)
+			scenarioTutorialAdminRoute.DELETE("/tutorials/:id", controller.AdminDeleteScenarioTutorial)
+		}
+
+		// Scenario tutorial (public)
+		scenarioTutorialPublicRoute := apiRouter.Group("/scenario_tutorial/public")
+		{
+			scenarioTutorialPublicRoute.GET("/tutorials", controller.PublicListScenarioTutorials)
+			scenarioTutorialPublicRoute.GET("/tutorials/:slug", controller.PublicGetScenarioTutorialBySlug)
+		}
+
 		// Subscription payment callbacks (no auth)
 		apiRouter.POST("/subscription/epay/notify", controller.SubscriptionEpayNotify)
 		apiRouter.GET("/subscription/epay/notify", controller.SubscriptionEpayNotify)

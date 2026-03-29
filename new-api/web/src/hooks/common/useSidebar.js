@@ -47,6 +47,7 @@ export const DEFAULT_ADMIN_CONFIG = {
   admin: {
     enabled: true,
     channel: true,
+    scenario_tutorial_manage: true,
     token_request_audit: true,
     models: true,
     deployment: true,

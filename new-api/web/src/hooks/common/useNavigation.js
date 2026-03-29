@@ -26,6 +26,7 @@ export const useNavigation = (t, docsLink, headerNavModules) => {
       home: true,
       console: true,
       blog: true,
+      tutorial: true,
       pricing: true,
       docs: true,
       about: true,
@@ -49,6 +50,11 @@ export const useNavigation = (t, docsLink, headerNavModules) => {
         text: t('博客'),
         itemKey: 'blog',
         to: '/blog',
+      },
+      {
+        text: t('场景教程'),
+        itemKey: 'tutorial',
+        to: '/tutorial',
       },
       {
         text: t('模型广场'),

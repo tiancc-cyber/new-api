@@ -47,6 +47,8 @@ import Subscription from './pages/Subscription';
 import BlogManage from './pages/BlogManage';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
+import ScenarioTutorial from './pages/ScenarioTutorial';
+import ScenarioTutorialDetail from './pages/ScenarioTutorialDetail';
 import TokenRequestAuditPage from './pages/TokenRequestAudit';
 import OAuth2Callback from './components/auth/OAuth2Callback';
 import PersonalSetting from './components/settings/PersonalSetting';
@@ -111,6 +113,8 @@ function App() {
         />
         <Route path='/blog' element={<Blog />} />
         <Route path='/blog/:md5' element={<BlogDetail />} />
+        <Route path='/tutorial' element={<ScenarioTutorial />} />
+        <Route path='/tutorial/:slug' element={<ScenarioTutorialDetail />} />
         <Route path='/forbidden' element={<Forbidden />} />
         <Route
           path='/console/models'
@@ -141,6 +145,18 @@ function App() {
           element={
             <AdminRoute>
               <BlogManage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/scenario-tutorial'
+          element={
+            <AdminRoute>
+              <Suspense fallback={<Loading></Loading>} key={location.pathname}>
+                {React.createElement(
+                  lazy(() => import('./pages/ScenarioTutorialManage/index.jsx'))
+                )}
+              </Suspense>
             </AdminRoute>
           }
         />

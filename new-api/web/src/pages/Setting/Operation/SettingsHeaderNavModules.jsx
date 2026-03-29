@@ -43,6 +43,7 @@ export default function SettingsHeaderNavModules(props) {
     home: true,
     console: true,
     blog: true,
+    tutorial: true,
     pricing: {
       enabled: true,
       requireAuth: false, // 默认不需要登录鉴权
@@ -84,6 +85,7 @@ export default function SettingsHeaderNavModules(props) {
       home: true,
       console: true,
       blog: true,
+      tutorial: true,
       pricing: {
         enabled: true,
         requireAuth: false,
@@ -151,6 +153,7 @@ export default function SettingsHeaderNavModules(props) {
           home: true,
           console: true,
           blog: true,
+          tutorial: true,
           pricing: {
             enabled: true,
             requireAuth: false,
@@ -179,6 +182,11 @@ export default function SettingsHeaderNavModules(props) {
       key: 'blog',
       title: t('博客'),
       description: t('博客文章列表'),
+    },
+    {
+      key: 'tutorial',
+      title: t('场景教程'),
+      description: t('场景教程和最佳实践指南'),
     },
     {
       key: 'pricing',

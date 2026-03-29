@@ -281,6 +281,7 @@ func migrateDB() error {
 		&UserSubscription{},
 		&SubscriptionPreConsumeRecord{},
 		&BlogManage{},
+		&ScenarioTutorial{},
 		&CustomOAuthProvider{},
 		&UserOAuthBinding{},
 	)
@@ -332,6 +333,7 @@ func migrateDBFast() error {
 		{&UserSubscription{}, "UserSubscription"},
 		{&SubscriptionPreConsumeRecord{}, "SubscriptionPreConsumeRecord"},
 		{&BlogManage{}, "BlogManage"},
+		{&ScenarioTutorial{}, "ScenarioTutorial"},
 		{&CustomOAuthProvider{}, "CustomOAuthProvider"},
 		{&UserOAuthBinding{}, "UserOAuthBinding"},
 	}

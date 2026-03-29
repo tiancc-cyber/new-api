@@ -68,6 +68,7 @@ export default function SettingsSidebarModulesAdmin(props) {
       user: true,
       subscription: true,
       blog_manage: true,
+      scenario_tutorial_manage: true,
       setting: true,
     },
   });
@@ -131,6 +132,7 @@ export default function SettingsSidebarModulesAdmin(props) {
         user: true,
         subscription: true,
         blog_manage: true,
+        scenario_tutorial_manage: true,
         setting: true,
       },
     };
@@ -202,6 +204,7 @@ export default function SettingsSidebarModulesAdmin(props) {
             user: true,
             subscription: true,
             blog_manage: true,
+            scenario_tutorial_manage: true,
             setting: true,
           },
         };
@@ -280,6 +283,11 @@ export default function SettingsSidebarModulesAdmin(props) {
           key: 'blog_manage',
           title: t('博客管理'),
           description: t('博客文章管理'),
+        },
+        {
+          key: 'scenario_tutorial_manage',
+          title: t('场景教程管理'),
+          description: t('场景教程内容管理'),
         },
         {
           key: 'redemption',

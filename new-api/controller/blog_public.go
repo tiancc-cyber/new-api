@@ -13,10 +13,12 @@ import (
 func PublicListBlogs(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
+	keyword := strings.TrimSpace(c.Query("keyword"))
 
 	items, total, err := service.PublicListBlogManages(service.PublicBlogManageListParams{
 		Page:     page,
 		PageSize: pageSize,
+		Keyword:  keyword,
 	})
 	if err != nil {
 		common.ApiError(c, err)

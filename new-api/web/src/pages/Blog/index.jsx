@@ -21,7 +21,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API, showError } from '../../helpers';
-import { Empty, Popover, Skeleton, Tag, Typography } from '@douyinfe/semi-ui';
+import { Button, Empty, Input, InputGroup, Popover, Skeleton, Tag, Typography } from '@douyinfe/semi-ui';
+import { IconSearch } from '@douyinfe/semi-icons';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -265,12 +266,25 @@ const Blog = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
+  const [keyword, setKeyword] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  // Clear search immediately when the input is cleared.
+  useEffect(() => {
+    if (keyword === '' && searchKeyword !== '') {
+      setSearchKeyword('');
+    }
+  }, [keyword, searchKeyword]);
 
   const load = async () => {
     setLoading(true);
     try {
       const res = await API.get('/api/blog_manage/public/blogs', {
-        params: { page: 1, page_size: 50 },
+        params: {
+          page: 1,
+          page_size: 50,
+          keyword: searchKeyword.trim() || undefined,
+        },
         skipErrorHandler: true,
       });
       if (res.data?.success) {
@@ -288,10 +302,15 @@ const Blog = () => {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchKeyword]);
 
-  const featured = posts?.[0];
-  const rest = useMemo(() => (posts || []).slice(1), [posts]);
+  const doSearch = () => {
+    setSearchKeyword(keyword);
+  };
+
+
+  const featuredFiltered = posts?.[0];
+  const restFiltered = useMemo(() => (posts || []).slice(1), [posts]);
 
   return (
     <div className='mt-[60px] px-3 md:px-6 max-w-6xl mx-auto'>
@@ -321,12 +340,108 @@ const Blog = () => {
           white-space: pre-wrap;
           word-break: break-word;
         }
+        .blog-search-sticky {
+          position: sticky;
+          top: 60px;
+          z-index: 20;
+          padding-top: 14px;
+          padding-bottom: 14px;
+          background: var(--semi-color-bg-0);
+          border-bottom: 1px solid var(--semi-color-border);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+        }
+
+        .blog-search-input .semi-input-wrapper {
+          border-radius: 12px;
+        }
+
+        .blog-search-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+        }
+
+        .blog-search-input {
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+
+        .blog-search-btn {
+          flex: 0 0 auto;
+          white-space: nowrap;
+        }
+
+        .blog-search-btn {
+          border-radius: 12px;
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
+        /* Purple search button (light/dark) */
+        .blog-search-btn.semi-button {
+          background: #7c3aed;
+          border-color: #7c3aed;
+        }
+
+        .blog-search-btn.semi-button:hover {
+          background: #6d28d9;
+          border-color: #6d28d9;
+        }
+
+        html.dark .blog-search-btn.semi-button,
+        body[theme-mode='dark'] .blog-search-btn.semi-button {
+          background: #a78bfa;
+          border-color: #a78bfa;
+          color: #1f1f1f;
+        }
+
+        html.dark .blog-search-btn.semi-button:hover,
+        body[theme-mode='dark'] .blog-search-btn.semi-button:hover {
+          background: #c4b5fd;
+          border-color: #c4b5fd;
+          color: #1f1f1f;
+        }
+
+        .blog-search-input .semi-input-prefix,
+        .blog-search-input .semi-input-prefix-text {
+          color: var(--semi-color-text-2);
+        }
+
+        @media (max-width: 767px) {
+          .blog-search-sticky {
+            padding-top: 12px;
+            padding-bottom: 12px;
+          }
+        }
       `}</style>
-      <div className='mb-5'>
-        <Title heading={2} style={{ margin: 0 }}>
-          {t('博客')}
-        </Title>
-        <Text type='tertiary'>{t('按时间倒序排列，展示已发布文章')}</Text>
+      <div className='blog-search-sticky'>
+        <div className='blog-search-row'>
+          <Input
+            className='blog-search-input'
+            value={keyword}
+            onChange={(v) => setKeyword(v)}
+            placeholder={t('搜索博客（标题/简介/标签）')}
+            showClear
+            onEnterPress={doSearch}
+            prefix={<IconSearch />}
+            style={{
+              height: 44,
+            }}
+          />
+          <Button
+            className='blog-search-btn'
+            theme='solid'
+            type='primary'
+            icon={<IconSearch />}
+            onClick={doSearch}
+            loading={loading}
+            style={{ height: 44 }}
+          >
+            {t('搜索')}
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -339,11 +454,11 @@ const Blog = () => {
         <Empty description={t('暂无文章')} style={{ padding: 40 }} />
       ) : (
         <>
-          <FeaturedCard post={featured} t={t} />
+          <FeaturedCard post={featuredFiltered} t={t} />
 
-          {rest.length > 0 && (
+          {restFiltered.length > 0 && (
             <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-5'>
-              {rest.map((p) => (
+              {restFiltered.map((p) => (
                 <GridCard key={p.md5} post={p} t={t} />
               ))}
             </div>

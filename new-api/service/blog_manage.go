@@ -42,6 +42,7 @@ type AdminBlogManageListParams struct {
 type PublicBlogManageListParams struct {
 	Page     int
 	PageSize int
+	Keyword  string
 }
 
 func AdminListBlogManages(params AdminBlogManageListParams) (items []dto.AdminBlogManageListResponse, total int64, err error) {
@@ -272,6 +273,7 @@ func AdminDeleteBlogManage(id uint) error {
 func PublicListBlogManages(params PublicBlogManageListParams) (items []dto.PublicBlogManageListItem, total int64, err error) {
 	page := params.Page
 	pageSize := params.PageSize
+	keyword := strings.TrimSpace(params.Keyword)
 	if page <= 0 {
 		page = 1
 	}
@@ -284,6 +286,12 @@ func PublicListBlogManages(params PublicBlogManageListParams) (items []dto.Publi
 
 	db := model.DB.Model(&model.BlogManage{}).
 		Where("status = ?", 1)
+
+	if keyword != "" {
+		// Cross-DB compatible fuzzy search.
+		like := "%" + keyword + "%"
+		db = db.Where("title LIKE ? OR intro LIKE ? OR tags LIKE ?", like, like, like)
+	}
 
 	if err = db.Count(&total).Error; err != nil {
 		return nil, 0, err

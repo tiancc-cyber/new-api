@@ -20,6 +20,7 @@ For commercial licensing, please contact support@quantumnous.com
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Form, Row, Col, Typography, Spin } from '@douyinfe/semi-ui';
 const { Text } = Typography;
+import { StatusContext } from '../../../context/Status';
 import {
   API,
   removeTrailingSlash,
@@ -31,6 +32,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function SettingsPaymentGateway(props) {
   const { t } = useTranslation();
+  const [, statusDispatch] = React.useContext(StatusContext);
   const [loading, setLoading] = useState(false);
   const [inputs, setInputs] = useState({
     PayAddress: '',
@@ -201,6 +203,19 @@ export default function SettingsPaymentGateway(props) {
         showSuccess(t('更新成功'));
         // 更新本地存储的原始值
         setOriginInputs({ ...inputs });
+
+        // 刷新 /api/status（其中包含 price），让首页等使用 StatusContext 的地方立即更新
+        try {
+          const statusRes = await API.get('/api/status', {
+            headers: { 'Cache-Control': 'no-store' },
+          });
+          if (statusRes.data?.success && statusRes.data?.data) {
+            statusDispatch({ type: 'set', payload: statusRes.data.data });
+          }
+        } catch (e) {
+          // ignore: 不阻塞保存流程
+        }
+
         props.refresh && props.refresh();
       }
     } catch (error) {

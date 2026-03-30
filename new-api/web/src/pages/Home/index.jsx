@@ -999,7 +999,17 @@ func main() {
                   <p className='home-hero-tip mt-4 max-w-2xl mx-auto text-sm md:text-[15px] leading-6'>
                     {t('本站充值比例为')}
                     <span className='home-hero-tip-highlight'>
-                      {t('2元兑换1美元')}
+                      {(() => {
+                        const price = Number(statusState?.status?.price);
+                        if (Number.isFinite(price) && price > 0) {
+                          // 充值价格（x元/美金） => “x元兑换1美元”
+                          // 使用 toFixed(2) 保留两位小数，避免出现长小数。
+                          return t('{{price}}元兑换1美元', {
+                            price: price.toFixed(2).replace(/\.00$/, ''),
+                          });
+                        }
+                        return t('2元兑换1美元');
+                      })()}
                     </span>
                     {t('，按需充值，虚拟商品不支持退款')}
                   </p>

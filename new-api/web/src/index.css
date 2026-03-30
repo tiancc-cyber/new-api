@@ -2131,6 +2131,38 @@ html.dark .home-hero-proof-card {
   color: var(--home-text-secondary);
 }
 
+/* Home hero secondary tip (recharge ratio / refund policy) */
+.home-hero-tip {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  /*background: rgba(99, 102, 241, 0.06);*/
+  color: color-mix(in srgb, var(--home-text-secondary) 92%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.home-hero-tip-highlight {
+  margin: 0 4px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 55%, #ec4899 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html.dark .home-hero-tip,
+[data-theme='dark'] .home-hero-tip {
+  border-color: rgba(99, 102, 241, 0.28);
+  background: rgba(99, 102, 241, 0.12);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+html.dark .home-hero-tip-highlight,
+[data-theme='dark'] .home-hero-tip-highlight {
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.25));
+}
+
 .home-glass-card,
 .home-stat-card,
 .home-highlight-panel,

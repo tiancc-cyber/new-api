@@ -840,25 +840,8 @@ func main() {
     });
   };
 
-  useEffect(() => {
-    const checkNoticeAndShow = async () => {
-      const lastCloseDate = localStorage.getItem('notice_close_date');
-      const today = new Date().toDateString();
-      if (lastCloseDate !== today) {
-        try {
-          const res = await API.get('/api/notice');
-          const { success, data } = res.data;
-          if (success && data && data.trim() !== '') {
-            setNoticeVisible(true);
-          }
-        } catch (error) {
-          console.error('获取公告失败:', error);
-        }
-      }
-    };
-
-    checkNoticeAndShow();
-  }, []);
+  // NOTE: Do not auto-popup system notice on Home page entry.
+  // Users can still open the NoticeModal from the header notice entry.
 
   useEffect(() => {
     displayHomePageContent().then();
@@ -887,8 +870,6 @@ func main() {
 
     return () => clearInterval(timer);
   }, [endpointOptions.length, reducedMotion]);
-
-
   useEffect(() => {
     scrollShowcaseTabIntoView(endpointTabsRef, activeEndpointIndex);
   }, [activeEndpointIndex]);
@@ -1013,6 +994,14 @@ func main() {
                     {t(
                       '将 OpenAI、Claude、Gemini、Azure、AWS Bedrock 等上游能力统一到一个稳定网关中，让接入、调度与运营都在同一套入口里完成。',
                     )}
+                  </p>
+
+                  <p className='home-hero-tip mt-4 max-w-2xl mx-auto text-sm md:text-[15px] leading-6'>
+                    {t('本站充值比例为')}
+                    <span className='home-hero-tip-highlight'>
+                      {t('2元兑换1美元')}
+                    </span>
+                    {t('，按需充值，虚拟商品不支持退款')}
                   </p>
 
                   <div className='mt-8 flex flex-wrap justify-center gap-3'>

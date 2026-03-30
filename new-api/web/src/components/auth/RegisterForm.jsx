@@ -783,7 +783,7 @@ const RegisterForm = () => {
         className='blur-ball blur-ball-teal'
         style={{ top: '50%', left: '-120px' }}
       />
-      <div className='w-full max-w-sm mt-[60px]'>
+      <div className='w-full max-w-sm mt-[88px] sm:mt-[104px]'>
         {showEmailRegister ||
         !hasOAuthRegisterOptions
           ? renderEmailRegisterForm()

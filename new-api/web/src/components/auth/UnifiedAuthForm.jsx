@@ -1310,7 +1310,7 @@ const UnifiedAuthForm = () => {
   };
 
   return (
-    <div className='unified-auth-page relative flex items-center justify-center overflow-hidden bg-gray-100 px-4 py-6 sm:px-6 lg:px-8'>
+    <div className='unified-auth-page relative flex items-center justify-center overflow-hidden bg-gray-100 px-4 pb-6 pt-20 sm:px-6 lg:px-8'>
       <div
         className='blur-ball blur-ball-indigo'
         style={{ top: '-80px', right: '-80px', transform: 'none' }}
@@ -1319,7 +1319,7 @@ const UnifiedAuthForm = () => {
         className='blur-ball blur-ball-teal'
         style={{ top: '50%', left: '-120px' }}
       />
-      <div className='mt-8 w-full max-w-[460px]'>
+      <div className='w-full max-w-[460px]'>
         <div className='mb-4 flex items-center justify-center gap-2'>
           <img src={logo} alt='Logo' className='h-10 rounded-full' />
           <Title heading={3} className='auth-page-brand-title'>

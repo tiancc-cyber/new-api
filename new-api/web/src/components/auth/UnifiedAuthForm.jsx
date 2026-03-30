@@ -153,7 +153,7 @@ const UnifiedAuthForm = () => {
   const consentGrantedRef = useRef(false);
 
   const logo = getLogo();
-  const systemName = getSystemName();
+  const systemName = "词元视界中转API";
   const affCode = searchParams.get('aff');
   const desiredMode = searchParams.get('mode') || '';
   const desiredMethod = searchParams.get('method') || '';
@@ -1325,6 +1325,11 @@ const UnifiedAuthForm = () => {
           <Title heading={3} className='auth-page-brand-title'>
             {systemName}
           </Title>
+        </div>
+        <div className='auth-page-subtitle-wrap'>
+          <Typography.Text className='auth-page-subtitle'>
+            {t('多种大模型一站式集成')}
+          </Typography.Text>
         </div>
         <Card className='unified-auth-card overflow-hidden border-0 !rounded-2xl'>
           <div className='unified-auth-card-shell'>

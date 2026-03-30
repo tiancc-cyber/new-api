@@ -1250,6 +1250,22 @@ html.dark .with-pastel-balls::before {
   color: #24143f !important;
 }
 
+.auth-page-subtitle-wrap {
+  display: flex;
+  justify-content: center;
+  margin: -6px auto 18px;
+  padding: 0 8px;
+}
+
+.auth-page-subtitle {
+  max-width: 360px;
+  text-align: center;
+  color: var(--semi-color-text-2) !important;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0.2px;
+}
+
 .unified-auth-card-shell {
   display: flex;
   flex-direction: column;
@@ -1757,6 +1773,10 @@ html.dark .unified-auth-page {
 
 html.dark .auth-page-brand-title {
   color: #f3ecff !important;
+}
+
+html.dark .auth-page-subtitle {
+  color: rgba(243, 236, 255, 0.78) !important;
 }
 
 html.dark .unified-auth-card {

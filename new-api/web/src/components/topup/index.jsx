@@ -622,19 +622,18 @@ const TopUp = () => {
   }, [statusState?.status]);
 
   const renderAmount = () => {
-    // 需求：实付 = 充值数量（1:1），并以人民币展示。
-    // 注意：这里只是 UI 展示口径，不影响后端实际计价/下单金额。
-    const paidRmb = Number(topUpCount || 0);
-    return `${paidRmb.toFixed(2)} ${t('元')}`;
+    // 实付金额以服务端计价为准（/api/user/amount 或 /api/user/stripe/amount），
+    // 由后台根据“充值价格（x元/美金）”、用户分组倍率、折扣等计算。
+    const paid = Number(amount || 0);
+    return `${paid.toFixed(2)} ${t('元')}`;
   };
 
   const renderExchangeSavings = () => {
     // 节省金额也换算成人民币。
-    // 新口径：充值金额:实付金额=1:1；旧口径：1:7。
-    // 以“当前实付(人民币, 按 1:1) = paidRmb”计，
-    // 旧口径需要支付 paidRmb*7，因此节省 = paidRmb*6。
+    // 新口径：以服务端实付金额为准；旧口径：按固定 1:7 估算。
+    // 以“当前实付(人民币) = paidRmb”计，旧口径需要支付 paidRmb*7，因此节省 = paidRmb*6。
     const oldRate = 7;
-    const paidRmb = Number(topUpCount || 0);
+    const paidRmb = Number(amount || 0);
     const savingsRmb = paidRmb * (oldRate - 1);
     return `${savingsRmb.toFixed(2)} ${t('元')}`;
   };

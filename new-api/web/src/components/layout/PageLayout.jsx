@@ -92,7 +92,7 @@ const PageLayout = () => {
       if (success) {
         statusDispatch({ type: 'set', payload: data });
         setStatusData(data);
-        document.title = 'OpenAiTools';
+        document.title = '词元视界';
         const linkElement = document.querySelector("link[rel~='icon']");
         if (linkElement) {
           linkElement.href = '/logo-icon.svg';

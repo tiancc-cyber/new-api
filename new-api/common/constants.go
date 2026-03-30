@@ -12,7 +12,7 @@ import (
 
 var StartTime = time.Now().Unix() // unit: second
 var Version = "v0.0.0"            // this hard coding will be replaced automatically when building, no need to manually change
-var SystemName = "OpenAiTools"
+var SystemName = "词元视界"
 var Footer = ""
 var Logo = "/logo-icon.svg"
 var TopUpLink = ""

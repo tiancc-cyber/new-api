@@ -19,7 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 
 export function setStatusData(data) {
   localStorage.setItem('status', JSON.stringify(data));
-  localStorage.setItem('system_name', 'OpenAiTools');
+  localStorage.setItem('system_name', '词元视界');
   localStorage.setItem('logo', '/logo-icon.svg');
   localStorage.setItem('footer_html', data.footer_html);
   localStorage.setItem('quota_per_unit', data.quota_per_unit);

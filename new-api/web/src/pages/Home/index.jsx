@@ -1002,7 +1002,7 @@ func main() {
                       isChinese ? 'lg:tracking-[-0.04em]' : ''
                     }`}
                   >
-                    {t('Open AI Tools')}
+                    {t('词元视界')}
                     <br />
                     <span className='home-gradient-text'>
                       {t('更强模型 更低价格 更易落地')}

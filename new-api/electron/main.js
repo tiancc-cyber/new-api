@@ -397,7 +397,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true
     },
-    title: 'OpenAiTools',
+    title: '词元视界',
     icon: path.join(__dirname, 'icon.png')
   });
 
@@ -436,7 +436,7 @@ function createTray() {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show OpenAiTools',
+      label: 'Show 词元视界',
       click: () => {
         if (mainWindow === null) {
           createWindow();

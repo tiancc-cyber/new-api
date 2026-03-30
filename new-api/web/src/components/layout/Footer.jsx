@@ -205,7 +205,7 @@ const FooterBar = () => {
               rel='noopener noreferrer'
               className='!text-semi-color-primary font-medium'
             >
-              Open AI Tools
+              词元视界
             </a>
           </div>
         </div>
@@ -234,7 +234,7 @@ const FooterBar = () => {
               rel='noopener noreferrer'
               className='!text-semi-color-primary font-medium'
             >
-              Open AI Tools
+              词元视界
             </a>
           </div>
         </div>

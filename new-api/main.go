@@ -49,7 +49,7 @@ func main() {
 		return
 	}
 
-	common.SysLog("OpenAiTools " + common.Version + " started")
+	common.SysLog("词元视界 " + common.Version + " started")
 	if os.Getenv("GIN_MODE") != "debug" {
 		gin.SetMode(gin.ReleaseMode)
 	}

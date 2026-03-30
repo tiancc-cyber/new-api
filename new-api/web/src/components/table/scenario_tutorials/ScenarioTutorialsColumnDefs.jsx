@@ -92,10 +92,16 @@ export const getScenarioTutorialsColumns = ({ t, openEdit, setRowStatus, removeR
   return [
     { title: t('ID'), dataIndex: 'id', width: 80 },
     {
-      title: t('标识'),
+      title: t('标识(MD5)'),
+      dataIndex: 'md5',
+      width: 260,
+      render: (text) => <Text ellipsis={{ showTooltip: true }}>{text}</Text>,
+    },
+    {
+      title: t('Slug'),
       dataIndex: 'slug',
       width: 190,
-      render: (text) => <Text ellipsis={{ showTooltip: true }}>{text}</Text>,
+      render: (text) => <Text ellipsis={{ showTooltip: true }}>{text || '-'}</Text>,
     },
     {
       title: t('标题'),

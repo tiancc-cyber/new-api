@@ -18,7 +18,19 @@ body {
   font-family:
     Lato, 'Helvetica Neue', Arial, Helvetica, 'Microsoft YaHei', sans-serif;
   color: var(--semi-color-text-0);
-  background-color: var(--semi-color-bg-0);
+  background-color: #ffffff;
+}
+
+html,
+body,
+#root {
+  background-color: #ffffff;
+}
+
+html.dark,
+html.dark body,
+html.dark #root {
+  background-color: #000000;
 }
 
 .app-layout {
@@ -1044,7 +1056,7 @@ html.dark .with-pastel-balls::before {
   position: relative;
   min-height: 64px;
   width: 100%;
-  padding: 0 18px;
+  padding: 0;
   border: 1px solid var(--home-header-border);
   border-radius: 0;
   background: var(--home-header-surface);

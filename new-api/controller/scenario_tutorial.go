@@ -147,3 +147,13 @@ func PublicGetScenarioTutorialBySlug(c *gin.Context) {
 	}
 	common.ApiSuccess(c, row)
 }
+
+func PublicGetScenarioTutorialByMD5(c *gin.Context) {
+	md5Str := c.Param("md5")
+	row, err := service.PublicGetScenarioTutorialByMD5(md5Str)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, row)
+}

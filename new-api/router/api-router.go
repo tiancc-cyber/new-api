@@ -201,6 +201,7 @@ func SetApiRouter(router *gin.Engine) {
 		scenarioTutorialPublicRoute := apiRouter.Group("/scenario_tutorial/public")
 		{
 			scenarioTutorialPublicRoute.GET("/tutorials", controller.PublicListScenarioTutorials)
+			scenarioTutorialPublicRoute.GET("/tutorials/md5/:md5", controller.PublicGetScenarioTutorialByMD5)
 			scenarioTutorialPublicRoute.GET("/tutorials/:slug", controller.PublicGetScenarioTutorialBySlug)
 		}
 

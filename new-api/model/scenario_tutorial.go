@@ -18,18 +18,21 @@ import (
 type ScenarioTutorial struct {
 	ID uint `gorm:"primaryKey" json:"id"`
 
+	MD5 string `gorm:"type:char(32);uniqueIndex" json:"md5"`
+
 	Slug string `gorm:"type:varchar(128);uniqueIndex" json:"slug"`
 
 	Title string `gorm:"type:varchar(512);index" json:"title"`
 	Intro string `gorm:"type:text" json:"intro"`
 	Tags  string `gorm:"type:text" json:"tags"`
 
-	Content     string `gorm:"type:text" json:"content"`
+	// Use LONGTEXT on MySQL to safely store large HTML tutorials.
+	// MySQL TEXT is limited to 64KB which is easy to exceed with rich HTML/CSS.
+	Content     string `gorm:"type:longtext" json:"content"`
 	ContentType string `gorm:"type:varchar(16);index" json:"content_type"` // markdown/text
 
 	Status int  `gorm:"index" json:"status"` // 0=draft, 1=published
 	Pinned bool `gorm:"index" json:"pinned"`
-	Order  int  `gorm:"index" json:"order"`
 
 	PublishedAt int64 `gorm:"index" json:"published_at"`
 

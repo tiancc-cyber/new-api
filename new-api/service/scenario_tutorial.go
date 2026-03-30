@@ -1,6 +1,7 @@
 package service
 
 import (
+	"crypto/md5"
 	"errors"
 	"fmt"
 	"strings"
@@ -8,7 +9,14 @@ import (
 
 	"github.com/QuantumNous/new-api/dto"
 	"github.com/QuantumNous/new-api/model"
+
+	"gorm.io/gorm"
 )
+
+func calcScenarioTutorialMD5(slug, title, content string) string {
+	sum := md5.Sum([]byte(strings.TrimSpace(slug) + "\n" + strings.TrimSpace(title) + "\n" + content))
+	return fmt.Sprintf("%x", sum)
+}
 
 func normalizeTutorialContentType(ct string) string {
 	ct = strings.ToLower(strings.TrimSpace(ct))
@@ -61,26 +69,19 @@ func AdminListScenarioTutorials(params AdminScenarioTutorialListParams) (items [
 	}
 
 	var rows []model.ScenarioTutorial
-	err = db.Order("pinned desc").Order("`order` desc").Order("published_at desc").Order("id desc").
+	err = db.Order("pinned desc").Order("published_at desc").Order("id desc").
 		Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&rows).Error
 	if err != nil {
-		// "order" is a reserved word in some DBs; if quoting fails, fallback to id ordering.
-		err = model.DB.Model(&model.ScenarioTutorial{}).
-			Order("pinned desc").Order("published_at desc").Order("id desc").
-			Limit(pageSize).
-			Offset((page - 1) * pageSize).
-			Find(&rows).Error
-		if err != nil {
-			return nil, 0, err
-		}
+		return nil, 0, err
 	}
 
 	items = make([]dto.AdminScenarioTutorialListResponse, 0, len(rows))
 	for _, r := range rows {
 		items = append(items, dto.AdminScenarioTutorialListResponse{
 			ID:          r.ID,
+			MD5:         r.MD5,
 			Slug:        r.Slug,
 			Title:       r.Title,
 			Intro:       r.Intro,
@@ -88,7 +89,6 @@ func AdminListScenarioTutorials(params AdminScenarioTutorialListParams) (items [
 			ContentType: r.ContentType,
 			Status:      r.Status,
 			Pinned:      r.Pinned,
-			Order:       r.Order,
 			PublishedAt: r.PublishedAt,
 			CreatedAt:   r.CreatedAt.Unix(),
 			UpdatedAt:   r.UpdatedAt.Unix(),
@@ -106,8 +106,12 @@ func AdminGetScenarioTutorial(id uint) (*model.ScenarioTutorial, error) {
 }
 
 func AdminCreateScenarioTutorial(req dto.AdminScenarioTutorialUpsertRequest) (*model.ScenarioTutorial, error) {
-	if req.Slug == nil || strings.TrimSpace(*req.Slug) == "" {
-		return nil, errors.New("slug is required")
+	slug := ""
+	if req.Slug != nil {
+		slug = strings.TrimSpace(*req.Slug)
+	}
+	if slug == "" {
+		slug = fmt.Sprintf("tutorial-%d", time.Now().UnixNano())
 	}
 	if req.Title == nil || strings.TrimSpace(*req.Title) == "" {
 		return nil, errors.New("title is required")
@@ -137,7 +141,8 @@ func AdminCreateScenarioTutorial(req dto.AdminScenarioTutorialUpsertRequest) (*m
 	}
 
 	row := &model.ScenarioTutorial{
-		Slug:        strings.TrimSpace(*req.Slug),
+		MD5:         calcScenarioTutorialMD5(slug, strings.TrimSpace(*req.Title), *req.Content),
+		Slug:        slug,
 		Title:       strings.TrimSpace(*req.Title),
 		Intro:       ptrOrEmpty(req.Intro),
 		Tags:        ptrOrEmpty(req.Tags),
@@ -145,12 +150,18 @@ func AdminCreateScenarioTutorial(req dto.AdminScenarioTutorialUpsertRequest) (*m
 		ContentType: contentType,
 		Status:      status,
 		Pinned:      ptrOrFalse(req.Pinned),
-		Order:       ptrOrZero(req.Order),
 		PublishedAt: publishedAt,
 	}
-
-	if err := model.DB.Create(row).Error; err != nil {
-		return nil, err
+	// ensure MD5 uniqueness even under rare collision
+	for i := 0; i < 3; i++ {
+		if err := model.DB.Create(row).Error; err != nil {
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
+				row.MD5 = calcScenarioTutorialMD5(slug+fmt.Sprintf("#%d", i+1), row.Title, row.Content)
+				continue
+			}
+			return nil, err
+		}
+		break
 	}
 	return row, nil
 }
@@ -186,9 +197,6 @@ func AdminUpdateScenarioTutorial(id uint, req dto.AdminScenarioTutorialUpsertReq
 	}
 	if req.Pinned != nil {
 		updates["pinned"] = *req.Pinned
-	}
-	if req.Order != nil {
-		updates["order"] = *req.Order
 	}
 	if req.Status != nil {
 		updates["status"] = *req.Status
@@ -275,25 +283,18 @@ func PublicListScenarioTutorials(params PublicScenarioTutorialListParams) (items
 	}
 
 	var rows []model.ScenarioTutorial
-	err = db.Order("pinned desc").Order("`order` desc").Order("published_at desc").Order("id desc").
+	err = db.Order("pinned desc").Order("published_at desc").Order("id desc").
 		Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&rows).Error
 	if err != nil {
-		// fallback without order field
-		err = model.DB.Model(&model.ScenarioTutorial{}).Where("status = ?", 1).
-			Order("pinned desc").Order("published_at desc").Order("id desc").
-			Limit(pageSize).
-			Offset((page - 1) * pageSize).
-			Find(&rows).Error
-		if err != nil {
-			return nil, 0, err
-		}
+		return nil, 0, err
 	}
 
 	items = make([]dto.PublicScenarioTutorialListItem, 0, len(rows))
 	for _, r := range rows {
 		items = append(items, dto.PublicScenarioTutorialListItem{
+			MD5:         r.MD5,
 			Slug:        r.Slug,
 			Title:       r.Title,
 			Intro:       r.Intro,
@@ -305,16 +306,25 @@ func PublicListScenarioTutorials(params PublicScenarioTutorialListParams) (items
 	return items, total, nil
 }
 
-func PublicGetScenarioTutorialBySlug(slug string) (*dto.PublicScenarioTutorialDetail, error) {
-	slug = strings.TrimSpace(slug)
-	if slug == "" {
-		return nil, errors.New("invalid slug")
+func PublicGetScenarioTutorialByMD5(md5Str string) (*dto.PublicScenarioTutorialDetail, error) {
+	md5Str = strings.TrimSpace(md5Str)
+	if md5Str == "" {
+		return nil, errors.New("invalid md5")
 	}
 	var row model.ScenarioTutorial
-	if err := model.DB.Where("slug = ?", slug).Where("status = ?", 1).First(&row).Error; err != nil {
-		return nil, err
+	// Backward compatible: if not found by md5, try slug.
+	err := model.DB.Where("md5 = ?", md5Str).Where("status = ?", 1).First(&row).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			if err2 := model.DB.Where("slug = ?", md5Str).Where("status = ?", 1).First(&row).Error; err2 != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
 	}
 	return &dto.PublicScenarioTutorialDetail{
+		MD5:         row.MD5,
 		Slug:        row.Slug,
 		Title:       row.Title,
 		Intro:       row.Intro,
@@ -325,9 +335,23 @@ func PublicGetScenarioTutorialBySlug(slug string) (*dto.PublicScenarioTutorialDe
 	}, nil
 }
 
-func ptrOrZero[T ~int](p *T) int {
-	if p == nil {
-		return 0
+func PublicGetScenarioTutorialBySlug(slug string) (*dto.PublicScenarioTutorialDetail, error) {
+	slug = strings.TrimSpace(slug)
+	if slug == "" {
+		return nil, errors.New("invalid slug")
 	}
-	return int(*p)
+	var row model.ScenarioTutorial
+	if err := model.DB.Where("slug = ? AND status = ?", slug, 1).First(&row).Error; err != nil {
+		return nil, err
+	}
+	return &dto.PublicScenarioTutorialDetail{
+		MD5:         row.MD5,
+		Slug:        row.Slug,
+		Title:       row.Title,
+		Intro:       row.Intro,
+		Tags:        row.Tags,
+		Content:     row.Content,
+		ContentType: row.ContentType,
+		PublishedAt: row.PublishedAt,
+	}, nil
 }

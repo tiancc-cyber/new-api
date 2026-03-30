@@ -16,7 +16,6 @@ type AdminScenarioTutorialUpsertRequest struct {
 
 	Status      *int   `json:"status,omitempty"` // 0=draft, 1=published
 	Pinned      *bool  `json:"pinned,omitempty"`
-	Order       *int   `json:"order,omitempty"`
 	PublishedAt *int64 `json:"published_at,omitempty"`
 }
 
@@ -27,6 +26,7 @@ type AdminScenarioTutorialStatusRequest struct {
 
 type AdminScenarioTutorialListResponse struct {
 	ID          uint   `json:"id"`
+	MD5         string `json:"md5"`
 	Slug        string `json:"slug"`
 	Title       string `json:"title"`
 	Intro       string `json:"intro"`
@@ -34,7 +34,6 @@ type AdminScenarioTutorialListResponse struct {
 	ContentType string `json:"content_type"`
 	Status      int    `json:"status"`
 	Pinned      bool   `json:"pinned"`
-	Order       int    `json:"order"`
 	PublishedAt int64  `json:"published_at"`
 
 	CreatedAt int64 `json:"created_at"`
@@ -44,6 +43,7 @@ type AdminScenarioTutorialListResponse struct {
 // ---- Public tutorial DTOs ----
 
 type PublicScenarioTutorialListItem struct {
+	MD5         string `json:"md5"`
 	Slug        string `json:"slug"`
 	Title       string `json:"title"`
 	Intro       string `json:"intro"`
@@ -53,6 +53,7 @@ type PublicScenarioTutorialListItem struct {
 }
 
 type PublicScenarioTutorialDetail struct {
+	MD5         string `json:"md5"`
 	Slug        string `json:"slug"`
 	Title       string `json:"title"`
 	Intro       string `json:"intro"`

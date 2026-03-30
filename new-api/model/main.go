@@ -254,6 +254,10 @@ func migrateDB() error {
 	if err := migrateTokenModelLimitsToText(); err != nil {
 		return err
 	}
+	// Migrate scenario tutorial content column to large text for existing tables
+	if err := migrateScenarioTutorialContentToText(); err != nil {
+		return err
+	}
 
 	err := DB.AutoMigrate(
 		&Channel{},
@@ -289,6 +293,9 @@ func migrateDB() error {
 		return err
 	}
 	if common.UsingSQLite {
+		if err := ensureScenarioTutorialTableSQLite(); err != nil {
+			return err
+		}
 		if err := ensureSubscriptionPlanTableSQLite(); err != nil {
 			return err
 		}
@@ -361,6 +368,9 @@ func migrateDBFast() error {
 		}
 	}
 	if common.UsingSQLite {
+		if err := ensureScenarioTutorialTableSQLite(); err != nil {
+			return err
+		}
 		if err := ensureSubscriptionPlanTableSQLite(); err != nil {
 			return err
 		}
@@ -502,6 +512,76 @@ func migrateTokenModelLimitsToText() error {
 	}
 
 	if alterSQL != "" {
+		if err := DB.Exec(alterSQL).Error; err != nil {
+			return fmt.Errorf("failed to migrate %s.%s to text: %w", tableName, columnName, err)
+		}
+		common.SysLog(fmt.Sprintf("Successfully migrated %s.%s to text", tableName, columnName))
+	}
+	return nil
+}
+
+// migrateScenarioTutorialContentToText ensures scenario_tutorials.content uses a large text type.
+//
+// Why:
+// Some deployments may have created scenario_tutorials.content as VARCHAR with limited size,
+// causing MySQL errors like: "Data too long for column 'content' at row 1".
+//
+// Cross-DB:
+// - SQLite: uses type affinity; ensureScenarioTutorialTableSQLite already defines TEXT.
+// - PostgreSQL: TEXT is large; alter only if not already.
+// - MySQL: upgrade to LONGTEXT to be safe for large HTML tutorials.
+func migrateScenarioTutorialContentToText() error {
+	if common.UsingSQLite {
+		return nil
+	}
+
+	tableName := "scenario_tutorials"
+	columnName := "content"
+
+	if !DB.Migrator().HasTable(tableName) {
+		return nil
+	}
+	if !DB.Migrator().HasColumn(&ScenarioTutorial{}, columnName) {
+		return nil
+	}
+
+	common.SysLog("migrateScenarioTutorialContentToText: checking scenario_tutorials.content")
+
+	var alterSQL string
+	if common.UsingPostgreSQL {
+		var dataType string
+		if err := DB.Raw(`SELECT data_type FROM information_schema.columns
+			WHERE table_schema = current_schema() AND table_name = ? AND column_name = ?`,
+			tableName, columnName).Scan(&dataType).Error; err != nil {
+			common.SysLog(fmt.Sprintf("Warning: failed to query metadata for %s.%s: %v", tableName, columnName, err))
+		} else if strings.ToLower(dataType) == "text" {
+			return nil
+		}
+		alterSQL = fmt.Sprintf(`ALTER TABLE %s ALTER COLUMN %s TYPE text`, tableName, columnName)
+	} else if common.UsingMySQL {
+		// MySQL: prefer LONGTEXT to avoid any size issues for large tutorials.
+		var dataType string
+		if err := DB.Raw(`SELECT DATA_TYPE FROM information_schema.columns
+			WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?`,
+			tableName, columnName).Scan(&dataType).Error; err != nil {
+			common.SysLog(fmt.Sprintf("Warning: failed to query metadata for %s.%s: %v", tableName, columnName, err))
+		} else {
+			ct := strings.ToLower(dataType)
+			common.SysLog(fmt.Sprintf("migrateScenarioTutorialContentToText: current MySQL %s.%s DATA_TYPE=%s", tableName, columnName, ct))
+			// information_schema.DATA_TYPE for text types returns: tinytext/text/mediumtext/longtext
+			// Always upgrade to LONGTEXT unless it's already LONGTEXT.
+			if ct == "longtext" {
+				common.SysLog("migrateScenarioTutorialContentToText: already longtext, skip")
+				return nil
+			}
+		}
+		alterSQL = fmt.Sprintf("ALTER TABLE `%s` MODIFY COLUMN `%s` longtext NOT NULL", tableName, columnName)
+	} else {
+		return nil
+	}
+
+	if alterSQL != "" {
+		common.SysLog("migrateScenarioTutorialContentToText: executing: " + alterSQL)
 		if err := DB.Exec(alterSQL).Error; err != nil {
 			return fmt.Errorf("failed to migrate %s.%s to text: %w", tableName, columnName, err)
 		}
@@ -708,5 +788,91 @@ func PingDB() error {
 
 	lastPingTime = time.Now()
 	common.SysLog("Database pinged successfully")
+	return nil
+}
+
+func ensureScenarioTutorialTableSQLite() error {
+	if !common.UsingSQLite {
+		return nil
+	}
+	// Ensure table exists and required columns are present.
+	tableName := "scenario_tutorials"
+	if !DB.Migrator().HasTable(tableName) {
+		// Use Unix timestamps (bigint) for created_at/updated_at to align with other SQLite manual tables.
+		createSQL := `CREATE TABLE ` + "`" + tableName + "`" + ` (
+` + "`id`" + ` integer,
+` + "`md5`" + ` char(32) NOT NULL,
+` + "`slug`" + ` varchar(128) NOT NULL,
+` + "`title`" + ` varchar(512) NOT NULL,
+` + "`intro`" + ` text,
+` + "`tags`" + ` text,
+` + "`content`" + ` text,
+` + "`content_type`" + ` varchar(16) DEFAULT 'markdown',
+` + "`status`" + ` integer DEFAULT 0,
+` + "`pinned`" + ` numeric DEFAULT 0,
+` + "`published_at`" + ` bigint DEFAULT 0,
+` + "`created_at`" + ` bigint,
+` + "`updated_at`" + ` bigint,
+` + "`deleted_at`" + ` datetime,
+PRIMARY KEY (` + "`id`" + `)
+)`
+		if err := DB.Exec(createSQL).Error; err != nil {
+			return err
+		}
+		// Indexes compatible with SQLite.
+		_ = DB.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_scenario_tutorials_md5 ON `" + tableName + "` (`md5`)").Error
+		_ = DB.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_scenario_tutorials_slug ON `" + tableName + "` (`slug`)").Error
+		_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_title ON `" + tableName + "` (`title`)").Error
+		_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_content_type ON `" + tableName + "` (`content_type`)").Error
+		_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_status ON `" + tableName + "` (`status`)").Error
+		_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_pinned ON `" + tableName + "` (`pinned`)").Error
+		_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_published_at ON `" + tableName + "` (`published_at`)").Error
+		_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_deleted_at ON `" + tableName + "` (`deleted_at`)").Error
+		return nil
+	}
+
+	var cols []struct {
+		Name string `gorm:"column:name"`
+	}
+	if err := DB.Raw("PRAGMA table_info(`" + tableName + "`)").Scan(&cols).Error; err != nil {
+		return err
+	}
+	existing := make(map[string]struct{}, len(cols))
+	for _, c := range cols {
+		existing[c.Name] = struct{}{}
+	}
+
+	required := []sqliteColumnDef{
+		{Name: "md5", DDL: "`md5` char(32) NOT NULL"},
+		{Name: "slug", DDL: "`slug` varchar(128) NOT NULL"},
+		{Name: "title", DDL: "`title` varchar(512) NOT NULL"},
+		{Name: "intro", DDL: "`intro` text"},
+		{Name: "tags", DDL: "`tags` text"},
+		{Name: "content", DDL: "`content` text"},
+		{Name: "content_type", DDL: "`content_type` varchar(16) DEFAULT 'markdown'"},
+		{Name: "status", DDL: "`status` integer DEFAULT 0"},
+		{Name: "pinned", DDL: "`pinned` numeric DEFAULT 0"},
+		{Name: "published_at", DDL: "`published_at` bigint DEFAULT 0"},
+		{Name: "created_at", DDL: "`created_at` bigint"},
+		{Name: "updated_at", DDL: "`updated_at` bigint"},
+		{Name: "deleted_at", DDL: "`deleted_at` datetime"},
+	}
+	for _, col := range required {
+		if _, ok := existing[col.Name]; ok {
+			continue
+		}
+		if err := DB.Exec("ALTER TABLE `" + tableName + "` ADD COLUMN " + col.DDL).Error; err != nil {
+			return err
+		}
+	}
+	// Best-effort indexes
+	_ = DB.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_scenario_tutorials_md5 ON `" + tableName + "` (`md5`)").Error
+	_ = DB.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_scenario_tutorials_slug ON `" + tableName + "` (`slug`)").Error
+	_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_title ON `" + tableName + "` (`title`)").Error
+	_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_content_type ON `" + tableName + "` (`content_type`)").Error
+	_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_status ON `" + tableName + "` (`status`)").Error
+	_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_pinned ON `" + tableName + "` (`pinned`)").Error
+	_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_published_at ON `" + tableName + "` (`published_at`)").Error
+	_ = DB.Exec("CREATE INDEX IF NOT EXISTS idx_scenario_tutorials_deleted_at ON `" + tableName + "` (`deleted_at`)").Error
 	return nil
 }

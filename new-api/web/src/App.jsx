@@ -114,7 +114,7 @@ function App() {
         <Route path='/blog' element={<Blog />} />
         <Route path='/blog/:md5' element={<BlogDetail />} />
         <Route path='/tutorial' element={<ScenarioTutorial />} />
-        <Route path='/tutorial/:slug' element={<ScenarioTutorialDetail />} />
+        <Route path='/tutorial/:md5' element={<ScenarioTutorialDetail />} />
         <Route path='/forbidden' element={<Forbidden />} />
         <Route
           path='/console/models'

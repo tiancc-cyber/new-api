@@ -26,7 +26,9 @@ import MarkdownRenderer from '../../components/common/markdown/MarkdownRenderer'
 import GithubSlugger from 'github-slugger';
 import './blogDetail.css';
 
-const { Title, Text } = Typography;
+import { isHtmlContent, sanitizeHtmlToSafePayload } from '../../helpers/safeHtml';
+
+const { Text } = Typography;
 
 function fmtDate(ts) {
   if (!ts) return '-';
@@ -78,24 +80,6 @@ function extractTocFromMarkdown(content) {
 }
 
 // Same idea as 通用设置「公告」: support Markdown & HTML.
-function isHtmlContent(content) {
-  if (!content || typeof content !== 'string') return false;
-  const htmlTagRegex = /<\/?[a-z][\s\S]*>/i;
-  return htmlTagRegex.test(content);
-}
-
-function sanitizeHtml(html) {
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-
-  const styles = Array.from(tempDiv.querySelectorAll('style'))
-    .map((style) => style.innerHTML)
-    .join('\n');
-
-  const bodyContent = tempDiv.querySelector('body');
-  const content = bodyContent ? bodyContent.innerHTML : html;
-  return { content, styles };
-}
 
 function extractTocFromHtml(html) {
   if (!html) return { toc: [], html: html || '' };
@@ -156,15 +140,31 @@ const BlogDetail = () => {
     return isHtmlContent(post?.content);
   }, [ct, post?.content]);
 
-  const htmlPayload = useMemo(() => {
-    if (!treatAsHtml) return { content: '', styles: '' };
-    return sanitizeHtml(post?.content || '');
+  const [safeHtmlPayload, setSafeHtmlPayload] = useState({
+    content: '',
+    styles: '',
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      if (!treatAsHtml) {
+        setSafeHtmlPayload({ content: '', styles: '' });
+        return;
+      }
+      const payload = await sanitizeHtmlToSafePayload(post?.content || '');
+      if (!cancelled) setSafeHtmlPayload(payload);
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
   }, [treatAsHtml, post?.content]);
 
   const { toc: tocFromHtml, html: htmlWithHeadingIds } = useMemo(() => {
     if (!treatAsHtml) return { toc: [], html: '' };
-    return extractTocFromHtml(htmlPayload.content);
-  }, [treatAsHtml, htmlPayload.content]);
+    return extractTocFromHtml(safeHtmlPayload.content);
+  }, [treatAsHtml, safeHtmlPayload.content]);
 
   const toc = useMemo(() => {
     if (!post?.content) return [];
@@ -176,7 +176,7 @@ const BlogDetail = () => {
     if (!treatAsHtml) return;
     const styleId = 'blog-detail-html-styles';
 
-    if (htmlPayload.styles) {
+    if (safeHtmlPayload.styles) {
       let styleEl = document.getElementById(styleId);
       if (!styleEl) {
         styleEl = document.createElement('style');
@@ -184,7 +184,7 @@ const BlogDetail = () => {
         styleEl.type = 'text/css';
         document.head.appendChild(styleEl);
       }
-      styleEl.innerHTML = htmlPayload.styles;
+      styleEl.innerHTML = safeHtmlPayload.styles;
     } else {
       const el = document.getElementById(styleId);
       if (el) el.remove();
@@ -194,7 +194,7 @@ const BlogDetail = () => {
       const el = document.getElementById(styleId);
       if (el) el.remove();
     };
-  }, [treatAsHtml, htmlPayload.styles]);
+  }, [treatAsHtml, safeHtmlPayload.styles]);
 
   const scrollToHeading = (id) => {
     if (!id) return;

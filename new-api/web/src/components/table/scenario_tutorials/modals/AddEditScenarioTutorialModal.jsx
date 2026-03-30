@@ -46,6 +46,7 @@ const AddEditScenarioTutorialModal = ({
 
     if (isEdit) {
       formApi.setValues({
+        md5: editingRow?.md5 || '',
         slug: editingRow?.slug || '',
         title: editingRow?.title || '',
         intro: editingRow?.intro || '',
@@ -54,7 +55,6 @@ const AddEditScenarioTutorialModal = ({
         content_type: editingRow?.content_type || 'markdown',
         status: editingRow?.status ?? 0,
         pinned: !!editingRow?.pinned,
-        order: editingRow?.order ?? 0,
         published_time: initialPublishTime,
       });
     } else {
@@ -63,7 +63,6 @@ const AddEditScenarioTutorialModal = ({
         content_type: 'markdown',
         status: 0,
         pinned: false,
-        order: 0,
         published_time: null,
       });
     }
@@ -82,11 +81,13 @@ const AddEditScenarioTutorialModal = ({
       content_type: values.content_type,
       status: Number(values.status),
       pinned: !!values.pinned,
-      order: Number(values.order || 0),
-      published_at: values.published_time
-        ? Math.floor(new Date(values.published_time).getTime() / 1000)
-        : 0,
     };
+
+    if (values.published_time) {
+      payload.published_at = Math.floor(
+        new Date(values.published_time).getTime() / 1000
+      );
+    }
 
     setSubmitting(true);
     try {
@@ -114,14 +115,6 @@ const AddEditScenarioTutorialModal = ({
     >
       <Form getFormApi={setFormApi} labelPosition='top'>
         <Form.Input
-          field='slug'
-          label={t('标识')}
-          placeholder={t('例如: quickstart')}
-          rules={[{ required: true, message: t('标识不能为空') }]}
-          disabled={isEdit}
-          extraText={t('标识用于URL路径，创建后不可修改')}
-        />
-        <Form.Input
           field='title'
           label={t('标题')}
           placeholder={t('请输入标题')}
@@ -147,14 +140,6 @@ const AddEditScenarioTutorialModal = ({
           ]}
         />
         <Form.Switch field='pinned' label={t('置顶')} />
-        <Form.InputNumber
-          field='order'
-          label={t('排序')}
-          min={0}
-          max={999999}
-          extraText={t('数值越大越靠前')}
-          style={{ width: '100%' }}
-        />
         <Form.DatePicker
           field='published_time'
           label={t('发布时间(年月日 时分秒)')}

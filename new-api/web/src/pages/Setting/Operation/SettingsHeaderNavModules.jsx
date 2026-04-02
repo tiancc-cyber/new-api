@@ -44,6 +44,7 @@ export default function SettingsHeaderNavModules(props) {
     console: true,
     blog: true,
     tutorial: true,
+    plans: true,
     pricing: {
       enabled: true,
       requireAuth: false, // 默认不需要登录鉴权
@@ -86,6 +87,7 @@ export default function SettingsHeaderNavModules(props) {
       console: true,
       blog: true,
       tutorial: true,
+      plans: true,
       pricing: {
         enabled: true,
         requireAuth: false,
@@ -146,6 +148,11 @@ export default function SettingsHeaderNavModules(props) {
           };
         }
 
+        // 兼容旧配置：若未配置“价格”模块，默认开启
+        if (typeof modules.plans !== 'boolean') {
+          modules.plans = true;
+        }
+
         setHeaderNavModules(modules);
       } catch (error) {
         // 使用默认配置
@@ -154,6 +161,7 @@ export default function SettingsHeaderNavModules(props) {
           console: true,
           blog: true,
           tutorial: true,
+          plans: true,
           pricing: {
             enabled: true,
             requireAuth: false,
@@ -187,6 +195,11 @@ export default function SettingsHeaderNavModules(props) {
       key: 'tutorial',
       title: t('场景教程'),
       description: t('场景教程和最佳实践指南'),
+    },
+    {
+      key: 'plans',
+      title: t('价格'),
+      description: t('按量付费与套餐价格方案'),
     },
     {
       key: 'pricing',

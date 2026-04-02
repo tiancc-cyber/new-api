@@ -39,6 +39,7 @@ import Chat from './pages/Chat';
 import Chat2Link from './pages/Chat2Link';
 import Midjourney from './pages/Midjourney';
 import Pricing from './pages/Pricing';
+import Plans from './pages/Plans';
 import Task from './pages/Task';
 import ModelPage from './pages/Model';
 import ModelDeploymentPage from './pages/ModelDeployment';
@@ -115,6 +116,7 @@ function App() {
         <Route path='/blog/:md5' element={<BlogDetail />} />
         <Route path='/tutorial' element={<ScenarioTutorial />} />
         <Route path='/tutorial/:md5' element={<ScenarioTutorialDetail />} />
+        <Route path='/plans' element={<Plans />} />
         <Route path='/forbidden' element={<Forbidden />} />
         <Route
           path='/console/models'

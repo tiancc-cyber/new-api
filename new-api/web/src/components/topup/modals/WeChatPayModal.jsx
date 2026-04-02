@@ -20,7 +20,7 @@ For commercial licensing, please contact support@quantumnous.com
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Modal, Button, Typography, Toast, Spin } from '@douyinfe/semi-ui';
 import { IconRefresh } from '@douyinfe/semi-icons';
-import { API, copy } from '../../../helpers';
+import { API } from '../../../helpers';
 import QRCode from 'qrcode';
 
 import { UserContext } from '../../../context/User';
@@ -44,9 +44,32 @@ export default function WeChatPayModal({
 	const [cancelLoading, setCancelLoading] = useState(false);
 	const [refreshLoading, setRefreshLoading] = useState(false);
 	const [qrLoading, setQrLoading] = useState(false);
+	const [closingLoading, setClosingLoading] = useState(false);
 	const [qrSvgDataUrl, setQrSvgDataUrl] = useState('');
 	const timerRef = useRef(null);
 	const qrCanvasRef = useRef(null);
+	const mountedRef = useRef(false);
+	const visibleRef = useRef(false);
+	const opSeqRef = useRef(0);
+	const confirmOpenRef = useRef(false);
+
+	useEffect(() => {
+		mountedRef.current = true;
+		return () => {
+			mountedRef.current = false;
+		};
+	}, []);
+
+	useEffect(() => {
+		visibleRef.current = !!visible;
+		// When modal becomes invisible, clear transient flags to avoid stale blocking state.
+		if (!visible) {
+			confirmOpenRef.current = false;
+			if (mountedRef.current) {
+				setClosingLoading(false);
+			}
+		}
+	}, [visible]);
 
 	useEffect(() => {
 		setQrSvgDataUrl('');
@@ -160,6 +183,7 @@ export default function WeChatPayModal({
 
 	const handleQueryPaid = async () => {
 		if (!tradeNo) return;
+		const mySeq = ++opSeqRef.current;
 		setQueryLoading(true);
 		try {
 			const res = await API.post('/api/user/wechatpay/query', {
@@ -193,7 +217,10 @@ export default function WeChatPayModal({
 		} catch (e) {
 			Toast.error({ content: t('查询失败') });
 		} finally {
-			setQueryLoading(false);
+			// Prevent setState after unmount / or when a newer operation already started.
+			if (mountedRef.current && opSeqRef.current === mySeq && visibleRef.current) {
+				setQueryLoading(false);
+			}
 		}
 	};
 
@@ -202,6 +229,7 @@ export default function WeChatPayModal({
 			onCancel?.();
 			return;
 		}
+		const mySeq = ++opSeqRef.current;
 		setCancelLoading(true);
 		try {
 			const res = await API.post('/api/user/wechatpay/cancel', {
@@ -217,7 +245,89 @@ export default function WeChatPayModal({
 		} catch (e) {
 			Toast.error({ content: t('取消失败') });
 		} finally {
-			setCancelLoading(false);
+			if (mountedRef.current && opSeqRef.current === mySeq && visibleRef.current) {
+				setCancelLoading(false);
+			}
+		}
+	};
+
+	const refreshSelfBalanceBestEffort = async () => {
+		try {
+			const selfRes = await API.get('/api/user/self');
+			if (selfRes.data?.success) {
+				userDispatch?.({ type: 'login', payload: selfRes.data.data });
+			}
+		} catch (e) {
+			// ignore
+		}
+	};
+
+	const handleClose = async () => {
+		// Close from the Modal (top-right X / mask / ESC)
+		// Requirement: close should query status first; paid => success; unpaid => confirm then cancel.
+		if (closingLoading || queryLoading || cancelLoading) return;
+		if (!tradeNo) {
+			onCancel?.();
+			return;
+		}
+		const mySeq = ++opSeqRef.current;
+		setClosingLoading(true);
+		try {
+			let paid = false;
+			let credited = false;
+			let queryOk = false;
+			try {
+				const res = await API.post('/api/user/wechatpay/query', { trade_no: tradeNo });
+				const { success, message, data } = res.data;
+				if (!success) {
+					Toast.error({ content: message || t('查询失败') });
+				} else {
+					queryOk = true;
+					paid = !!data?.paid;
+					credited = !!data?.credited;
+				}
+			} catch (e) {
+				Toast.error({ content: t('查询失败') });
+			}
+
+			if (paid && credited) {
+				await refreshSelfBalanceBestEffort();
+				Toast.success({ content: t('支付成功，已入账') });
+				onCancel?.();
+				return;
+			}
+
+			if (paid && !credited) {
+				Toast.warning({ content: t('已支付但入账失败，请稍后重试') });
+				return;
+			}
+
+			// If query fails, still allow user to close by confirming (avoid trapping user in modal).
+			if (confirmOpenRef.current) return;
+			confirmOpenRef.current = true;
+			Modal.confirm({
+				title: t('尚未支付，是否关闭？'),
+				content: queryOk
+					? t('关闭后将视为取消支付，若你已在微信完成支付请先点击「我已支付」确认。')
+					: t('当前无法确认支付状态。若直接关闭将视为取消支付，建议稍后重试查询或点击「我已支付」。'),
+				okText: t('确认关闭'),
+				cancelText: t('继续支付'),
+				onOk: () => {
+					// Returning the promise makes confirm wait for completion.
+					return handleCancelPay();
+				},
+				onCancel: () => {
+					confirmOpenRef.current = false;
+				},
+				afterClose: () => {
+					confirmOpenRef.current = false;
+				},
+			});
+		} finally {
+			// Do not unlock closing state if a newer operation already started or modal is gone.
+			if (mountedRef.current && opSeqRef.current === mySeq && visibleRef.current) {
+				setClosingLoading(false);
+			}
 		}
 	};
 
@@ -225,7 +335,7 @@ export default function WeChatPayModal({
 		<Modal
 			title={t('微信支付')}
 			visible={visible}
-			onCancel={onCancel}
+			onCancel={handleClose}
 			footer={null}
 			maskClosable={true}
 			centered

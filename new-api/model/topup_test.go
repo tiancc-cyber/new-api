@@ -76,15 +76,6 @@ func countUserTokensForTest(t *testing.T, db *gorm.DB, userId int) int64 {
 	return count
 }
 
-func fetchSingleUserTokenForTest(t *testing.T, db *gorm.DB, userId int) *Token {
-	t.Helper()
-	var token Token
-	if err := db.Where("user_id = ?", userId).First(&token).Error; err != nil {
-		t.Fatalf("failed to fetch token: %v", err)
-	}
-	return &token
-}
-
 func fetchUserForTest(t *testing.T, db *gorm.DB, userId int) *User {
 	t.Helper()
 	var user User
@@ -103,16 +94,16 @@ func fetchTopUpForTest(t *testing.T, db *gorm.DB, tradeNo string) *TopUp {
 	return &topUp
 }
 
-func fetchLatestTopUpLogForTest(t *testing.T, db *gorm.DB, userId int) *Log {
+func countUserTopUpLogsForTest(t *testing.T, db *gorm.DB, userId int) int64 {
 	t.Helper()
-	var logEntry Log
-	if err := db.Where("user_id = ? AND type = ?", userId, LogTypeTopup).Order("id desc").First(&logEntry).Error; err != nil {
-		t.Fatalf("failed to fetch topup log: %v", err)
+	var count int64
+	if err := db.Model(&Log{}).Where("user_id = ? AND type = ?", userId, LogTypeTopup).Count(&count).Error; err != nil {
+		t.Fatalf("failed to count topup logs: %v", err)
 	}
-	return &logEntry
+	return count
 }
 
-func TestRechargeEpayCreatesTokenWithQuota(t *testing.T) {
+func TestRechargeEpayCreditsQuotaWithoutCreatingTokenOrLog(t *testing.T) {
 	db := setupTopUpTestDB(t)
 	user := seedTopUpTestUser(t, db, 1, "epay-user")
 	tradeNo := "epay-order-1"
@@ -140,38 +131,20 @@ func TestRechargeEpayCreatesTokenWithQuota(t *testing.T) {
 	if updatedUser.Quota != expectedQuota {
 		t.Fatalf("expected user quota %d, got %d", expectedQuota, updatedUser.Quota)
 	}
-
-	if got := countUserTokensForTest(t, db, user.Id); got != 1 {
-		t.Fatalf("expected 1 recharge token, got %d", got)
-	}
-	createdToken := fetchSingleUserTokenForTest(t, db, user.Id)
-	if createdToken.RemainQuota != expectedQuota {
-		t.Fatalf("expected token quota %d, got %d", expectedQuota, createdToken.RemainQuota)
-	}
-	if createdToken.UnlimitedQuota {
-		t.Fatalf("expected recharge token to have limited quota")
-	}
-	if createdToken.ExpiredTime != -1 {
-		t.Fatalf("expected recharge token never expires, got %d", createdToken.ExpiredTime)
-	}
-	if !strings.HasPrefix(createdToken.Name, rechargeTokenNamePrefix) {
-		t.Fatalf("expected token name prefix %q, got %q", rechargeTokenNamePrefix, createdToken.Name)
-	}
-	if !strings.Contains(createdToken.Name, buildRechargeTokenOrderMarker(tradeNo)) {
-		t.Fatalf("expected token name %q to contain order marker %q", createdToken.Name, buildRechargeTokenOrderMarker(tradeNo))
+	if got := countUserTokensForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 tokens after topup, got %d", got)
 	}
 
 	updatedTopUp := fetchTopUpForTest(t, db, tradeNo)
 	if updatedTopUp.Status != common.TopUpStatusSuccess {
 		t.Fatalf("expected topup status success, got %s", updatedTopUp.Status)
 	}
-	logEntry := fetchLatestTopUpLogForTest(t, db, user.Id)
-	if !strings.Contains(logEntry.Content, tradeNo) {
-		t.Fatalf("expected topup log to contain tradeNo %q, got %q", tradeNo, logEntry.Content)
+	if got := countUserTopUpLogsForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 topup logs after topup, got %d", got)
 	}
 }
 
-func TestRechargeStripeCreatesTokenAndStoresCustomer(t *testing.T) {
+func TestRechargeStripeCreditsQuotaAndStoresCustomerWithoutTokenOrLog(t *testing.T) {
 	db := setupTopUpTestDB(t)
 	user := seedTopUpTestUser(t, db, 2, "stripe-user")
 	tradeNo := "stripe-order-1"
@@ -197,21 +170,15 @@ func TestRechargeStripeCreatesTokenAndStoresCustomer(t *testing.T) {
 	if updatedUser.StripeCustomer != "cus_test_123" {
 		t.Fatalf("expected stripe customer to be updated")
 	}
-
-	createdToken := fetchSingleUserTokenForTest(t, db, user.Id)
-	if createdToken.RemainQuota != expectedQuota {
-		t.Fatalf("expected token quota %d, got %d", expectedQuota, createdToken.RemainQuota)
+	if got := countUserTokensForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 tokens after topup, got %d", got)
 	}
-	if !strings.Contains(createdToken.Name, buildRechargeTokenOrderMarker(tradeNo)) {
-		t.Fatalf("expected token name %q to contain order marker %q", createdToken.Name, buildRechargeTokenOrderMarker(tradeNo))
-	}
-	logEntry := fetchLatestTopUpLogForTest(t, db, user.Id)
-	if !strings.Contains(logEntry.Content, tradeNo) {
-		t.Fatalf("expected topup log to contain tradeNo %q, got %q", tradeNo, logEntry.Content)
+	if got := countUserTopUpLogsForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 topup logs after topup, got %d", got)
 	}
 }
 
-func TestManualCompleteTopUpIsIdempotentForRechargeToken(t *testing.T) {
+func TestManualCompleteTopUpIsIdempotentWithoutTokenOrLog(t *testing.T) {
 	db := setupTopUpTestDB(t)
 	user := seedTopUpTestUser(t, db, 3, "manual-user")
 	tradeNo := "manual-order-1"
@@ -237,20 +204,15 @@ func TestManualCompleteTopUpIsIdempotentForRechargeToken(t *testing.T) {
 	if updatedUser.Quota != expectedQuota {
 		t.Fatalf("expected user quota %d after idempotent completion, got %d", expectedQuota, updatedUser.Quota)
 	}
-	if got := countUserTokensForTest(t, db, user.Id); got != 1 {
-		t.Fatalf("expected exactly 1 recharge token after repeated completion, got %d", got)
+	if got := countUserTokensForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 tokens after repeated completion, got %d", got)
 	}
-	createdToken := fetchSingleUserTokenForTest(t, db, user.Id)
-	if !strings.Contains(createdToken.Name, buildRechargeTokenOrderMarker(tradeNo)) {
-		t.Fatalf("expected token name %q to contain order marker %q", createdToken.Name, buildRechargeTokenOrderMarker(tradeNo))
-	}
-	logEntry := fetchLatestTopUpLogForTest(t, db, user.Id)
-	if !strings.Contains(logEntry.Content, tradeNo) {
-		t.Fatalf("expected topup log to contain tradeNo %q, got %q", tradeNo, logEntry.Content)
+	if got := countUserTopUpLogsForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 topup logs after repeated completion, got %d", got)
 	}
 }
 
-func TestRechargeCreemCreatesTokenWithCreditedAmount(t *testing.T) {
+func TestRechargeCreemCreditsAmountWithoutTokenOrLog(t *testing.T) {
 	db := setupTopUpTestDB(t)
 	user := seedTopUpTestUser(t, db, 4, "creem-user")
 	tradeNo := "creem-order-1"
@@ -275,16 +237,10 @@ func TestRechargeCreemCreatesTokenWithCreditedAmount(t *testing.T) {
 	if updatedUser.Email != "creem@example.com" {
 		t.Fatalf("expected user email to be populated from creem callback")
 	}
-
-	createdToken := fetchSingleUserTokenForTest(t, db, user.Id)
-	if createdToken.RemainQuota != 88 {
-		t.Fatalf("expected token quota 88, got %d", createdToken.RemainQuota)
+	if got := countUserTokensForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 tokens after topup, got %d", got)
 	}
-	if !strings.Contains(createdToken.Name, buildRechargeTokenOrderMarker(tradeNo)) {
-		t.Fatalf("expected token name %q to contain order marker %q", createdToken.Name, buildRechargeTokenOrderMarker(tradeNo))
-	}
-	logEntry := fetchLatestTopUpLogForTest(t, db, user.Id)
-	if !strings.Contains(logEntry.Content, tradeNo) {
-		t.Fatalf("expected topup log to contain tradeNo %q, got %q", tradeNo, logEntry.Content)
+	if got := countUserTopUpLogsForTest(t, db, user.Id); got != 0 {
+		t.Fatalf("expected 0 topup logs after topup, got %d", got)
 	}
 }

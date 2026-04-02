@@ -2,10 +2,8 @@ package model
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/logger"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/shopspring/decimal"
@@ -62,24 +60,27 @@ func getCreditedQuotaByTopUp(topUp *TopUp) (int, error) {
 	return quota, nil
 }
 
-func completeTopUpTx(tx *gorm.DB, topUp *TopUp, quota int, userUpdates map[string]any) (*Token, error) {
+// completeTopUpTx completes a recharge order by crediting user quota and marking the TopUp as success.
+// IMPORTANT: Recharge records must only be retained in TopUp billing records.
+// We must NOT auto-create tokens or insert records into token management / usage logs here.
+func completeTopUpTx(tx *gorm.DB, topUp *TopUp, quota int, userUpdates map[string]any) error {
 	if topUp == nil {
-		return nil, errors.New("充值订单不存在")
+		return errors.New("充值订单不存在")
 	}
 	if quota <= 0 {
-		return nil, errors.New("无效的充值额度")
+		return errors.New("无效的充值额度")
 	}
 	topUp.CompleteTime = common.GetTimestamp()
 	topUp.Status = common.TopUpStatusSuccess
 	if err := tx.Save(topUp).Error; err != nil {
-		return nil, err
+		return err
 	}
 	if userUpdates == nil {
 		userUpdates = make(map[string]any)
 	}
 	userUpdates["quota"] = gorm.Expr("quota + ?", quota)
 	if err := tx.Model(&User{}).Where("id = ?", topUp.UserId).Updates(userUpdates).Error; err != nil {
-		return nil, err
+		return err
 	}
 	// Best-effort: update/invalidate user cache so balance becomes visible immediately.
 	// This must not break the transaction if Redis is unavailable.
@@ -90,11 +91,7 @@ func completeTopUpTx(tx *gorm.DB, topUp *TopUp, quota int, userUpdates map[strin
 			}
 		})
 	}
-	token, err := CreateRechargeTokenTx(tx, topUp.UserId, quota, topUp.TradeNo)
-	if err != nil {
-		return nil, err
-	}
-	return token, nil
+	return nil
 }
 
 func (topUp *TopUp) Insert() error {
@@ -136,7 +133,6 @@ func Recharge(referenceId string, customerId string) (err error) {
 
 	var quota int
 	topUp := &TopUp{}
-	var createdToken *Token
 
 	refCol := getTopUpTradeNoColumn()
 
@@ -151,20 +147,13 @@ func Recharge(referenceId string, customerId string) (err error) {
 		}
 
 		quota = quotaFromTopUpMoney(topUp.Money)
-		createdToken, err = completeTopUpTx(tx, topUp, quota, map[string]any{"stripe_customer": customerId})
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return completeTopUpTx(tx, topUp, quota, map[string]any{"stripe_customer": customerId})
 	})
 
 	if err != nil {
 		common.SysError("topup failed: " + err.Error())
 		return errors.New("充值失败，请稍后重试")
 	}
-
-	RecordLog(topUp.UserId, LogTypeTopup, fmt.Sprintf("使用在线充值成功，订单号: %s，充值金额: %v，支付金额：%d，自动创建令牌：%s", topUp.TradeNo, logger.FormatQuota(quota), topUp.Amount, createdToken.Name))
 
 	return nil
 }
@@ -175,7 +164,6 @@ func RechargeEpay(referenceId string) (quota int, topUp *TopUp, err error) {
 	}
 
 	topUp = &TopUp{}
-	var createdToken *Token
 	refCol := getTopUpTradeNoColumn()
 	err = DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Set("gorm:query_option", "FOR UPDATE").Where(refCol+" = ?", referenceId).First(topUp).Error; err != nil {
@@ -185,14 +173,12 @@ func RechargeEpay(referenceId string) (quota int, topUp *TopUp, err error) {
 			return errors.New("充值订单状态错误")
 		}
 		quota = quotaFromTopUpAmount(topUp.Amount)
-		createdToken, err = completeTopUpTx(tx, topUp, quota, nil)
-		return err
+		return completeTopUpTx(tx, topUp, quota, nil)
 	})
 	if err != nil {
 		common.SysError("epay topup failed: " + err.Error())
 		return 0, nil, errors.New("充值失败，请稍后重试")
 	}
-	RecordLog(topUp.UserId, LogTypeTopup, fmt.Sprintf("使用在线充值成功，订单号: %s，充值金额: %v，支付金额：%f，自动创建令牌：%s", topUp.TradeNo, logger.FormatQuota(quota), topUp.Money, createdToken.Name))
 	return quota, topUp, nil
 }
 
@@ -339,7 +325,6 @@ func ManualCompleteTopUp(tradeNo string) error {
 	var quotaToAdd int
 	var payMoney float64
 	var alreadyCompleted bool
-	var createdToken *Token
 
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		topUp := &TopUp{}
@@ -365,7 +350,7 @@ func ManualCompleteTopUp(tradeNo string) error {
 		quotaToAdd = creditedQuota
 
 		var completeErr error
-		createdToken, completeErr = completeTopUpTx(tx, topUp, quotaToAdd, nil)
+		completeErr = completeTopUpTx(tx, topUp, quotaToAdd, nil)
 		if completeErr != nil {
 			return completeErr
 		}
@@ -381,9 +366,8 @@ func ManualCompleteTopUp(tradeNo string) error {
 	if alreadyCompleted {
 		return nil
 	}
-
-	// 事务外记录日志，避免阻塞
-	RecordLog(userId, LogTypeTopup, fmt.Sprintf("管理员补单成功，订单号: %s，充值金额: %v，支付金额：%f，自动创建令牌：%s", tradeNo, logger.FormatQuota(quotaToAdd), payMoney, createdToken.Name))
+	_ = userId
+	_ = payMoney
 	return nil
 }
 
@@ -429,7 +413,6 @@ func RechargeCreem(referenceId string, customerEmail string, _ string) (err erro
 
 	var quota int64
 	topUp := &TopUp{}
-	var createdToken *Token
 
 	refCol := getTopUpTradeNoColumn()
 
@@ -464,20 +447,13 @@ func RechargeCreem(referenceId string, customerEmail string, _ string) (err erro
 			}
 		}
 
-		createdToken, err = completeTopUpTx(tx, topUp, int(quota), updateFields)
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return completeTopUpTx(tx, topUp, int(quota), updateFields)
 	})
 
 	if err != nil {
 		common.SysError("creem topup failed: " + err.Error())
 		return errors.New("充值失败，请稍后重试")
 	}
-
-	RecordLog(topUp.UserId, LogTypeTopup, fmt.Sprintf("使用Creem充值成功，订单号: %s，充值额度: %v，支付金额：%.2f，自动创建令牌：%s", topUp.TradeNo, quota, topUp.Money, createdToken.Name))
 
 	return nil
 }

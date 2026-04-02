@@ -7,6 +7,7 @@ import (
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/logger"
 
+	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
@@ -79,6 +80,15 @@ func completeTopUpTx(tx *gorm.DB, topUp *TopUp, quota int, userUpdates map[strin
 	userUpdates["quota"] = gorm.Expr("quota + ?", quota)
 	if err := tx.Model(&User{}).Where("id = ?", topUp.UserId).Updates(userUpdates).Error; err != nil {
 		return nil, err
+	}
+	// Best-effort: update/invalidate user cache so balance becomes visible immediately.
+	// This must not break the transaction if Redis is unavailable.
+	if common.RedisEnabled {
+		gopool.Go(func() {
+			if err := cacheIncrUserQuota(topUp.UserId, int64(quota)); err != nil {
+				common.SysLog("failed to increase user quota cache after topup: " + err.Error())
+			}
+		})
 	}
 	token, err := CreateRechargeTokenTx(tx, topUp.UserId, quota, topUp.TradeNo)
 	if err != nil {
@@ -375,6 +385,41 @@ func ManualCompleteTopUp(tradeNo string) error {
 	// 事务外记录日志，避免阻塞
 	RecordLog(userId, LogTypeTopup, fmt.Sprintf("管理员补单成功，订单号: %s，充值金额: %v，支付金额：%f，自动创建令牌：%s", tradeNo, logger.FormatQuota(quotaToAdd), payMoney, createdToken.Name))
 	return nil
+}
+
+// CancelTopUpByTradeNo 用户取消支付，将待支付订单标记为已取消。
+// 幂等：已成功/已过期/已取消都会直接返回 nil。
+func CancelTopUpByTradeNo(tradeNo string, userId int) error {
+	if tradeNo == "" {
+		return errors.New("未提供订单号")
+	}
+	if userId <= 0 {
+		return errors.New("无效的用户")
+	}
+
+	refCol := getTopUpTradeNoColumn()
+
+	return DB.Transaction(func(tx *gorm.DB) error {
+		topUp := &TopUp{}
+		if err := tx.Set("gorm:query_option", "FOR UPDATE").Where(refCol+" = ?", tradeNo).First(topUp).Error; err != nil {
+			return errors.New("充值订单不存在")
+		}
+		if topUp.UserId != userId {
+			return errors.New("无权限")
+		}
+
+		// 已终态直接返回（幂等）
+		if topUp.Status == common.TopUpStatusSuccess || topUp.Status == common.TopUpStatusExpired || topUp.Status == common.TopUpStatusCanceled {
+			return nil
+		}
+		if topUp.Status != common.TopUpStatusPending {
+			return errors.New("订单状态错误")
+		}
+
+		topUp.Status = common.TopUpStatusCanceled
+		topUp.CompleteTime = common.GetTimestamp()
+		return tx.Save(topUp).Error
+	})
 }
 
 func RechargeCreem(referenceId string, customerEmail string, _ string) (err error) {

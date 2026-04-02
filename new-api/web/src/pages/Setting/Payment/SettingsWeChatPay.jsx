@@ -37,6 +37,8 @@ export default function SettingsWeChatPay(props) {
     api_v3_key: '',
     private_key: '',
     cert_serial: '',
+	public_key_id: '',
+	public_key_pem: '',
   });
   const [originInputs, setOriginInputs] = useState({});
   const formApiRef = useRef(null);
@@ -58,6 +60,8 @@ export default function SettingsWeChatPay(props) {
           api_v3_key: config.api_v3_key || '',
           private_key: config.private_key || '',
           cert_serial: config.cert_serial || '',
+			public_key_id: config.public_key_id || '',
+			public_key_pem: config.public_key_pem || '',
         };
         setInputs(currentInputs);
         setOriginInputs({ ...currentInputs });
@@ -88,6 +92,8 @@ export default function SettingsWeChatPay(props) {
         api_v3_key: inputs.api_v3_key,
         private_key: inputs.private_key,
         cert_serial: inputs.cert_serial,
+		public_key_id: inputs.public_key_id,
+		public_key_pem: inputs.public_key_pem,
       };
 
       const res = await API.put('/api/option/wechatpay/config', config);
@@ -176,6 +182,34 @@ export default function SettingsWeChatPay(props) {
               />
             </Col>
           </Row>
+      <Row
+        gutter={{ xs: 8, sm: 16, md: 24, lg: 24, xl: 24, xxl: 24 }}
+        style={{ marginTop: 16 }}
+      >
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          <Form.Input
+            field='public_key_id'
+            label={t('微信支付公钥ID')}
+            placeholder={t('例如：PUB_KEY_ID_xxx')}
+            disabled={!inputs.enabled}
+          />
+        </Col>
+      </Row>
+      <Row
+        gutter={{ xs: 8, sm: 16, md: 24, lg: 24, xl: 24, xxl: 24 }}
+        style={{ marginTop: 16 }}
+      >
+        <Col xs={24}>
+          <Form.TextArea
+            field='public_key_pem'
+            label={t('微信支付公钥PEM')}
+            placeholder={t('-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----')}
+            rows={6}
+            disabled={!inputs.enabled}
+            extraText={t('在商户平台-API安全申请“微信支付公钥”，粘贴完整 PEM 内容')}
+          />
+        </Col>
+      </Row>
           <Row
             gutter={{ xs: 8, sm: 16, md: 24, lg: 24, xl: 24, xxl: 24 }}
             style={{ marginTop: 16 }}

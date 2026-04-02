@@ -28,7 +28,7 @@ import {
   copy,
   getQuotaPerUnit,
 } from '../../helpers';
-import { Modal, Toast, Button } from '@douyinfe/semi-ui';
+import { Modal, Toast } from '@douyinfe/semi-ui';
 import { useTranslation } from 'react-i18next';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
@@ -38,6 +38,7 @@ import InvitationCard from './InvitationCard';
 import TransferModal from './modals/TransferModal';
 import PaymentConfirmModal from './modals/PaymentConfirmModal';
 import TopupHistoryModal from './modals/TopupHistoryModal';
+import WeChatPayModal from './modals/WeChatPayModal';
 
 const TopUp = () => {
   const { t } = useTranslation();
@@ -86,6 +87,11 @@ const TopUp = () => {
 
   // 账单Modal状态
   const [openHistory, setOpenHistory] = useState(false);
+
+  // 微信支付二维码弹窗状态
+  const [wxPayModalVisible, setWxPayModalVisible] = useState(false);
+  const [wxCodeUrl, setWxCodeUrl] = useState('');
+  const [wxTradeNo, setWxTradeNo] = useState('');
 
   // 订阅相关
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
@@ -149,50 +155,28 @@ const TopUp = () => {
     window.open(topUpLink, '_blank');
   };
 
-  const showWeChatPayQRCode = (codeUrl, tradeNo) => {
-    // 创建二维码显示模态框
-    Modal.info({
-      title: t('微信支付'),
-      content: (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          <div style={{ marginBottom: '20px' }}>
-            <img 
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(codeUrl)}`} 
-              alt="微信支付二维码"
-              style={{ width: '200px', height: '200px' }}
-            />
-          </div>
-          <p style={{ marginBottom: '10px' }}>{t('请使用微信扫描二维码完成支付')}</p>
-          <p style={{ fontSize: '12px', color: '#666' }}>
-            {t('订单号')}: {tradeNo}
-          </p>
-          <div style={{ marginTop: '20px' }}>
-            <Button 
-              type="primary" 
-              onClick={() => {
-                window.open(codeUrl, '_blank');
-                Modal.destroyAll();
-              }}
-            >
-              {t('在微信中打开')}
-            </Button>
-            <Button 
-              style={{ marginLeft: '10px' }}
-              onClick={() => {
-                copy(codeUrl);
-                showSuccess(t('支付链接已复制到剪贴板'));
-              }}
-            >
-              {t('复制支付链接')}
-            </Button>
-          </div>
-        </div>
-      ),
-      width: 400,
-      footer: null,
-      maskClosable: true,
+	const showWeChatPayQRCode = (codeUrl, tradeNo) => {
+		setWxCodeUrl(codeUrl);
+		setWxTradeNo(tradeNo);
+		setWxPayModalVisible(true);
+	};
+
+	const refreshWeChatPayQRCode = async () => {
+    if (!wxTradeNo) {
+      Toast.error({ content: t('订单号为空，无法刷新') });
+      return;
+    }
+    const res = await API.post('/api/user/wechatpay/refresh', {
+      trade_no: wxTradeNo,
     });
-  };
+		const { success, message, data } = res.data;
+		if (!success) {
+			Toast.error({ content: message || t('刷新失败') });
+			return;
+		}
+		setWxCodeUrl(data.code_url);
+    // trade_no 不变，仅刷新二维码
+	};
 
   const preTopUp = async (payment) => {
     if (payment === 'stripe') {
@@ -443,7 +427,7 @@ const TopUp = () => {
   const getTopupInfo = async () => {
     try {
       const res = await API.get('/api/user/topup/info');
-      const { message, data, success } = res.data;
+      const { data, success } = res.data;
       if (success) {
         setTopupInfo({
           amount_options: data.amount_options || [],
@@ -776,6 +760,16 @@ const TopUp = () => {
         t={t}
       />
 
+      {/* 微信支付二维码弹窗 */}
+      <WeChatPayModal
+        visible={wxPayModalVisible}
+        onCancel={() => setWxPayModalVisible(false)}
+        codeUrl={wxCodeUrl}
+        tradeNo={wxTradeNo}
+        onRefresh={refreshWeChatPayQRCode}
+        t={t}
+      />
+
       {/* Creem 充值确认模态框 */}
       <Modal
         title={t('确定要充值 $')}
@@ -825,6 +819,7 @@ const TopUp = () => {
           setTopUpCount={setTopUpCount}
           setSelectedPreset={setSelectedPreset}
           renderAmount={renderAmount}
+          amount={amount}
           amountLoading={amountLoading}
           payMethods={payMethods}
           preTopUp={preTopUp}

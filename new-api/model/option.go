@@ -108,6 +108,17 @@ func InitOptionMap() {
 	common.OptionMap["QuotaForInvitee"] = strconv.Itoa(common.QuotaForInvitee)
 	common.OptionMap["QuotaRemindThreshold"] = strconv.Itoa(common.QuotaRemindThreshold)
 	common.OptionMap["PreConsumedQuota"] = strconv.Itoa(common.PreConsumedQuota)
+
+	// Usage monitor defaults (admin-configurable)
+	common.OptionMap["usage_monitor.enabled"] = "true"
+	common.OptionMap["usage_monitor.mode"] = "scan"
+	common.OptionMap["usage_monitor.check_interval_minutes"] = "10"
+	common.OptionMap["usage_monitor.window_minutes"] = "60"
+	common.OptionMap["usage_monitor.user_quota_threshold"] = "0"
+	common.OptionMap["usage_monitor.user_recipients"] = ""
+	common.OptionMap["usage_monitor.token_quota_threshold"] = "0"
+	common.OptionMap["usage_monitor.token_recipients"] = ""
+	common.OptionMap["usage_monitor.also_notify_user"] = "false"
 	common.OptionMap["ModelRequestRateLimitCount"] = strconv.Itoa(setting.ModelRequestRateLimitCount)
 	common.OptionMap["ModelRequestRateLimitDurationMinutes"] = strconv.Itoa(setting.ModelRequestRateLimitDurationMinutes)
 	common.OptionMap["ModelRequestRateLimitSuccessCount"] = strconv.Itoa(setting.ModelRequestRateLimitSuccessCount)

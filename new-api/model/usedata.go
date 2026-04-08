@@ -126,3 +126,86 @@ func GetAllQuotaDates(startTime int64, endTime int64, username string) (quotaDat
 	err = DB.Table("quota_data").Select("model_name, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used, created_at").Where("created_at >= ? and created_at <= ?", startTime, endTime).Group("model_name, created_at").Find(&quotaDatas).Error
 	return quotaDatas, err
 }
+
+type TopUserModelUsageRow struct {
+	UserID    int    `json:"user_id"`
+	Username  string `json:"username"`
+	ModelName string `json:"model_name"`
+	Quota     int    `json:"quota"`
+	TokenUsed int    `json:"token_used"`
+}
+
+type TopUserModelUsage struct {
+	UserID   int                       `json:"user_id"`
+	Username string                    `json:"username"`
+	Models   map[string]TopModelMetric `json:"models"`
+}
+
+type TopModelMetric struct {
+	Quota     int `json:"quota"`
+	TokenUsed int `json:"token_used"`
+}
+
+// GetTopUsersModelUsage aggregates quota_data between [startTime,endTime] and returns top N users,
+// with their usage broken down (stacked) by model.
+//
+// Note: This is designed to be cross-DB compatible (SQLite/MySQL/PostgreSQL) and uses only
+// basic aggregation functions.
+func GetTopUsersModelUsage(startTime int64, endTime int64, top int) ([]*TopUserModelUsage, error) {
+	if top <= 0 {
+		top = 10
+	}
+	if top > 50 {
+		top = 50
+	}
+
+	// 1) find top users by total quota
+	type topUserRow struct {
+		UserID   int    `json:"user_id"`
+		Username string `json:"username"`
+		Quota    int    `json:"quota"`
+	}
+	var topUsers []topUserRow
+	if err := DB.Table("quota_data").
+		Select("user_id, username, sum(quota) as quota").
+		Where("created_at >= ? and created_at <= ?", startTime, endTime).
+		Group("user_id, username").
+		Order("quota desc").
+		Limit(top).
+		Scan(&topUsers).Error; err != nil {
+		return nil, err
+	}
+	if len(topUsers) == 0 {
+		return []*TopUserModelUsage{}, nil
+	}
+
+	ids := make([]int, 0, len(topUsers))
+	userIndex := make(map[int]*TopUserModelUsage, len(topUsers))
+	res := make([]*TopUserModelUsage, 0, len(topUsers))
+	for _, u := range topUsers {
+		ids = append(ids, u.UserID)
+		item := &TopUserModelUsage{UserID: u.UserID, Username: u.Username, Models: map[string]TopModelMetric{}}
+		userIndex[u.UserID] = item
+		res = append(res, item)
+	}
+
+	// 2) for those users, aggregate per model
+	var rows []TopUserModelUsageRow
+	if err := DB.Table("quota_data").
+		Select("user_id, username, model_name, sum(quota) as quota, sum(token_used) as token_used").
+		Where("created_at >= ? and created_at <= ?", startTime, endTime).
+		Where("user_id in ?", ids).
+		Group("user_id, username, model_name").
+		Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	for _, r := range rows {
+		item := userIndex[r.UserID]
+		if item == nil {
+			continue
+		}
+		item.Models[r.ModelName] = TopModelMetric{Quota: r.Quota, TokenUsed: r.TokenUsed}
+	}
+
+	return res, nil
+}

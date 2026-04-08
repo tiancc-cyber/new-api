@@ -41,6 +41,7 @@ const routerMap = {
   blog_manage: '/console/blog-manage',
   scenario_tutorial_manage: '/console/scenario-tutorial',
   token_request_audit: '/console/token-request-audit',
+  monitor: '/console/monitor',
   log: '/console/log',
   midjourney: '/console/midjourney',
   setting: '/console/setting',
@@ -178,6 +179,12 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         text: t('令牌请求审计'),
         itemKey: 'token_request_audit',
         to: '/console/token-request-audit',
+        className: isAdmin() ? '' : 'tableHiddle',
+      },
+      {
+        text: t('监控管理'),
+        itemKey: 'monitor',
+        to: '/console/monitor',
         className: isAdmin() ? '' : 'tableHiddle',
       },
       {

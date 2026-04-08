@@ -171,6 +171,18 @@ function App() {
           }
         />
         <Route
+          path='/console/monitor'
+          element={
+            <AdminRoute>
+              <Suspense fallback={<Loading></Loading>} key={location.pathname}>
+                {React.createElement(
+                  lazy(() => import('./pages/MonitorManage/index.jsx'))
+                )}
+              </Suspense>
+            </AdminRoute>
+          }
+        />
+        <Route
           path='/console/channel'
           element={
             <AdminRoute>

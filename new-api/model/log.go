@@ -39,6 +39,10 @@ type Log struct {
 	Other            string `json:"other"`
 }
 
+// OnAfterConsumeLogPersisted will be called after a consume log is successfully persisted.
+// It is assigned by upper layer (service) to avoid import cycles (model must not import service).
+var OnAfterConsumeLogPersisted func(userId int, tokenId int)
+
 // don't use iota, avoid change log type value
 const (
 	LogTypeUnknown = 0
@@ -191,6 +195,10 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 	err := LOG_DB.Create(log).Error
 	if err != nil {
 		logger.LogError(c, "failed to record log: "+err.Error())
+	}
+	// Event-driven hooks: after log is persisted.
+	if OnAfterConsumeLogPersisted != nil {
+		OnAfterConsumeLogPersisted(userId, params.TokenId)
 	}
 	if common.DataExportEnabled {
 		gopool.Go(func() {

@@ -294,6 +294,9 @@ func InitResources() error {
 	// 启动系统监控
 	common.StartSystemMonitor()
 
+	// 启动用量监控扫描器（按配置定时轮询）
+	service.StartUsageMonitorScanner()
+
 	// Initialize i18n
 	err = i18n.Init()
 	if err != nil {

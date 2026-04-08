@@ -350,6 +350,7 @@ func SetApiRouter(router *gin.Engine) {
 
 		dataRoute := apiRouter.Group("/data")
 		dataRoute.GET("/", middleware.AdminAuth(), controller.GetAllQuotaDates)
+		dataRoute.GET("/top_users_model_usage", middleware.AdminAuth(), controller.GetTopUsersModelUsage)
 		dataRoute.GET("/self", middleware.UserAuth(), controller.GetUserQuotaDates)
 
 		logRoute.Use(middleware.CORS(), middleware.CriticalRateLimit())
@@ -369,6 +370,12 @@ func SetApiRouter(router *gin.Engine) {
 			prefillGroupRoute.POST("/", controller.CreatePrefillGroup)
 			prefillGroupRoute.PUT("/", controller.UpdatePrefillGroup)
 			prefillGroupRoute.DELETE("/:id", controller.DeletePrefillGroup)
+		}
+
+		monitorRoute := apiRouter.Group("/monitor")
+		monitorRoute.Use(middleware.AdminAuth())
+		{
+			monitorRoute.GET("/usage/alerts", controller.ListUsageMonitorAlerts)
 		}
 
 		mjRoute := apiRouter.Group("/mj")

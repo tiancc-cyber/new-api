@@ -1,0 +1,659 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Row,
+  Select,
+  Spin,
+  Switch,
+  Table,
+  Typography,
+} from '@douyinfe/semi-ui';
+import { API, showError, showSuccess, showWarning } from '../../helpers';
+import { ResponsiveBar } from '@nivo/bar';
+
+import { DATE_RANGE_PRESETS } from '../../constants/console.constants';
+
+const { Text } = Typography;
+
+const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {
+  // Transform API data: [{user_id, username, models:{model:{quota,token_used}}}]
+  const { rows, keys } = useMemo(() => {
+    const keySet = new Set();
+    const r = (Array.isArray(data) ? data : []).map((u) => {
+      const models = u?.models || {};
+      Object.keys(models).forEach((k) => keySet.add(k));
+      // Use quota as stack height. (token_used can be added later as tooltip.)
+      const row = {
+        user: u?.username ? `${u.username} (#${u.user_id})` : `#${u?.user_id ?? '-'}`,
+      };
+      Object.entries(models).forEach(([modelName, mm]) => {
+        const v = metric === 'token_used' ? Number(mm?.token_used || 0) : Number(mm?.quota || 0);
+        row[modelName] = v;
+      });
+      return row;
+    });
+    return { rows: r, keys: Array.from(keySet) };
+  }, [data]);
+
+  if (!rows || rows.length === 0) {
+    return (
+      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Text type='tertiary'>{t('暂无数据')}</Text>
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveBar
+      data={rows}
+      keys={keys}
+      indexBy='user'
+      margin={{ top: 10, right: 20, bottom: 60, left: 100 }}
+      padding={0.25}
+      groupMode='stacked'
+      layout='horizontal'
+      valueScale={{ type: 'linear' }}
+      indexScale={{ type: 'band', round: true }}
+      enableGridY={false}
+      enableLabel={false}
+      axisBottom={{
+        legend: metric === 'token_used' ? t('tokens（越大表示 token 使用越多）') : t('quota（越大表示消耗越多）'),
+        legendPosition: 'middle',
+        legendOffset: 40,
+      }}
+      axisLeft={{
+        tickSize: 5,
+        tickPadding: 5,
+        tickRotation: 0,
+      }}
+      tooltip={({ id, value, indexValue }) => (
+        <div style={{ padding: 8, background: 'white', border: '1px solid #eee' }}>
+          <div>
+            <strong>{indexValue}</strong>
+          </div>
+          <div>
+            {t('模型')}: {String(id)}
+          </div>
+          <div>
+            {t('用量')}: {Number(value)}
+          </div>
+        </div>
+      )}
+    />
+  );
+};
+
+const OPTION_KEYS = [
+  'usage_monitor.enabled',
+  'usage_monitor.also_notify_user',
+  'usage_monitor.window_minutes',
+  'usage_monitor.user_quota_threshold',
+  'usage_monitor.user_recipients',
+];
+
+export default function MonitorManage() {
+  const { t } = useTranslation();
+  const alertPollingRef = useRef(null);
+  const topUsagePollingRef = useRef(null);
+
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [inputs, setInputs] = useState({
+    'usage_monitor.enabled': true,
+    'usage_monitor.also_notify_user': false,
+    'usage_monitor.window_minutes': 60,
+    'usage_monitor.user_quota_threshold': 0,
+    'usage_monitor.user_recipients': '',
+  });
+  const [originInputs, setOriginInputs] = useState(inputs);
+  const formApiRef = useRef();
+
+  const [alertLoading, setAlertLoading] = useState(false);
+  const [alerts, setAlerts] = useState([]);
+  const [alertTotal, setAlertTotal] = useState(0);
+  const [alertPage, setAlertPage] = useState(1);
+  const [alertPageSize, setAlertPageSize] = useState(20);
+  const [alertFilters, setAlertFilters] = useState({
+    user_id: '',
+    token_id: '',
+    metric: '',
+    status: '',
+    dateRange: null,
+  });
+
+  const [topUsageLoading, setTopUsageLoading] = useState(false);
+  const [topUsageRange, setTopUsageRange] = useState(null);
+  const [topUsageTop, setTopUsageTop] = useState(10);
+  const [topUsageItems, setTopUsageItems] = useState([]);
+  const [topUsageMetric, setTopUsageMetric] = useState('quota');
+
+  const columns = useMemo(
+    () => [
+      {
+        title: t('时间'),
+        dataIndex: 'created_at',
+        render: (val) => (val ? new Date(val).toLocaleString() : '-'),
+      },
+      {
+        title: t('指标'),
+        dataIndex: 'metric',
+        render: (val) => (val === 'user_quota' ? t('用户使用量') : val),
+      },
+      { title: t('用户ID'), dataIndex: 'user_id' },
+      { title: t('令牌ID'), dataIndex: 'token_id' },
+      { title: t('窗口开始'), dataIndex: 'period_start' },
+      { title: t('窗口结束'), dataIndex: 'period_end' },
+      { title: t('使用量'), dataIndex: 'used_quota' },
+      { title: t('阈值'), dataIndex: 'threshold_quota' },
+      { title: t('收件人'), dataIndex: 'recipients' },
+      { title: t('状态'), dataIndex: 'status' },
+      {
+        title: t('错误'),
+        dataIndex: 'error',
+        render: (val) => (
+          <Text type='tertiary' style={{ maxWidth: 260 }} ellipsis={{ showTooltip: true }}>
+            {val || '-'}
+          </Text>
+        ),
+      },
+    ],
+    [t],
+  );
+
+  const loadOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await API.get('/api/option/');
+      const { success, data, message } = res.data || {};
+      if (!success) {
+        showError(message || t('加载失败'));
+        return;
+      }
+
+      const next = { ...inputs };
+      for (const k of OPTION_KEYS) {
+        if (data && Object.prototype.hasOwnProperty.call(data, k)) {
+          next[k] = data[k];
+        }
+      }
+
+      // normalize types
+      next['usage_monitor.enabled'] = String(next['usage_monitor.enabled']) === 'true';
+      next['usage_monitor.also_notify_user'] =
+        String(next['usage_monitor.also_notify_user']) === 'true';
+      next['usage_monitor.window_minutes'] = Number(next['usage_monitor.window_minutes'] || 60);
+      next['usage_monitor.user_quota_threshold'] = Number(next['usage_monitor.user_quota_threshold'] || 0);
+      next['usage_monitor.user_recipients'] = String(next['usage_monitor.user_recipients'] || '');
+
+      setInputs(next);
+      setOriginInputs(structuredClone(next));
+      if (formApiRef.current) {
+        formApiRef.current.setValues(next);
+      }
+    } catch (e) {
+      showError(t('加载失败，请重试'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAlerts = async (nextQuery) => {
+	  setAlertLoading(true);
+	  try {
+      const q = nextQuery || {
+        page: alertPage,
+        page_size: alertPageSize,
+        ...alertFilters,
+      };
+
+      // dateRange -> created_start/created_end (unix seconds)
+      if (Array.isArray(q.dateRange) && q.dateRange.length === 2) {
+        const [start, end] = q.dateRange;
+        const startDate = start ? new Date(start) : null;
+        const endDate = end ? new Date(end) : null;
+        if (startDate && !Number.isNaN(startDate.getTime())) {
+          q.created_start = Math.floor(startDate.getTime() / 1000);
+        }
+        if (endDate && !Number.isNaN(endDate.getTime())) {
+          q.created_end = Math.floor(endDate.getTime() / 1000);
+        }
+      }
+      delete q.dateRange;
+
+      // Remove empty values
+      Object.keys(q).forEach((k) => {
+        if (q[k] === '' || q[k] === null || q[k] === undefined) delete q[k];
+      });
+
+      const res = await API.get('/api/monitor/usage/alerts', { params: q });
+      const { success, data, message } = res.data || {};
+      if (!success) {
+        showError(message || t('加载失败'));
+        return;
+      }
+
+      //兼容两种返回：
+      //  1) legacy: data = []
+      //  2) paged:  data = { items, total, page, page_size }
+      if (Array.isArray(data)) {
+        setAlerts(data);
+        setAlertTotal(data.length);
+      } else {
+        setAlerts(Array.isArray(data?.items) ? data.items : []);
+        setAlertTotal(Number(data?.total || 0));
+        if (data?.page) setAlertPage(Number(data.page));
+        if (data?.page_size) setAlertPageSize(Number(data.page_size));
+      }
+	  } catch (e) {
+	    showError(t('加载失败，请重试'));
+	  } finally {
+	    setAlertLoading(false);
+	  }
+  };
+
+  const loadTopUsersModelUsage = async (params) => {
+    setTopUsageLoading(true);
+    try {
+      const p = params || { top: topUsageTop };
+      if (Array.isArray(p.dateRange) && p.dateRange.length === 2) {
+        const [start, end] = p.dateRange;
+        const startDate = start ? new Date(start) : null;
+        const endDate = end ? new Date(end) : null;
+        if (startDate && !Number.isNaN(startDate.getTime())) {
+          p.start_timestamp = Math.floor(startDate.getTime() / 1000);
+        }
+        if (endDate && !Number.isNaN(endDate.getTime())) {
+          p.end_timestamp = Math.floor(endDate.getTime() / 1000);
+        }
+      }
+      delete p.dateRange;
+      Object.keys(p).forEach((k) => {
+        if (p[k] === '' || p[k] === null || p[k] === undefined) delete p[k];
+      });
+
+      const res = await API.get('/api/data/top_users_model_usage', { params: p });
+      const { success, data, message } = res.data || {};
+      if (!success) {
+        showError(message || t('加载失败'));
+        return;
+      }
+      setTopUsageItems(Array.isArray(data) ? data : []);
+    } catch (e) {
+      showError(t('加载失败，请重试'));
+    } finally {
+      setTopUsageLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOptions();
+    loadAlerts();
+
+    // Poll alert list periodically to reduce user-triggered refresh load.
+    // (Backend alert generation is already async; this is only about dashboard refresh.)
+    if (alertPollingRef.current) {
+      clearInterval(alertPollingRef.current);
+      alertPollingRef.current = null;
+    }
+    alertPollingRef.current = setInterval(() => {
+      loadAlerts();
+    }, 30 * 1000);
+
+    // Default top usage time range: last 24h
+    const now = Date.now();
+    const defaultRange = [new Date(now - 24 * 3600 * 1000), new Date(now)];
+    setTopUsageRange(defaultRange);
+    loadTopUsersModelUsage({ dateRange: defaultRange, top: 10 });
+    if (topUsagePollingRef.current) {
+      clearInterval(topUsagePollingRef.current);
+      topUsagePollingRef.current = null;
+    }
+    topUsagePollingRef.current = setInterval(() => {
+      loadTopUsersModelUsage({ dateRange: defaultRange, top: 10 });
+    }, 60 * 1000);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (alertPollingRef.current) clearInterval(alertPollingRef.current);
+      if (topUsagePollingRef.current) clearInterval(topUsagePollingRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    // When paging changes, reload alert list.
+    loadAlerts({ page: alertPage, page_size: alertPageSize, ...alertFilters });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alertPage, alertPageSize]);
+
+  const onSubmit = async () => {
+    // compare with origin
+    const changed = [];
+    for (const k of OPTION_KEYS) {
+      if (inputs[k] !== originInputs[k]) {
+        let val = inputs[k];
+        if (typeof val === 'boolean') val = val ? 'true' : 'false';
+        changed.push({ key: k, value: String(val) });
+      }
+    }
+    if (changed.length === 0) {
+      showWarning(t('你似乎并没有修改什么'));
+      return;
+    }
+
+    setSaving(true);
+    try {
+      // sequential update to reuse existing backend API
+      for (const item of changed) {
+        const res = await API.put('/api/option/', item);
+        const { success, message } = res.data || {};
+        if (!success) {
+          throw new Error(message || t('保存失败'));
+        }
+      }
+      showSuccess(t('保存成功'));
+      await loadOptions();
+    } catch (e) {
+      showError(e?.message || t('保存失败，请重试'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className='mt-[60px] px-2'>
+      <Spin spinning={loading}>
+        <Card
+          title={t('Top 10 用户模型用量堆叠图')}
+          style={{ marginBottom: 12 }}
+          headerStyle={{ fontWeight: 600 }}
+          headerExtraContent={
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Text type='tertiary'>{t('指标')}</Text>
+                <Switch
+                  checked={topUsageMetric === 'token_used'}
+                  checkedText={t('Tokens')}
+                  uncheckedText={t('Quota')}
+                  onChange={(v) => setTopUsageMetric(v ? 'token_used' : 'quota')}
+                />
+              </div>
+              <DatePicker
+                value={topUsageRange}
+                onChange={(v) => {
+                  setTopUsageRange(v);
+                  loadTopUsersModelUsage({ dateRange: v, top: topUsageTop });
+                }}
+                type='dateTimeRange'
+                placeholder={[t('开始时间'), t('结束时间')]}
+                showClear
+                style={{ width: 360 }}
+              />
+              <Form.InputNumber
+                field='top'
+                initValue={topUsageTop}
+                min={1}
+                max={50}
+                step={1}
+                suffix={t('人')}
+                onChange={(v) => {
+                  const n = Number(v || 10);
+                  setTopUsageTop(n);
+                }}
+                style={{ width: 180 }}
+                disabled
+              />
+              <Button
+                type='tertiary'
+                onClick={() => loadTopUsersModelUsage({ dateRange: topUsageRange, top: topUsageTop })}
+                loading={topUsageLoading}
+              >
+                {t('刷新')}
+              </Button>
+            </div>
+          }
+        >
+          <Spin spinning={topUsageLoading}>
+            <div style={{ height: 360 }}>
+              <TopUsersStackedBar data={topUsageItems} t={t} metric={topUsageMetric} />
+            </div>
+          </Spin>
+          <div style={{ marginTop: 8 }}>
+            <Text type='tertiary'>
+              {t('说明：数据来自“使用日志”汇总表（quota_data），按用户汇总后取 Top N，并按模型堆叠展示；页面每分钟自动刷新。')}
+            </Text>
+          </div>
+        </Card>
+
+        <Card
+          title={t('监控管理')}
+          style={{ marginBottom: 12 }}
+          headerStyle={{ fontWeight: 600 }}
+        >
+          <Form
+            initValues={inputs}
+            getFormApi={(api) => (formApiRef.current = api)}
+            onValueChange={(values) => setInputs(values)}
+          >
+            <Form.Section text={t('用户/令牌使用量监控')}
+              extraText={t('按用户维度监控：统计用户账户下所有令牌的使用量加总。消费日志落库后将异步检查：当窗口内使用量达到阈值时，将发送邮件提醒并写入告警记录')}
+            >
+              <Row gutter={16}>
+                <Col xs={24} sm={12} md={8}>
+                  <Form.Switch
+                    field='usage_monitor.enabled'
+                    label={t('启用监控')}
+                    checkedText='｜'
+                    uncheckedText='〇'
+                  />
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                  <Form.Switch
+                    field='usage_monitor.also_notify_user'
+                    label={t('同时通知用户邮箱')}
+                    extraText={t('当收件人已配置时，仍将额外抄送该用户邮箱（若用户邮箱存在）')}
+                    checkedText='｜'
+                    uncheckedText='〇'
+                  />
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                  <Form.InputNumber
+                    field='usage_monitor.window_minutes'
+                    label={t('统计窗口')}
+                    min={1}
+                    step={1}
+                    suffix={t('分钟')}
+                    extraText={t('统计最近 N 分钟的使用量')}
+                  />
+                </Col>
+              </Row>
+
+              <Row gutter={16}>
+                <Col xs={24} sm={12} md={8}>
+                  <Form.InputNumber
+                    field='usage_monitor.user_quota_threshold'
+                    label={t('用户使用量阈值')}
+                    min={0}
+                    step={1}
+                    extraText={t('当某用户在窗口内消耗 quota（跨所有令牌合计）>= 阈值时触发')}
+                  />
+                </Col>
+                <Col xs={24} sm={12} md={16}>
+                  <Form.Input
+                    field='usage_monitor.user_recipients'
+                    label={t('用户告警收件人')}
+                    placeholder={t('多个邮箱使用 ; 或 , 分隔，留空则默认发给该用户邮箱')}
+                  />
+                </Col>
+              </Row>
+
+              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                <Button type='primary' onClick={onSubmit} loading={saving}>
+                  {t('保存设置')}
+                </Button>
+                <Button type='tertiary' onClick={loadOptions} disabled={saving}>
+                  {t('刷新')}
+                </Button>
+              </div>
+            </Form.Section>
+          </Form>
+        </Card>
+
+        <Card
+          title={t('告警记录')}
+          headerExtraContent={
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Button
+                type='primary'
+                onClick={() => {
+                  setAlertPage(1);
+                  loadAlerts({ page: 1, page_size: alertPageSize, ...alertFilters });
+                }}
+                loading={alertLoading}
+              >
+                {t('查询')}
+              </Button>
+              <Button
+                type='tertiary'
+                onClick={() => {
+                  const cleared = {
+                    user_id: '',
+                    token_id: '',
+                    metric: '',
+                    status: '',
+                    dateRange: null,
+                  };
+                  setAlertFilters(cleared);
+                  setAlertPage(1);
+                  loadAlerts({ page: 1, page_size: alertPageSize, ...cleared });
+                }}
+                disabled={alertLoading}
+              >
+                {t('重置')}
+              </Button>
+              <Button type='tertiary' onClick={() => loadAlerts()} loading={alertLoading}>
+                {t('刷新')}
+              </Button>
+              <Text type='tertiary' style={{ marginLeft: 8 }}>
+                {t('自动刷新：30 秒')}
+              </Text>
+            </div>
+          }
+        >
+          <div style={{ marginBottom: 12 }}>
+            <Row gutter={12}>
+              <Col xs={24} sm={24} md={8}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('时间范围')}</Text>
+                  <DatePicker
+                    value={alertFilters.dateRange}
+                    onChange={(v) => setAlertFilters((prev) => ({ ...prev, dateRange: v }))}
+                    type='dateTimeRange'
+                    placeholder={[t('开始时间'), t('结束时间')]}
+                    showClear
+                    presets={DATE_RANGE_PRESETS.map((preset) => ({
+                      text: t(preset.text),
+                      start: preset.start(),
+                      end: preset.end(),
+                    }))}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <Input
+                  value={alertFilters.user_id}
+                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, user_id: v }))}
+                  placeholder={t('用户ID')}
+                />
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <Input
+                  value={alertFilters.token_id}
+                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, token_id: v }))}
+                  placeholder={t('令牌ID')}
+                />
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <Select
+                  value={alertFilters.metric}
+                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, metric: v || '' }))}
+                  placeholder={t('指标')}
+                  style={{ width: '100%' }}
+                  optionList={[
+                    { label: t('全部'), value: '' },
+                    { label: t('用户使用量'), value: 'user_quota' },
+                  ]}
+                />
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <Select
+                  value={alertFilters.status}
+                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, status: v || '' }))}
+                  placeholder={t('状态')}
+                  style={{ width: '100%' }}
+                  optionList={[
+                    { label: t('全部'), value: '' },
+                    { label: t('sent'), value: 'sent' },
+                    { label: t('failed'), value: 'failed' },
+                    { label: t('skipped'), value: 'skipped' },
+                  ]}
+                />
+              </Col>
+            </Row>
+            <div style={{ marginTop: 8 }}>
+              <Text type='tertiary'>
+                {t('提示：留空表示不过滤；点击“查询”后按条件分页查看全站告警记录。')}
+              </Text>
+            </div>
+          </div>
+          <Table
+            columns={columns}
+            dataSource={alerts}
+            pagination={{
+              currentPage: alertPage,
+              pageSize: alertPageSize,
+              total: alertTotal,
+              showSizeChanger: true,
+              onPageChange: (p) => setAlertPage(p),
+              onPageSizeChange: (ps) => {
+                setAlertPageSize(ps);
+                setAlertPage(1);
+              },
+            }}
+            loading={alertLoading}
+            rowKey={(r, idx) => r?.id ?? idx}
+          />
+        </Card>
+      </Spin>
+    </div>
+  );
+}
+

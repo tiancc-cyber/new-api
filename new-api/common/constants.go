@@ -80,9 +80,9 @@ var InsecureTLSConfig = &tls.Config{InsecureSkipVerify: true}
 var SMTPServer = "smtp.163.com"
 var SMTPPort = 465
 var SMTPSSLEnabled = true
-var SMTPAccount = "vtokenai@163.com"
-var SMTPFrom = "vtokenai@163.com"
-var SMTPToken = "ZPxzUgWuM4vCRV7Z"
+var SMTPAccount = ""
+var SMTPFrom = ""
+var SMTPToken = ""
 
 var SMSAuthEnabled = false
 var SMSWebhookURL = ""

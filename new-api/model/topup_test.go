@@ -85,6 +85,15 @@ func fetchUserForTest(t *testing.T, db *gorm.DB, userId int) *User {
 	return &user
 }
 
+func fetchSingleUserTokenForTest(t *testing.T, db *gorm.DB, userId int) *Token {
+	t.Helper()
+	var token Token
+	if err := db.Where("user_id = ?", userId).Order("id asc").First(&token).Error; err != nil {
+		t.Fatalf("failed to fetch user token: %v", err)
+	}
+	return &token
+}
+
 func fetchTopUpForTest(t *testing.T, db *gorm.DB, tradeNo string) *TopUp {
 	t.Helper()
 	var topUp TopUp

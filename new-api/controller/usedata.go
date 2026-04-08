@@ -51,3 +51,28 @@ func GetUserQuotaDates(c *gin.Context) {
 	})
 	return
 }
+
+// GetTopUsersModelUsage returns top N users' usage stacked by model (aggregated from quota_data).
+// GET /api/data/top_users_model_usage?start_timestamp=...&end_timestamp=...&top=10
+func GetTopUsersModelUsage(c *gin.Context) {
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	top, _ := strconv.Atoi(c.Query("top"))
+	if top <= 0 {
+		top = 10
+	}
+	if top > 50 {
+		top = 50
+	}
+
+	data, err := model.GetTopUsersModelUsage(startTimestamp, endTimestamp, top)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    data,
+	})
+}

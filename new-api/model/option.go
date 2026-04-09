@@ -109,7 +109,7 @@ func InitOptionMap() {
 	common.OptionMap["QuotaRemindThreshold"] = strconv.Itoa(common.QuotaRemindThreshold)
 	common.OptionMap["PreConsumedQuota"] = strconv.Itoa(common.PreConsumedQuota)
 
-	// NOTE: usage_monitor.* options were removed.
+	// usage_monitor.* options are used by the monitoring management module.
 	common.OptionMap["ModelRequestRateLimitCount"] = strconv.Itoa(setting.ModelRequestRateLimitCount)
 	common.OptionMap["ModelRequestRateLimitDurationMinutes"] = strconv.Itoa(setting.ModelRequestRateLimitDurationMinutes)
 	common.OptionMap["ModelRequestRateLimitSuccessCount"] = strconv.Itoa(setting.ModelRequestRateLimitSuccessCount)
@@ -159,20 +159,6 @@ func InitOptionMap() {
 
 	common.OptionMapRWMutex.Unlock()
 	loadOptionsFromDatabase()
-	cleanupLegacyUsageMonitorOptions()
-}
-
-// cleanupLegacyUsageMonitorOptions removes legacy usage_monitor.* keys from persisted options.
-// It is cross-DB compatible (uses GORM) and only touches rows whose primary key starts with
-// "usage_monitor.".
-func cleanupLegacyUsageMonitorOptions() {
-	// Best-effort cleanup: ignore any errors to avoid blocking startup.
-	// Only remove persisted legacy rows; in-memory OptionMap is already filtered.
-	if DB == nil {
-		return
-	}
-	// Use struct field name (Key) so GORM can quote correctly across MySQL/SQLite/PostgreSQL.
-	_ = DB.Where("key LIKE ?", "usage_monitor.%").Delete(&Option{}).Error
 }
 
 func loadOptionsFromDatabase() {
@@ -220,12 +206,6 @@ func updateOptionMap(key string, value string) (err error) {
 	common.OptionMapRWMutex.Lock()
 	defer common.OptionMapRWMutex.Unlock()
 	common.OptionMap[key] = value
-
-	// usage_monitor.* options were removed; ignore updates to prevent re-introducing them.
-	if strings.HasPrefix(key, "usage_monitor.") {
-		delete(common.OptionMap, key)
-		return nil
-	}
 
 	// 检查是否是模型配置 - 使用更规范的方式处理
 	if handleConfigUpdate(key, value) {

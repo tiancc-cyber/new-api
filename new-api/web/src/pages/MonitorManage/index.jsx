@@ -24,7 +24,7 @@ import {
   Card,
   DatePicker,
   Input,
-    InputNumber,
+  InputNumber,
   Row,
   Col,
   Radio,
@@ -32,6 +32,7 @@ import {
   Spin,
   Table,
   Typography,
+  Switch,
 } from '@douyinfe/semi-ui';
 import { API, showError, showSuccess } from '../../helpers';
 import { ResponsiveBar } from '@nivo/bar';
@@ -40,8 +41,24 @@ import { DATE_RANGE_PRESETS } from '../../constants/console.constants';
 
 const { Text } = Typography;
 
-// Alert list auto refresh interval (seconds) - fixed.
-const ALERT_POLL_INTERVAL_SECONDS = 120;
+// monitoring config option keys
+const OPTION_KEYS = {
+  enabled: 'usage_monitor.enabled',
+  recipients: 'usage_monitor.recipients',
+  userThreshold: 'usage_monitor.user_quota_threshold',
+  intervalMinutes: 'usage_monitor.check_interval_minutes',
+  alertRefreshSeconds: 'usage_monitor.alert_refresh_seconds',
+  topUsageRefreshSeconds: 'usage_monitor.top_usage_refresh_seconds',
+};
+
+const DEFAULTS = {
+  enabled: true,
+  recipients: '',
+  userThreshold: 0,
+  intervalMinutes: 10,
+  alertRefreshSeconds: 120,
+  topUsageRefreshSeconds: 60,
+};
 
 const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {
   // Transform API data: [{user_id, username, models:{model:{quota,token_used}}}]
@@ -105,7 +122,17 @@ const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {
         tickRotation: 0,
       }}
       tooltip={({ id, value, indexValue }) => (
-        <div style={{ padding: 8, background: 'white', border: '1px solid #eee' }}>
+        <div
+          style={{
+            padding: 10,
+            background: 'rgba(17, 24, 39, 0.95)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: 8,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
+            minWidth: 160,
+          }}
+        >
           <div>
             <strong>{indexValue}</strong>
           </div>
@@ -126,6 +153,16 @@ export default function MonitorManage() {
   const alertPollingRef = useRef(null);
   const topUsagePollingRef = useRef(null);
 
+  const [monitorOptionsLoading, setMonitorOptionsLoading] = useState(false);
+  const [monitorOptions, setMonitorOptions] = useState({
+    enabled: DEFAULTS.enabled,
+    recipients: DEFAULTS.recipients,
+    userThreshold: DEFAULTS.userThreshold,
+    intervalMinutes: DEFAULTS.intervalMinutes,
+    alertRefreshSeconds: DEFAULTS.alertRefreshSeconds,
+    topUsageRefreshSeconds: DEFAULTS.topUsageRefreshSeconds,
+  });
+
   const [alertLoading, setAlertLoading] = useState(false);
   const [alerts, setAlerts] = useState([]);
   const [alertTotal, setAlertTotal] = useState(0);
@@ -144,6 +181,16 @@ export default function MonitorManage() {
   const [topUsageTop, setTopUsageTop] = useState(10);
   const [topUsageItems, setTopUsageItems] = useState([]);
   const [topUsageMetric, setTopUsageMetric] = useState('quota');
+
+  // keep latest values for polling closures
+  const topUsageRangeRef = useRef(topUsageRange);
+  const topUsageTopRef = useRef(topUsageTop);
+  useEffect(() => {
+    topUsageRangeRef.current = topUsageRange;
+  }, [topUsageRange]);
+  useEffect(() => {
+    topUsageTopRef.current = topUsageTop;
+  }, [topUsageTop]);
 
   const columns = useMemo(
     () => [
@@ -233,6 +280,81 @@ export default function MonitorManage() {
 	  }
   };
 
+  const loadMonitorOptions = async () => {
+    setMonitorOptionsLoading(true);
+    try {
+      const res = await API.get('/api/option/');
+      const { success, data, message } = res.data || {};
+      if (!success) {
+        showError(message || t('加载失败'));
+        return;
+      }
+      const list = Array.isArray(data) ? data : [];
+      const map = {};
+      for (const o of list) {
+        if (o && o.key) map[o.key] = o.value;
+      }
+
+      const enabledRaw = map[OPTION_KEYS.enabled];
+      const recipientsRaw = map[OPTION_KEYS.recipients];
+      const thresholdRaw = map[OPTION_KEYS.userThreshold];
+      const intervalRaw = map[OPTION_KEYS.intervalMinutes];
+      const refreshRaw = map[OPTION_KEYS.alertRefreshSeconds];
+      const topUsageRefreshRaw = map[OPTION_KEYS.topUsageRefreshSeconds];
+
+      setMonitorOptions({
+        enabled: enabledRaw === undefined || enabledRaw === '' ? DEFAULTS.enabled : String(enabledRaw) === 'true',
+        recipients: recipientsRaw === undefined || recipientsRaw === null ? DEFAULTS.recipients : String(recipientsRaw),
+        userThreshold:
+          thresholdRaw === undefined || thresholdRaw === '' ? DEFAULTS.userThreshold : Number(thresholdRaw || 0),
+        intervalMinutes:
+          intervalRaw === undefined || intervalRaw === '' ? DEFAULTS.intervalMinutes : Number(intervalRaw || 0),
+        alertRefreshSeconds:
+          refreshRaw === undefined || refreshRaw === '' ? DEFAULTS.alertRefreshSeconds : Number(refreshRaw || 0),
+        topUsageRefreshSeconds:
+          topUsageRefreshRaw === undefined || topUsageRefreshRaw === ''
+            ? DEFAULTS.topUsageRefreshSeconds
+            : Number(topUsageRefreshRaw || 0),
+      });
+    } catch (e) {
+      showError(t('加载失败，请重试'));
+    } finally {
+      setMonitorOptionsLoading(false);
+    }
+  };
+
+  const saveMonitorOptions = async () => {
+    setMonitorOptionsLoading(true);
+    try {
+      const payload = {
+        options: [
+          { key: OPTION_KEYS.enabled, value: String(!!monitorOptions.enabled) },
+          { key: OPTION_KEYS.recipients, value: String(monitorOptions.recipients || '') },
+          { key: OPTION_KEYS.userThreshold, value: String(Number(monitorOptions.userThreshold || 0)) },
+          { key: OPTION_KEYS.intervalMinutes, value: String(Math.max(1, Number(monitorOptions.intervalMinutes || 1))) },
+          { key: OPTION_KEYS.alertRefreshSeconds, value: String(Math.max(10, Number(monitorOptions.alertRefreshSeconds || 10))) },
+          {
+            key: OPTION_KEYS.topUsageRefreshSeconds,
+            value: String(Math.max(10, Number(monitorOptions.topUsageRefreshSeconds || 10))),
+          },
+        ],
+      };
+      const res = await API.put('/api/option/batch', payload);
+      const { success, message } = res.data || {};
+      if (!success) {
+        showError(message || t('保存失败'));
+        return;
+      }
+      showSuccess(t('保存成功'));
+      // reload after save to ensure UI reflects DB state
+      await loadMonitorOptions();
+    } catch (e) {
+      showError(t('保存失败，请重试'));
+    } finally {
+      setMonitorOptionsLoading(false);
+    }
+  };
+
   const loadTopUsersModelUsage = async (params) => {
     setTopUsageLoading(true);
     try {
@@ -269,6 +391,7 @@ export default function MonitorManage() {
 
   useEffect(() => {
     (async () => {
+      await loadMonitorOptions();
       loadAlerts();
     })();
 
@@ -278,7 +401,7 @@ export default function MonitorManage() {
       clearInterval(alertPollingRef.current);
       alertPollingRef.current = null;
     }
-    const pollMs = Math.max(10, Number(ALERT_POLL_INTERVAL_SECONDS)) * 1000;
+    const pollMs = Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)) * 1000;
     alertPollingRef.current = setInterval(() => {
       loadAlerts();
     }, pollMs);
@@ -287,22 +410,45 @@ export default function MonitorManage() {
     const now = Date.now();
     const defaultRange = [new Date(now - 24 * 3600 * 1000), new Date(now)];
     setTopUsageRange(defaultRange);
-    loadTopUsersModelUsage({ dateRange: defaultRange, top: 10 });
+    // do not call loadTopUsersModelUsage here with defaultRange to avoid racing with user interaction;
+    // the polling effect below will pick up the latest range.
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Top usage auto refresh: always use the latest selected range/top.
+  useEffect(() => {
+    if (!Array.isArray(topUsageRange) || topUsageRange.length !== 2) {
+      return;
+    }
+
+    // load once immediately when range/top becomes ready
+    loadTopUsersModelUsage({ dateRange: topUsageRange, top: topUsageTop });
+
     if (topUsagePollingRef.current) {
       clearInterval(topUsagePollingRef.current);
       topUsagePollingRef.current = null;
     }
     topUsagePollingRef.current = setInterval(() => {
-      loadTopUsersModelUsage({ dateRange: defaultRange, top: 10 });
-    }, 60 * 1000);
+      const r = topUsageRangeRef.current;
+      const topN = topUsageTopRef.current;
+      if (!Array.isArray(r) || r.length !== 2) return;
+      loadTopUsersModelUsage({ dateRange: r, top: topN });
+    }, Math.max(10, Number(monitorOptions.topUsageRefreshSeconds || DEFAULTS.topUsageRefreshSeconds)) * 1000);
 
+    return () => {
+      if (topUsagePollingRef.current) {
+        clearInterval(topUsagePollingRef.current);
+        topUsagePollingRef.current = null;
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [topUsageRange, topUsageTop, monitorOptions.topUsageRefreshSeconds]);
 
   // Recreate alert polling interval after options are loaded/changed.
   useEffect(() => {
     // keep a dedicated effect so future changes can adjust interval if needed
-    const pollMs = Math.max(10, Number(ALERT_POLL_INTERVAL_SECONDS)) * 1000;
+    const pollMs = Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)) * 1000;
     if (alertPollingRef.current) {
       clearInterval(alertPollingRef.current);
       alertPollingRef.current = null;
@@ -317,7 +463,7 @@ export default function MonitorManage() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [monitorOptions.alertRefreshSeconds]);
 
   useEffect(() => {
     return () => {
@@ -335,6 +481,105 @@ export default function MonitorManage() {
   return (
     <div className='mt-[60px] px-2'>
       <Spin spinning={false}>
+        <Card
+          title={t('监控配置')}
+          style={{ marginBottom: 12 }}
+          headerStyle={{ fontWeight: 600 }}
+          headerExtraContent={
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Button type='primary' onClick={saveMonitorOptions} loading={monitorOptionsLoading}>
+                {t('保存')}
+              </Button>
+              <Button type='tertiary' onClick={loadMonitorOptions} loading={monitorOptionsLoading}>
+                {t('刷新')}
+              </Button>
+            </div>
+          }
+        >
+          <Spin spinning={monitorOptionsLoading}>
+            <Row gutter={12}>
+              <Col xs={24} sm={24} md={6}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('是否启用监控')}</Text>
+                  <Switch
+                    checked={!!monitorOptions.enabled}
+                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, enabled: !!v }))}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={24} md={10}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('告警收件人（多个邮箱用 ; 或 , 分隔，空则不发送）')}</Text>
+                  <Input
+                    value={monitorOptions.recipients}
+                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, recipients: v }))}
+                    placeholder={t('例如：admin@example.com;ops@example.com')}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={4}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('用户使用量阈值（quota）')}</Text>
+                  <InputNumber
+                    value={Number(monitorOptions.userThreshold || 0)}
+                    min={0}
+                    step={1}
+                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, userThreshold: Number(v || 0) }))}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={4}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('定时统计间隔（分钟）')}</Text>
+                  <InputNumber
+                    value={Number(monitorOptions.intervalMinutes || DEFAULTS.intervalMinutes)}
+                    min={1}
+                    step={1}
+                    onChange={(v) =>
+                      setMonitorOptions((prev) => ({ ...prev, intervalMinutes: Math.max(1, Number(v || 1)) }))
+                    }
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={4}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('告警列表刷新间隔（秒）')}</Text>
+                  <InputNumber
+                    value={Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)}
+                    min={10}
+                    step={10}
+                    onChange={(v) =>
+                      setMonitorOptions((prev) => ({ ...prev, alertRefreshSeconds: Math.max(10, Number(v || 10)) }))
+                    }
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={4}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('Top10 刷新间隔（秒）')}</Text>
+                  <InputNumber
+                    value={Number(monitorOptions.topUsageRefreshSeconds || DEFAULTS.topUsageRefreshSeconds)}
+                    min={10}
+                    step={10}
+                    onChange={(v) =>
+                      setMonitorOptions((prev) => ({ ...prev, topUsageRefreshSeconds: Math.max(10, Number(v || 10)) }))
+                    }
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </Col>
+            </Row>
+            <div style={{ marginTop: 8 }}>
+              <Text type='tertiary'>
+                {t('说明：后端会每隔 N 分钟轮询最近窗口内各用户的 quota 总消耗，超过阈值则会记录告警并尝试发送邮件。')}
+              </Text>
+            </div>
+          </Spin>
+        </Card>
+
         <Card
           title={t('Top 10 用户模型用量堆叠图')}
           style={{ marginBottom: 12 }}
@@ -434,7 +679,8 @@ export default function MonitorManage() {
                 {t('刷新')}
               </Button>
               <Text type='tertiary' style={{ marginLeft: 8 }}>
-                {t('自动刷新')}: {Math.max(10, Number(ALERT_POLL_INTERVAL_SECONDS))} {t('秒')}
+                {t('自动刷新')}: {Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds))}{' '}
+                {t('秒')}
               </Text>
             </div>
           }

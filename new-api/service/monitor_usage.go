@@ -13,15 +13,15 @@ import (
 )
 
 const (
-	monitorUsageSettingKeyMode            = "usage_monitor.mode" // scan|consume
 	monitorUsageSettingKeyEnabled         = "usage_monitor.enabled"
+	monitorUsageSettingKeyUserRecipients  = "usage_monitor.recipients"
+	monitorUsageSettingKeyUserThreshold   = "usage_monitor.user_quota_threshold"
 	monitorUsageSettingKeyCheckIntervalM  = "usage_monitor.check_interval_minutes"
 	monitorUsageSettingKeyWindowM         = "usage_monitor.window_minutes"
-	monitorUsageSettingKeyUserThreshold   = "usage_monitor.user_quota_threshold"
-	monitorUsageSettingKeyUserRecipients  = "usage_monitor.user_recipients"
+	monitorUsageSettingKeyMode            = "usage_monitor.mode"
+	monitorUsageSettingKeyAlsoNotifyUser  = "usage_monitor.also_notify_user"
 	monitorUsageSettingKeyTokenThreshold  = "usage_monitor.token_quota_threshold"
 	monitorUsageSettingKeyTokenRecipients = "usage_monitor.token_recipients"
-	monitorUsageSettingKeyAlsoNotifyUser  = "usage_monitor.also_notify_user"
 
 	monitorMetricUserQuota  = "user_quota"
 	monitorMetricTokenQuota = "token_quota"

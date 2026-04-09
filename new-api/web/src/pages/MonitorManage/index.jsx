@@ -47,7 +47,9 @@ const OPTION_KEYS = {
   recipients: 'usage_monitor.recipients',
   userThreshold: 'usage_monitor.user_quota_threshold',
   intervalMinutes: 'usage_monitor.check_interval_minutes',
+  alertAutoRefresh: 'usage_monitor.alert_auto_refresh',
   alertRefreshSeconds: 'usage_monitor.alert_refresh_seconds',
+  topUsageAutoRefresh: 'usage_monitor.top_usage_auto_refresh',
   topUsageRefreshSeconds: 'usage_monitor.top_usage_refresh_seconds',
 };
 
@@ -56,7 +58,9 @@ const DEFAULTS = {
   recipients: '',
   userThreshold: 0,
   intervalMinutes: 10,
+  alertAutoRefresh: true,
   alertRefreshSeconds: 120,
+  topUsageAutoRefresh: true,
   topUsageRefreshSeconds: 60,
 };
 
@@ -159,7 +163,9 @@ export default function MonitorManage() {
     recipients: DEFAULTS.recipients,
     userThreshold: DEFAULTS.userThreshold,
     intervalMinutes: DEFAULTS.intervalMinutes,
+    alertAutoRefresh: DEFAULTS.alertAutoRefresh,
     alertRefreshSeconds: DEFAULTS.alertRefreshSeconds,
+    topUsageAutoRefresh: DEFAULTS.topUsageAutoRefresh,
     topUsageRefreshSeconds: DEFAULTS.topUsageRefreshSeconds,
   });
 
@@ -299,7 +305,9 @@ export default function MonitorManage() {
       const recipientsRaw = map[OPTION_KEYS.recipients];
       const thresholdRaw = map[OPTION_KEYS.userThreshold];
       const intervalRaw = map[OPTION_KEYS.intervalMinutes];
+      const alertAutoRefreshRaw = map[OPTION_KEYS.alertAutoRefresh];
       const refreshRaw = map[OPTION_KEYS.alertRefreshSeconds];
+      const topUsageAutoRefreshRaw = map[OPTION_KEYS.topUsageAutoRefresh];
       const topUsageRefreshRaw = map[OPTION_KEYS.topUsageRefreshSeconds];
 
       setMonitorOptions({
@@ -309,8 +317,16 @@ export default function MonitorManage() {
           thresholdRaw === undefined || thresholdRaw === '' ? DEFAULTS.userThreshold : Number(thresholdRaw || 0),
         intervalMinutes:
           intervalRaw === undefined || intervalRaw === '' ? DEFAULTS.intervalMinutes : Number(intervalRaw || 0),
+        alertAutoRefresh:
+          alertAutoRefreshRaw === undefined || alertAutoRefreshRaw === ''
+            ? DEFAULTS.alertAutoRefresh
+            : String(alertAutoRefreshRaw) === 'true',
         alertRefreshSeconds:
           refreshRaw === undefined || refreshRaw === '' ? DEFAULTS.alertRefreshSeconds : Number(refreshRaw || 0),
+        topUsageAutoRefresh:
+          topUsageAutoRefreshRaw === undefined || topUsageAutoRefreshRaw === ''
+            ? DEFAULTS.topUsageAutoRefresh
+            : String(topUsageAutoRefreshRaw) === 'true',
         topUsageRefreshSeconds:
           topUsageRefreshRaw === undefined || topUsageRefreshRaw === ''
             ? DEFAULTS.topUsageRefreshSeconds
@@ -332,7 +348,9 @@ export default function MonitorManage() {
           { key: OPTION_KEYS.recipients, value: String(monitorOptions.recipients || '') },
           { key: OPTION_KEYS.userThreshold, value: String(Number(monitorOptions.userThreshold || 0)) },
           { key: OPTION_KEYS.intervalMinutes, value: String(Math.max(1, Number(monitorOptions.intervalMinutes || 1))) },
+          { key: OPTION_KEYS.alertAutoRefresh, value: String(!!monitorOptions.alertAutoRefresh) },
           { key: OPTION_KEYS.alertRefreshSeconds, value: String(Math.max(10, Number(monitorOptions.alertRefreshSeconds || 10))) },
+          { key: OPTION_KEYS.topUsageAutoRefresh, value: String(!!monitorOptions.topUsageAutoRefresh) },
           {
             key: OPTION_KEYS.topUsageRefreshSeconds,
             value: String(Math.max(10, Number(monitorOptions.topUsageRefreshSeconds || 10))),
@@ -395,16 +413,7 @@ export default function MonitorManage() {
       loadAlerts();
     })();
 
-    // Poll alert list periodically to reduce user-triggered refresh load.
-    // (Backend alert generation is already async; this is only about dashboard refresh.)
-    if (alertPollingRef.current) {
-      clearInterval(alertPollingRef.current);
-      alertPollingRef.current = null;
-    }
-    const pollMs = Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)) * 1000;
-    alertPollingRef.current = setInterval(() => {
-      loadAlerts();
-    }, pollMs);
+    // alert polling is handled by a dedicated effect below (depends on loaded options)
 
     // Default top usage time range: last 24h
     const now = Date.now();
@@ -425,16 +434,19 @@ export default function MonitorManage() {
     // load once immediately when range/top becomes ready
     loadTopUsersModelUsage({ dateRange: topUsageRange, top: topUsageTop });
 
+    // auto refresh
     if (topUsagePollingRef.current) {
       clearInterval(topUsagePollingRef.current);
       topUsagePollingRef.current = null;
     }
-    topUsagePollingRef.current = setInterval(() => {
-      const r = topUsageRangeRef.current;
-      const topN = topUsageTopRef.current;
-      if (!Array.isArray(r) || r.length !== 2) return;
-      loadTopUsersModelUsage({ dateRange: r, top: topN });
-    }, Math.max(10, Number(monitorOptions.topUsageRefreshSeconds || DEFAULTS.topUsageRefreshSeconds)) * 1000);
+    if (monitorOptions.topUsageAutoRefresh) {
+      topUsagePollingRef.current = setInterval(() => {
+        const r = topUsageRangeRef.current;
+        const topN = topUsageTopRef.current;
+        if (!Array.isArray(r) || r.length !== 2) return;
+        loadTopUsersModelUsage({ dateRange: r, top: topN });
+      }, Math.max(10, Number(monitorOptions.topUsageRefreshSeconds || DEFAULTS.topUsageRefreshSeconds)) * 1000);
+    }
 
     return () => {
       if (topUsagePollingRef.current) {
@@ -443,19 +455,22 @@ export default function MonitorManage() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topUsageRange, topUsageTop, monitorOptions.topUsageRefreshSeconds]);
+  }, [topUsageRange, topUsageTop, monitorOptions.topUsageRefreshSeconds, monitorOptions.topUsageAutoRefresh]);
 
   // Recreate alert polling interval after options are loaded/changed.
   useEffect(() => {
     // keep a dedicated effect so future changes can adjust interval if needed
-    const pollMs = Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)) * 1000;
     if (alertPollingRef.current) {
       clearInterval(alertPollingRef.current);
       alertPollingRef.current = null;
     }
-    alertPollingRef.current = setInterval(() => {
-      loadAlerts();
-    }, pollMs);
+
+    if (monitorOptions.alertAutoRefresh) {
+      const pollMs = Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)) * 1000;
+      alertPollingRef.current = setInterval(() => {
+        loadAlerts();
+      }, pollMs);
+    }
     return () => {
       if (alertPollingRef.current) {
         clearInterval(alertPollingRef.current);
@@ -463,7 +478,7 @@ export default function MonitorManage() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monitorOptions.alertRefreshSeconds]);
+  }, [monitorOptions.alertRefreshSeconds, monitorOptions.alertAutoRefresh]);
 
   useEffect(() => {
     return () => {
@@ -545,6 +560,15 @@ export default function MonitorManage() {
               </Col>
               <Col xs={24} sm={12} md={4}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('告警列表自动刷新')}</Text>
+                  <Switch
+                    checked={!!monitorOptions.alertAutoRefresh}
+                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, alertAutoRefresh: !!v }))}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={4}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('告警列表刷新间隔（秒）')}</Text>
                   <InputNumber
                     value={Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)}
@@ -554,6 +578,16 @@ export default function MonitorManage() {
                       setMonitorOptions((prev) => ({ ...prev, alertRefreshSeconds: Math.max(10, Number(v || 10)) }))
                     }
                     style={{ width: '100%' }}
+                    disabled={!monitorOptions.alertAutoRefresh}
+                  />
+                </div>
+              </Col>
+              <Col xs={24} sm={12} md={4}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('Top10 自动刷新')}</Text>
+                  <Switch
+                    checked={!!monitorOptions.topUsageAutoRefresh}
+                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, topUsageAutoRefresh: !!v }))}
                   />
                 </div>
               </Col>
@@ -568,6 +602,7 @@ export default function MonitorManage() {
                       setMonitorOptions((prev) => ({ ...prev, topUsageRefreshSeconds: Math.max(10, Number(v || 10)) }))
                     }
                     style={{ width: '100%' }}
+                    disabled={!monitorOptions.topUsageAutoRefresh}
                   />
                 </div>
               </Col>

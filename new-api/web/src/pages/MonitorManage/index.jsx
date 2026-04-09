@@ -512,27 +512,35 @@ export default function MonitorManage() {
           }
         >
           <Spin spinning={monitorOptionsLoading}>
-            <Row gutter={12}>
-              <Col xs={24} sm={24} md={6}>
+            <Row gutter={[12, 12]} align='middle'>
+              <Col xs={24} md={6}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('是否启用监控')}</Text>
-                  <Switch
-                    checked={!!monitorOptions.enabled}
-                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, enabled: !!v }))}
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <Switch
+                      checked={!!monitorOptions.enabled}
+                      onChange={(v) => setMonitorOptions((prev) => ({ ...prev, enabled: !!v }))}
+                    />
+                    <Text type='tertiary'>
+                      {monitorOptions.enabled ? t('已启用') : t('已关闭')}
+                    </Text>
+                  </div>
                 </div>
               </Col>
-              <Col xs={24} sm={24} md={10}>
+
+              <Col xs={24} md={10}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('告警收件人（多个邮箱用 ; 或 , 分隔，空则不发送）')}</Text>
                   <Input
                     value={monitorOptions.recipients}
                     onChange={(v) => setMonitorOptions((prev) => ({ ...prev, recipients: v }))}
                     placeholder={t('例如：admin@example.com;ops@example.com')}
+                    showClear
                   />
                 </div>
               </Col>
-              <Col xs={24} sm={12} md={4}>
+
+              <Col xs={12} md={4}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('用户使用量阈值（quota）')}</Text>
                   <InputNumber
@@ -544,7 +552,8 @@ export default function MonitorManage() {
                   />
                 </div>
               </Col>
-              <Col xs={24} sm={12} md={4}>
+
+              <Col xs={12} md={4}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('定时统计间隔（分钟）')}</Text>
                   <InputNumber
@@ -558,55 +567,83 @@ export default function MonitorManage() {
                   />
                 </div>
               </Col>
-              <Col xs={24} sm={12} md={4}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <Text type='tertiary'>{t('告警列表自动刷新')}</Text>
-                  <Switch
-                    checked={!!monitorOptions.alertAutoRefresh}
-                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, alertAutoRefresh: !!v }))}
-                  />
-                </div>
-              </Col>
-              <Col xs={24} sm={12} md={4}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <Text type='tertiary'>{t('告警列表刷新间隔（秒）')}</Text>
-                  <InputNumber
-                    value={Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)}
-                    min={10}
-                    step={10}
-                    onChange={(v) =>
-                      setMonitorOptions((prev) => ({ ...prev, alertRefreshSeconds: Math.max(10, Number(v || 10)) }))
-                    }
-                    style={{ width: '100%' }}
-                    disabled={!monitorOptions.alertAutoRefresh}
-                  />
-                </div>
-              </Col>
-              <Col xs={24} sm={12} md={4}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <Text type='tertiary'>{t('Top10 自动刷新')}</Text>
-                  <Switch
-                    checked={!!monitorOptions.topUsageAutoRefresh}
-                    onChange={(v) => setMonitorOptions((prev) => ({ ...prev, topUsageAutoRefresh: !!v }))}
-                  />
-                </div>
-              </Col>
-              <Col xs={24} sm={12} md={4}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <Text type='tertiary'>{t('Top10 刷新间隔（秒）')}</Text>
-                  <InputNumber
-                    value={Number(monitorOptions.topUsageRefreshSeconds || DEFAULTS.topUsageRefreshSeconds)}
-                    min={10}
-                    step={10}
-                    onChange={(v) =>
-                      setMonitorOptions((prev) => ({ ...prev, topUsageRefreshSeconds: Math.max(10, Number(v || 10)) }))
-                    }
-                    style={{ width: '100%' }}
-                    disabled={!monitorOptions.topUsageAutoRefresh}
-                  />
-                </div>
-              </Col>
             </Row>
+
+            <div style={{ marginTop: 10 }}>
+              <Row gutter={[12, 12]} align='middle'>
+                <Col xs={24} md={12}>
+                  <div
+                    style={{
+                      padding: 12,
+                      border: '1px solid var(--semi-color-border)',
+                      borderRadius: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12,
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <Text style={{ fontWeight: 600 }}>{t('告警列表刷新')}</Text>
+                      <Text type='tertiary'>{t('支持手动刷新或按间隔自动刷新')}</Text>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <Switch
+                        checked={!!monitorOptions.alertAutoRefresh}
+                        onChange={(v) => setMonitorOptions((prev) => ({ ...prev, alertAutoRefresh: !!v }))}
+                      />
+                      <InputNumber
+                        value={Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds)}
+                        min={10}
+                        step={10}
+                        style={{ width: 160 }}
+                        onChange={(v) =>
+                          setMonitorOptions((prev) => ({ ...prev, alertRefreshSeconds: Math.max(10, Number(v || 10)) }))
+                        }
+                        disabled={!monitorOptions.alertAutoRefresh}
+                        suffix={t('秒')}
+                      />
+                    </div>
+                  </div>
+                </Col>
+
+                <Col xs={24} md={12}>
+                  <div
+                    style={{
+                      padding: 12,
+                      border: '1px solid var(--semi-color-border)',
+                      borderRadius: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12,
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <Text style={{ fontWeight: 600 }}>{t('Top10 刷新')}</Text>
+                      <Text type='tertiary'>{t('仅影响 Top10 图表的自动刷新频率')}</Text>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <Switch
+                        checked={!!monitorOptions.topUsageAutoRefresh}
+                        onChange={(v) => setMonitorOptions((prev) => ({ ...prev, topUsageAutoRefresh: !!v }))}
+                      />
+                      <InputNumber
+                        value={Number(monitorOptions.topUsageRefreshSeconds || DEFAULTS.topUsageRefreshSeconds)}
+                        min={10}
+                        step={10}
+                        style={{ width: 160 }}
+                        onChange={(v) =>
+                          setMonitorOptions((prev) => ({ ...prev, topUsageRefreshSeconds: Math.max(10, Number(v || 10)) }))
+                        }
+                        disabled={!monitorOptions.topUsageAutoRefresh}
+                        suffix={t('秒')}
+                      />
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </div>
             <div style={{ marginTop: 8 }}>
               <Text type='tertiary'>
                 {t('说明：后端会每隔 N 分钟轮询最近窗口内各用户的 quota 总消耗，超过阈值则会记录告警并尝试发送邮件。')}
@@ -616,7 +653,7 @@ export default function MonitorManage() {
         </Card>
 
         <Card
-          title={t('Top 10 用户模型用量堆叠图')}
+          title={t('Top 用户模型用量堆叠图')}
           style={{ marginBottom: 12 }}
           headerStyle={{ fontWeight: 600 }}
           headerExtraContent={
@@ -654,7 +691,6 @@ export default function MonitorManage() {
                   setTopUsageTop(n);
                 }}
                 style={{ width: 180 }}
-                disabled
               />
               <Button
                 type='tertiary'
@@ -714,8 +750,9 @@ export default function MonitorManage() {
                 {t('刷新')}
               </Button>
               <Text type='tertiary' style={{ marginLeft: 8 }}>
-                {t('自动刷新')}: {Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds))}{' '}
-                {t('秒')}
+                {monitorOptions.alertAutoRefresh
+                  ? `${t('自动刷新')}: ${Math.max(10, Number(monitorOptions.alertRefreshSeconds || DEFAULTS.alertRefreshSeconds))} ${t('秒')}`
+                  : t('手动刷新')}
               </Text>
             </div>
           }

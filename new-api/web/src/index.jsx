@@ -18,7 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 // CSS import removed due to build issues
 import { UserProvider } from './context/User';
@@ -54,7 +54,12 @@ function SemiLocaleWrapper({ children }) {
 
 // initialization
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
+if (!container) {
+  throw new Error('Root container (#root) not found');
+}
+
+const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <StatusProvider>

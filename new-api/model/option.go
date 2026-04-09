@@ -109,16 +109,7 @@ func InitOptionMap() {
 	common.OptionMap["QuotaRemindThreshold"] = strconv.Itoa(common.QuotaRemindThreshold)
 	common.OptionMap["PreConsumedQuota"] = strconv.Itoa(common.PreConsumedQuota)
 
-	// Usage monitor defaults (admin-configurable)
-	common.OptionMap["usage_monitor.enabled"] = "true"
-	common.OptionMap["usage_monitor.mode"] = "scan"
-	common.OptionMap["usage_monitor.check_interval_minutes"] = "10"
-	common.OptionMap["usage_monitor.window_minutes"] = "60"
-	common.OptionMap["usage_monitor.user_quota_threshold"] = "0"
-	common.OptionMap["usage_monitor.user_recipients"] = ""
-	common.OptionMap["usage_monitor.token_quota_threshold"] = "0"
-	common.OptionMap["usage_monitor.token_recipients"] = ""
-	common.OptionMap["usage_monitor.also_notify_user"] = "false"
+	// NOTE: usage_monitor.* options were removed.
 	common.OptionMap["ModelRequestRateLimitCount"] = strconv.Itoa(setting.ModelRequestRateLimitCount)
 	common.OptionMap["ModelRequestRateLimitDurationMinutes"] = strconv.Itoa(setting.ModelRequestRateLimitDurationMinutes)
 	common.OptionMap["ModelRequestRateLimitSuccessCount"] = strconv.Itoa(setting.ModelRequestRateLimitSuccessCount)
@@ -168,6 +159,20 @@ func InitOptionMap() {
 
 	common.OptionMapRWMutex.Unlock()
 	loadOptionsFromDatabase()
+	cleanupLegacyUsageMonitorOptions()
+}
+
+// cleanupLegacyUsageMonitorOptions removes legacy usage_monitor.* keys from persisted options.
+// It is cross-DB compatible (uses GORM) and only touches rows whose primary key starts with
+// "usage_monitor.".
+func cleanupLegacyUsageMonitorOptions() {
+	// Best-effort cleanup: ignore any errors to avoid blocking startup.
+	// Only remove persisted legacy rows; in-memory OptionMap is already filtered.
+	if DB == nil {
+		return
+	}
+	// Use struct field name (Key) so GORM can quote correctly across MySQL/SQLite/PostgreSQL.
+	_ = DB.Where("key LIKE ?", "usage_monitor.%").Delete(&Option{}).Error
 }
 
 func loadOptionsFromDatabase() {
@@ -204,10 +209,23 @@ func UpdateOption(key string, value string) error {
 	return updateOptionMap(key, value)
 }
 
+// UpdateOptionMapOnly updates the in-memory OptionMap and related runtime settings
+// without touching the database. This is useful for transactional/batch updates
+// where DB writes are handled separately.
+func UpdateOptionMapOnly(key string, value string) error {
+	return updateOptionMap(key, value)
+}
+
 func updateOptionMap(key string, value string) (err error) {
 	common.OptionMapRWMutex.Lock()
 	defer common.OptionMapRWMutex.Unlock()
 	common.OptionMap[key] = value
+
+	// usage_monitor.* options were removed; ignore updates to prevent re-introducing them.
+	if strings.HasPrefix(key, "usage_monitor.") {
+		delete(common.OptionMap, key)
+		return nil
+	}
 
 	// 检查是否是模型配置 - 使用更规范的方式处理
 	if handleConfigUpdate(key, value) {

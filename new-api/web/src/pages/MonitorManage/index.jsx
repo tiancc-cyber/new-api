@@ -22,23 +22,26 @@ import { useTranslation } from 'react-i18next';
 import {
   Button,
   Card,
-  Col,
   DatePicker,
-  Form,
   Input,
+    InputNumber,
   Row,
+  Col,
+  Radio,
   Select,
   Spin,
-  Switch,
   Table,
   Typography,
 } from '@douyinfe/semi-ui';
-import { API, showError, showSuccess, showWarning } from '../../helpers';
+import { API, showError, showSuccess } from '../../helpers';
 import { ResponsiveBar } from '@nivo/bar';
 
 import { DATE_RANGE_PRESETS } from '../../constants/console.constants';
 
 const { Text } = Typography;
+
+// Alert list auto refresh interval (seconds) - fixed.
+const ALERT_POLL_INTERVAL_SECONDS = 120;
 
 const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {
   // Transform API data: [{user_id, username, models:{model:{quota,token_used}}}]
@@ -57,8 +60,18 @@ const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {
       });
       return row;
     });
-    return { rows: r, keys: Array.from(keySet) };
-  }, [data]);
+    const kArr = Array.from(keySet);
+    // Ensure Top N are displayed in descending order (by total stack value)
+    r.sort((a, b) => {
+      const aTotal = kArr.reduce((sum, k) => sum + Number(a?.[k] || 0), 0);
+      const bTotal = kArr.reduce((sum, k) => sum + Number(b?.[k] || 0), 0);
+      return bTotal - aTotal;
+    });
+    // For horizontal bar charts, Nivo renders the first item at the bottom.
+    // Reverse to make the largest (Top1) appear at the top.
+    r.reverse();
+    return { rows: r, keys: kArr };
+  }, [data, metric]);
 
   if (!rows || rows.length === 0) {
     return (
@@ -108,30 +121,10 @@ const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {
   );
 };
 
-const OPTION_KEYS = [
-  'usage_monitor.enabled',
-  'usage_monitor.also_notify_user',
-  'usage_monitor.window_minutes',
-  'usage_monitor.user_quota_threshold',
-  'usage_monitor.user_recipients',
-];
-
 export default function MonitorManage() {
   const { t } = useTranslation();
   const alertPollingRef = useRef(null);
   const topUsagePollingRef = useRef(null);
-
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [inputs, setInputs] = useState({
-    'usage_monitor.enabled': true,
-    'usage_monitor.also_notify_user': false,
-    'usage_monitor.window_minutes': 60,
-    'usage_monitor.user_quota_threshold': 0,
-    'usage_monitor.user_recipients': '',
-  });
-  const [originInputs, setOriginInputs] = useState(inputs);
-  const formApiRef = useRef();
 
   const [alertLoading, setAlertLoading] = useState(false);
   const [alerts, setAlerts] = useState([]);
@@ -165,6 +158,7 @@ export default function MonitorManage() {
         render: (val) => (val === 'user_quota' ? t('用户使用量') : val),
       },
       { title: t('用户ID'), dataIndex: 'user_id' },
+      { title: t('用户名'), dataIndex: 'username' },
       { title: t('令牌ID'), dataIndex: 'token_id' },
       { title: t('窗口开始'), dataIndex: 'period_start' },
       { title: t('窗口结束'), dataIndex: 'period_end' },
@@ -184,43 +178,6 @@ export default function MonitorManage() {
     ],
     [t],
   );
-
-  const loadOptions = async () => {
-    setLoading(true);
-    try {
-      const res = await API.get('/api/option/');
-      const { success, data, message } = res.data || {};
-      if (!success) {
-        showError(message || t('加载失败'));
-        return;
-      }
-
-      const next = { ...inputs };
-      for (const k of OPTION_KEYS) {
-        if (data && Object.prototype.hasOwnProperty.call(data, k)) {
-          next[k] = data[k];
-        }
-      }
-
-      // normalize types
-      next['usage_monitor.enabled'] = String(next['usage_monitor.enabled']) === 'true';
-      next['usage_monitor.also_notify_user'] =
-        String(next['usage_monitor.also_notify_user']) === 'true';
-      next['usage_monitor.window_minutes'] = Number(next['usage_monitor.window_minutes'] || 60);
-      next['usage_monitor.user_quota_threshold'] = Number(next['usage_monitor.user_quota_threshold'] || 0);
-      next['usage_monitor.user_recipients'] = String(next['usage_monitor.user_recipients'] || '');
-
-      setInputs(next);
-      setOriginInputs(structuredClone(next));
-      if (formApiRef.current) {
-        formApiRef.current.setValues(next);
-      }
-    } catch (e) {
-      showError(t('加载失败，请重试'));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const loadAlerts = async (nextQuery) => {
 	  setAlertLoading(true);
@@ -311,8 +268,9 @@ export default function MonitorManage() {
   };
 
   useEffect(() => {
-    loadOptions();
-    loadAlerts();
+    (async () => {
+      loadAlerts();
+    })();
 
     // Poll alert list periodically to reduce user-triggered refresh load.
     // (Backend alert generation is already async; this is only about dashboard refresh.)
@@ -320,9 +278,10 @@ export default function MonitorManage() {
       clearInterval(alertPollingRef.current);
       alertPollingRef.current = null;
     }
+    const pollMs = Math.max(10, Number(ALERT_POLL_INTERVAL_SECONDS)) * 1000;
     alertPollingRef.current = setInterval(() => {
       loadAlerts();
-    }, 30 * 1000);
+    }, pollMs);
 
     // Default top usage time range: last 24h
     const now = Date.now();
@@ -340,6 +299,26 @@ export default function MonitorManage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Recreate alert polling interval after options are loaded/changed.
+  useEffect(() => {
+    // keep a dedicated effect so future changes can adjust interval if needed
+    const pollMs = Math.max(10, Number(ALERT_POLL_INTERVAL_SECONDS)) * 1000;
+    if (alertPollingRef.current) {
+      clearInterval(alertPollingRef.current);
+      alertPollingRef.current = null;
+    }
+    alertPollingRef.current = setInterval(() => {
+      loadAlerts();
+    }, pollMs);
+    return () => {
+      if (alertPollingRef.current) {
+        clearInterval(alertPollingRef.current);
+        alertPollingRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     return () => {
       if (alertPollingRef.current) clearInterval(alertPollingRef.current);
@@ -353,43 +332,9 @@ export default function MonitorManage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alertPage, alertPageSize]);
 
-  const onSubmit = async () => {
-    // compare with origin
-    const changed = [];
-    for (const k of OPTION_KEYS) {
-      if (inputs[k] !== originInputs[k]) {
-        let val = inputs[k];
-        if (typeof val === 'boolean') val = val ? 'true' : 'false';
-        changed.push({ key: k, value: String(val) });
-      }
-    }
-    if (changed.length === 0) {
-      showWarning(t('你似乎并没有修改什么'));
-      return;
-    }
-
-    setSaving(true);
-    try {
-      // sequential update to reuse existing backend API
-      for (const item of changed) {
-        const res = await API.put('/api/option/', item);
-        const { success, message } = res.data || {};
-        if (!success) {
-          throw new Error(message || t('保存失败'));
-        }
-      }
-      showSuccess(t('保存成功'));
-      await loadOptions();
-    } catch (e) {
-      showError(e?.message || t('保存失败，请重试'));
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <div className='mt-[60px] px-2'>
-      <Spin spinning={loading}>
+      <Spin spinning={false}>
         <Card
           title={t('Top 10 用户模型用量堆叠图')}
           style={{ marginBottom: 12 }}
@@ -398,12 +343,14 @@ export default function MonitorManage() {
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Text type='tertiary'>{t('指标')}</Text>
-                <Switch
-                  checked={topUsageMetric === 'token_used'}
-                  checkedText={t('Tokens')}
-                  uncheckedText={t('Quota')}
-                  onChange={(v) => setTopUsageMetric(v ? 'token_used' : 'quota')}
-                />
+                <Radio.Group
+                  type='button'
+                  value={topUsageMetric}
+                  onChange={(e) => setTopUsageMetric(e?.target?.value || 'quota')}
+                >
+                  <Radio value='quota'>{t('Quota')}</Radio>
+                  <Radio value='token_used'>{t('Tokens')}</Radio>
+                </Radio.Group>
               </div>
               <DatePicker
                 value={topUsageRange}
@@ -416,9 +363,8 @@ export default function MonitorManage() {
                 showClear
                 style={{ width: 360 }}
               />
-              <Form.InputNumber
-                field='top'
-                initValue={topUsageTop}
+              <InputNumber
+                value={topUsageTop}
                 min={1}
                 max={50}
                 step={1}
@@ -450,80 +396,6 @@ export default function MonitorManage() {
               {t('说明：数据来自“使用日志”汇总表（quota_data），按用户汇总后取 Top N，并按模型堆叠展示；页面每分钟自动刷新。')}
             </Text>
           </div>
-        </Card>
-
-        <Card
-          title={t('监控管理')}
-          style={{ marginBottom: 12 }}
-          headerStyle={{ fontWeight: 600 }}
-        >
-          <Form
-            initValues={inputs}
-            getFormApi={(api) => (formApiRef.current = api)}
-            onValueChange={(values) => setInputs(values)}
-          >
-            <Form.Section text={t('用户/令牌使用量监控')}
-              extraText={t('按用户维度监控：统计用户账户下所有令牌的使用量加总。消费日志落库后将异步检查：当窗口内使用量达到阈值时，将发送邮件提醒并写入告警记录')}
-            >
-              <Row gutter={16}>
-                <Col xs={24} sm={12} md={8}>
-                  <Form.Switch
-                    field='usage_monitor.enabled'
-                    label={t('启用监控')}
-                    checkedText='｜'
-                    uncheckedText='〇'
-                  />
-                </Col>
-                <Col xs={24} sm={12} md={8}>
-                  <Form.Switch
-                    field='usage_monitor.also_notify_user'
-                    label={t('同时通知用户邮箱')}
-                    extraText={t('当收件人已配置时，仍将额外抄送该用户邮箱（若用户邮箱存在）')}
-                    checkedText='｜'
-                    uncheckedText='〇'
-                  />
-                </Col>
-                <Col xs={24} sm={12} md={8}>
-                  <Form.InputNumber
-                    field='usage_monitor.window_minutes'
-                    label={t('统计窗口')}
-                    min={1}
-                    step={1}
-                    suffix={t('分钟')}
-                    extraText={t('统计最近 N 分钟的使用量')}
-                  />
-                </Col>
-              </Row>
-
-              <Row gutter={16}>
-                <Col xs={24} sm={12} md={8}>
-                  <Form.InputNumber
-                    field='usage_monitor.user_quota_threshold'
-                    label={t('用户使用量阈值')}
-                    min={0}
-                    step={1}
-                    extraText={t('当某用户在窗口内消耗 quota（跨所有令牌合计）>= 阈值时触发')}
-                  />
-                </Col>
-                <Col xs={24} sm={12} md={16}>
-                  <Form.Input
-                    field='usage_monitor.user_recipients'
-                    label={t('用户告警收件人')}
-                    placeholder={t('多个邮箱使用 ; 或 , 分隔，留空则默认发给该用户邮箱')}
-                  />
-                </Col>
-              </Row>
-
-              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                <Button type='primary' onClick={onSubmit} loading={saving}>
-                  {t('保存设置')}
-                </Button>
-                <Button type='tertiary' onClick={loadOptions} disabled={saving}>
-                  {t('刷新')}
-                </Button>
-              </div>
-            </Form.Section>
-          </Form>
         </Card>
 
         <Card
@@ -562,7 +434,7 @@ export default function MonitorManage() {
                 {t('刷新')}
               </Button>
               <Text type='tertiary' style={{ marginLeft: 8 }}>
-                {t('自动刷新：30 秒')}
+                {t('自动刷新')}: {Math.max(10, Number(ALERT_POLL_INTERVAL_SECONDS))} {t('秒')}
               </Text>
             </div>
           }

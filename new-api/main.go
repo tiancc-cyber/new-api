@@ -295,7 +295,7 @@ func InitResources() error {
 	common.StartSystemMonitor()
 
 	// 启动用量监控扫描器（按配置定时轮询）
-	service.StartUsageMonitorScanner()
+	// usage monitor scanner removed
 
 	// Initialize i18n
 	err = i18n.Init()

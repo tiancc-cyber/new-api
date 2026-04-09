@@ -9,8 +9,9 @@ type MonitorUsageAlert struct {
 
 	CreatedAt time.Time `json:"created_at" gorm:"index"`
 
-	UserId  int `json:"user_id" gorm:"index"`
-	TokenId int `json:"token_id" gorm:"index"`
+	UserId   int    `json:"user_id" gorm:"index"`
+	Username string `json:"username" gorm:"type:varchar(64);index"`
+	TokenId  int    `json:"token_id" gorm:"index"`
 
 	// PeriodStart/PeriodEnd define the monitored window (unix seconds).
 	PeriodStart int64 `json:"period_start" gorm:"bigint;index"`

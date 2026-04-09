@@ -14,6 +14,8 @@ import (
 	"github.com/QuantumNous/new-api/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var completionRatioMetaOptionKeys = []string{
@@ -63,9 +65,31 @@ func buildCompletionRatioMetaValue(optionValues map[string]string) string {
 func GetOptions(c *gin.Context) {
 	var options []*model.Option
 	optionValues := make(map[string]string)
+	// For some admin-configurable options (e.g. usage_monitor.*), relying solely on
+	// in-memory OptionMap may cause stale values after refresh/restart.
+	// Read DB values and override in the returned list.
+	// NOTE: we only override the response payload; OptionMap sync is handled elsewhere.
+	dbOverride := make(map[string]string)
+	{
+		var dbOptions []*model.Option
+		// Best-effort: ignore DB errors and fall back to OptionMap.
+		// IMPORTANT: do NOT hardcode MySQL-style backticks for column `key`.
+		// Use GORM clause.Column so it can quote correctly across MySQL/SQLite/PostgreSQL.
+		keyCol := clause.Column{Name: "key"}
+		if err := model.DB.Where(clause.Expr{SQL: "? LIKE ?", Vars: []any{keyCol, "usage_monitor.%"}}).Find(&dbOptions).Error; err == nil {
+			for _, o := range dbOptions {
+				if o != nil && o.Key != "" {
+					dbOverride[o.Key] = o.Value
+				}
+			}
+		}
+	}
 	common.OptionMapRWMutex.Lock()
 	for k, v := range common.OptionMap {
 		value := common.Interface2String(v)
+		if ov, ok := dbOverride[k]; ok {
+			value = ov
+		}
 		if strings.HasSuffix(k, "Token") ||
 			strings.HasSuffix(k, "Secret") ||
 			strings.HasSuffix(k, "Key") ||
@@ -100,6 +124,159 @@ func GetOptions(c *gin.Context) {
 type OptionUpdateRequest struct {
 	Key   string `json:"key"`
 	Value any    `json:"value"`
+}
+
+type OptionsBatchUpdateRequest struct {
+	Options []OptionUpdateRequest `json:"options"`
+}
+
+func BatchUpdateOptions(c *gin.Context) {
+	var req OptionsBatchUpdateRequest
+	err := common.DecodeJson(c.Request.Body, &req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "无效的参数",
+		})
+		return
+	}
+	if len(req.Options) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": "",
+		})
+		return
+	}
+
+	// Normalize values to string and reuse the same validation logic as single update.
+	// Use a DB transaction to make the batch update atomic.
+	err = model.DB.Transaction(func(tx *gorm.DB) error {
+		for _, option := range req.Options {
+			var valueStr string
+			switch v := option.Value.(type) {
+			case bool:
+				valueStr = common.Interface2String(v)
+			case float64:
+				valueStr = common.Interface2String(v)
+			case int:
+				valueStr = common.Interface2String(v)
+			default:
+				valueStr = fmt.Sprintf("%v", v)
+			}
+
+			// Apply the same key-specific validation as UpdateOption.
+			switch option.Key {
+			case "GitHubOAuthEnabled":
+				if valueStr == "true" && common.GitHubClientId == "" {
+					return fmt.Errorf("无法启用 GitHub OAuth，请先填入 GitHub Client Id 以及 GitHub Client Secret！")
+				}
+			case "discord.enabled":
+				if valueStr == "true" && system_setting.GetDiscordSettings().ClientId == "" {
+					return fmt.Errorf("无法启用 Discord OAuth，请先填入 Discord Client Id 以及 Discord Client Secret！")
+				}
+			case "oidc.enabled":
+				if valueStr == "true" && system_setting.GetOIDCSettings().ClientId == "" {
+					return fmt.Errorf("无法启用 OIDC 登录，请先填入 OIDC Client Id 以及 OIDC Client Secret！")
+				}
+			case "LinuxDOOAuthEnabled":
+				if valueStr == "true" && common.LinuxDOClientId == "" {
+					return fmt.Errorf("无法启用 LinuxDO OAuth，请先填入 LinuxDO Client Id 以及 LinuxDO Client Secret！")
+				}
+			case "EmailDomainRestrictionEnabled":
+				if valueStr == "true" && len(common.EmailDomainWhitelist) == 0 {
+					return fmt.Errorf("无法启用邮箱域名限制，请先填入限制的邮箱域名！")
+				}
+			case "WeChatAuthEnabled":
+				if valueStr == "true" && common.WeChatServerAddress == "" {
+					return fmt.Errorf("无法启用微信登录，请先填入微信登录相关配置信息！")
+				}
+			case "TurnstileCheckEnabled":
+				if valueStr == "true" && common.TurnstileSiteKey == "" {
+					return fmt.Errorf("无法启用 Turnstile 校验，请先填入 Turnstile 校验相关配置信息！")
+				}
+			case "TelegramOAuthEnabled":
+				if valueStr == "true" && common.TelegramBotToken == "" {
+					return fmt.Errorf("无法启用 Telegram OAuth，请先填入 Telegram Bot Token！")
+				}
+			case "GroupRatio":
+				if err := ratio_setting.CheckGroupRatio(valueStr); err != nil {
+					return err
+				}
+			case "ImageRatio":
+				if err := ratio_setting.UpdateImageRatioByJSONString(valueStr); err != nil {
+					return fmt.Errorf("图片倍率设置失败: %v", err)
+				}
+			case "AudioRatio":
+				if err := ratio_setting.UpdateAudioRatioByJSONString(valueStr); err != nil {
+					return fmt.Errorf("音频倍率设置失败: %v", err)
+				}
+			case "AudioCompletionRatio":
+				if err := ratio_setting.UpdateAudioCompletionRatioByJSONString(valueStr); err != nil {
+					return fmt.Errorf("音频补全倍率设置失败: %v", err)
+				}
+			case "CreateCacheRatio":
+				if err := ratio_setting.UpdateCreateCacheRatioByJSONString(valueStr); err != nil {
+					return fmt.Errorf("缓存创建倍率设置失败: %v", err)
+				}
+			case "ModelRequestRateLimitGroup":
+				if err := setting.CheckModelRequestRateLimitGroup(valueStr); err != nil {
+					return err
+				}
+			case "AutomaticDisableStatusCodes":
+				if _, err := operation_setting.ParseHTTPStatusCodeRanges(valueStr); err != nil {
+					return err
+				}
+			case "AutomaticRetryStatusCodes":
+				if _, err := operation_setting.ParseHTTPStatusCodeRanges(valueStr); err != nil {
+					return err
+				}
+			case "console_setting.api_info":
+				if err := console_setting.ValidateConsoleSettings(valueStr, "ApiInfo"); err != nil {
+					return err
+				}
+			case "console_setting.announcements":
+				if err := console_setting.ValidateConsoleSettings(valueStr, "Announcements"); err != nil {
+					return err
+				}
+			case "console_setting.faq":
+				if err := console_setting.ValidateConsoleSettings(valueStr, "FAQ"); err != nil {
+					return err
+				}
+			case "console_setting.uptime_kuma_groups":
+				if err := console_setting.ValidateConsoleSettings(valueStr, "UptimeKumaGroups"); err != nil {
+					return err
+				}
+			}
+
+			// Update within transaction (db) and OptionMap.
+			// model.UpdateOption uses global DB, so we inline a tx-aware write.
+			o := model.Option{Key: option.Key}
+			if err := tx.FirstOrCreate(&o, model.Option{Key: option.Key}).Error; err != nil {
+				return err
+			}
+			o.Value = valueStr
+			if err := tx.Save(&o).Error; err != nil {
+				return err
+			}
+			// Update in-memory OptionMap
+			if err := model.UpdateOptionMapOnly(option.Key, valueStr); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+	})
 }
 
 func UpdateOption(c *gin.Context) {

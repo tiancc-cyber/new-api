@@ -13,15 +13,18 @@ import (
 )
 
 const (
-	monitorUsageSettingKeyMode           = "usage_monitor.mode" // scan|consume
-	monitorUsageSettingKeyEnabled        = "usage_monitor.enabled"
-	monitorUsageSettingKeyCheckIntervalM = "usage_monitor.check_interval_minutes"
-	monitorUsageSettingKeyWindowM        = "usage_monitor.window_minutes"
-	monitorUsageSettingKeyUserThreshold  = "usage_monitor.user_quota_threshold"
-	monitorUsageSettingKeyUserRecipients = "usage_monitor.user_recipients"
-	monitorUsageSettingKeyAlsoNotifyUser = "usage_monitor.also_notify_user"
+	monitorUsageSettingKeyMode            = "usage_monitor.mode" // scan|consume
+	monitorUsageSettingKeyEnabled         = "usage_monitor.enabled"
+	monitorUsageSettingKeyCheckIntervalM  = "usage_monitor.check_interval_minutes"
+	monitorUsageSettingKeyWindowM         = "usage_monitor.window_minutes"
+	monitorUsageSettingKeyUserThreshold   = "usage_monitor.user_quota_threshold"
+	monitorUsageSettingKeyUserRecipients  = "usage_monitor.user_recipients"
+	monitorUsageSettingKeyTokenThreshold  = "usage_monitor.token_quota_threshold"
+	monitorUsageSettingKeyTokenRecipients = "usage_monitor.token_recipients"
+	monitorUsageSettingKeyAlsoNotifyUser  = "usage_monitor.also_notify_user"
 
-	monitorMetricUserQuota = "user_quota"
+	monitorMetricUserQuota  = "user_quota"
+	monitorMetricTokenQuota = "token_quota"
 )
 
 var usageMonitorStarted = false
@@ -87,15 +90,78 @@ func OnUsageConsumed(userId int, tokenId int) {
 	periodKeyEnd := end - (end % 60)
 
 	userThreshold := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyUserThreshold], 0)
+	tokenThreshold := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyTokenThreshold], 0)
 
 	userRecipients := normalizeRecipients(common.OptionMap[monitorUsageSettingKeyUserRecipients])
+	tokenRecipients := normalizeRecipients(common.OptionMap[monitorUsageSettingKeyTokenRecipients])
 	alsoNotifyUser := getOrDefaultBool(common.OptionMap[monitorUsageSettingKeyAlsoNotifyUser], false)
 
-	if userThreshold > 0 {
+	// threshold == 0 means "alert on any usage".
+	// Previous behavior treated 0 as disabled, which made the UI confusing.
+	if userThreshold >= 0 {
 		gopool.Go(func() {
 			handleUserThreshold(start, periodKeyEnd, userId, userThreshold, userRecipients, alsoNotifyUser)
 		})
 	}
+	if tokenId > 0 && tokenThreshold >= 0 {
+		tid := tokenId
+		gopool.Go(func() {
+			handleTokenThreshold(start, periodKeyEnd, userId, tid, tokenThreshold, tokenRecipients, alsoNotifyUser)
+		})
+	}
+}
+
+func handleTokenThreshold(start, periodKeyEnd int64, userId int, tokenId int, threshold int, recipients []string, alsoNotifyUser bool) {
+	used, err := sumTokenUsedQuotaInWindow(userId, tokenId, start, periodKeyEnd)
+	if err != nil {
+		persistAlert(monitorMetricTokenQuota, userId, "", tokenId, start, periodKeyEnd, 0, threshold, recipients, "failed", err.Error())
+		return
+	}
+	if used < threshold {
+		return
+	}
+
+	// De-dup: only 1 record per (metric,user_id,token_id,period_end,threshold) with Status=sent.
+	var cnt int64
+	if err := model.DB.Model(&model.MonitorUsageAlert{}).
+		Where("metric = ? AND user_id = ? AND token_id = ? AND period_end = ? AND threshold_quota = ? AND status = ?",
+			monitorMetricTokenQuota, userId, tokenId, periodKeyEnd, threshold, "sent").Count(&cnt).Error; err != nil {
+		common.SysError("usage monitor token dedup query failed: " + err.Error())
+		return
+	}
+	if cnt > 0 {
+		return
+	}
+
+	user, err := model.GetUserById(userId, false)
+	if err != nil {
+		persistAlert(monitorMetricTokenQuota, userId, "", tokenId, start, periodKeyEnd, used, threshold, recipients, "failed", err.Error())
+		return
+	}
+
+	to := recipients
+	if user.Email != "" {
+		if len(to) == 0 {
+			to = []string{user.Email}
+		} else if alsoNotifyUser {
+			to = append(to, user.Email)
+			to = normalizeRecipients(strings.Join(to, ";"))
+		}
+	}
+	if len(to) == 0 {
+		persistAlert(monitorMetricTokenQuota, userId, user.Username, tokenId, start, periodKeyEnd, used, threshold, nil, "skipped", "no recipients")
+		return
+	}
+
+	subject := fmt.Sprintf("%s 使用量监控告警（令牌）", common.SystemName)
+	ctx, _ := findLatestConsumeLogContext(userId, tokenId, start, periodKeyEnd)
+	content := buildUsageAlertEmailHTML(monitorMetricTokenQuota, userId, user.Username, tokenId, "", start, periodKeyEnd, used, threshold, ctx)
+	err = common.SendEmail(subject, strings.Join(to, ";"), content)
+	if err != nil {
+		persistAlert(monitorMetricTokenQuota, userId, user.Username, tokenId, start, periodKeyEnd, used, threshold, to, "failed", err.Error())
+		return
+	}
+	persistAlert(monitorMetricTokenQuota, userId, user.Username, tokenId, start, periodKeyEnd, used, threshold, to, "sent", "")
 }
 
 type userQuotaAggRow struct {
@@ -114,9 +180,7 @@ func scanOnceAndAlertUsers() {
 	periodKeyEnd := end - (end % 60)
 
 	threshold := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyUserThreshold], 0)
-	if threshold <= 0 {
-		return
-	}
+	// threshold == 0 means "alert on any usage".
 	recipients := normalizeRecipients(common.OptionMap[monitorUsageSettingKeyUserRecipients])
 	alsoNotifyUser := getOrDefaultBool(common.OptionMap[monitorUsageSettingKeyAlsoNotifyUser], false)
 
@@ -171,7 +235,7 @@ func normalizeRecipients(raw string) []string {
 func handleUserThreshold(start, periodKeyEnd int64, userId int, threshold int, recipients []string, alsoNotifyUser bool) {
 	used, err := sumUserUsedQuotaInWindow(userId, start, periodKeyEnd)
 	if err != nil {
-		persistAlert(monitorMetricUserQuota, userId, 0, start, periodKeyEnd, 0, threshold, recipients, "failed", err.Error())
+		persistAlert(monitorMetricUserQuota, userId, "", 0, start, periodKeyEnd, 0, threshold, recipients, "failed", err.Error())
 		return
 	}
 	if used < threshold {
@@ -193,7 +257,7 @@ func handleUserThreshold(start, periodKeyEnd int64, userId int, threshold int, r
 
 	user, err := model.GetUserById(userId, false)
 	if err != nil {
-		persistAlert(monitorMetricUserQuota, userId, 0, start, periodKeyEnd, used, threshold, recipients, "failed", err.Error())
+		persistAlert(monitorMetricUserQuota, userId, "", 0, start, periodKeyEnd, used, threshold, recipients, "failed", err.Error())
 		return
 	}
 
@@ -209,7 +273,7 @@ func handleUserThreshold(start, periodKeyEnd int64, userId int, threshold int, r
 		}
 	}
 	if len(to) == 0 {
-		persistAlert(monitorMetricUserQuota, userId, 0, start, periodKeyEnd, used, threshold, nil, "skipped", "no recipients")
+		persistAlert(monitorMetricUserQuota, userId, user.Username, 0, start, periodKeyEnd, used, threshold, nil, "skipped", "no recipients")
 		return
 	}
 
@@ -219,10 +283,10 @@ func handleUserThreshold(start, periodKeyEnd int64, userId int, threshold int, r
 
 	err = common.SendEmail(subject, strings.Join(to, ";"), content)
 	if err != nil {
-		persistAlert(monitorMetricUserQuota, userId, 0, start, periodKeyEnd, used, threshold, to, "failed", err.Error())
+		persistAlert(monitorMetricUserQuota, userId, user.Username, 0, start, periodKeyEnd, used, threshold, to, "failed", err.Error())
 		return
 	}
-	persistAlert(monitorMetricUserQuota, userId, 0, start, periodKeyEnd, used, threshold, to, "sent", "")
+	persistAlert(monitorMetricUserQuota, userId, user.Username, 0, start, periodKeyEnd, used, threshold, to, "sent", "")
 }
 
 type latestConsumeLogContext struct {
@@ -265,11 +329,27 @@ func sumUserUsedQuotaInWindow(userId int, start, end int64) (int, error) {
 	return used, err
 }
 
-func persistAlert(metric string, userId int, tokenId int, start, end int64, used int, threshold int, recipients []string, status string, errMsg string) {
+func sumTokenUsedQuotaInWindow(userId int, tokenId int, start, end int64) (int, error) {
+	var used int
+	err := model.LOG_DB.Table("logs").Select("coalesce(sum(quota),0)").
+		Where("type = ? AND user_id = ? AND token_id = ? AND created_at >= ? AND created_at <= ?",
+			model.LogTypeConsume, userId, tokenId, start, end).
+		Scan(&used).Error
+	return used, err
+}
+
+func persistAlert(metric string, userId int, username string, tokenId int, start, end int64, used int, threshold int, recipients []string, status string, errMsg string) {
+	if username == "" && userId > 0 {
+		// best-effort username lookup for failed paths
+		if u, err := model.GetUserById(userId, false); err == nil {
+			username = u.Username
+		}
+	}
 	recipientStr := strings.Join(recipients, ";")
 	alert := &model.MonitorUsageAlert{
 		CreatedAt:      time.Now(),
 		UserId:         userId,
+		Username:       username,
 		TokenId:        tokenId,
 		PeriodStart:    start,
 		PeriodEnd:      end,

@@ -37,6 +37,11 @@ func TokenRequestAudit() gin.HandlerFunc {
 			return
 		}
 
+		statusCode := c.Writer.Status()
+		if !common.ShouldStoreTokenRequestAuditStatusCode(statusCode) {
+			return
+		}
+
 		requestBody := getTokenRequestAuditRequestBody(c)
 		responseBody, err := writer.Bytes()
 		if err != nil {
@@ -58,7 +63,7 @@ func TokenRequestAudit() gin.HandlerFunc {
 			ModelName:           common.GetContextKeyString(c, constant.ContextKeyOriginalModel),
 			ChannelId:           common.GetContextKeyInt(c, constant.ContextKeyChannelId),
 			ChannelName:         common.GetContextKeyString(c, constant.ContextKeyChannelName),
-			StatusCode:          c.Writer.Status(),
+			StatusCode:          statusCode,
 			IsStream:            isTokenRequestAuditStreamRequest(c),
 			RequestContentType:  c.Request.Header.Get("Content-Type"),
 			ResponseContentType: c.Writer.Header().Get("Content-Type"),

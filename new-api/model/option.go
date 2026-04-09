@@ -149,6 +149,8 @@ func InitOptionMap() {
 	common.OptionMap["AutomaticDisableKeywords"] = operation_setting.AutomaticDisableKeywordsToString()
 	common.OptionMap["AutomaticDisableStatusCodes"] = operation_setting.AutomaticDisableStatusCodesToString()
 	common.OptionMap["AutomaticRetryStatusCodes"] = operation_setting.AutomaticRetryStatusCodesToString()
+	// TokenRequestAuditStatusCodeWhitelist: empty means no filtering (store all).
+	common.OptionMap[common.TokenRequestAuditStatusCodeWhitelistKey] = ""
 	common.OptionMap["ExposeRatioEnabled"] = strconv.FormatBool(ratio_setting.IsExposeRatioEnabled())
 
 	// 自动添加所有注册的模型配置
@@ -169,6 +171,9 @@ func loadOptionsFromDatabase() {
 			common.SysLog("failed to update option map: " + err.Error())
 		}
 	}
+	// Ensure runtime cache for token request audit whitelist is initialized even if
+	// the option does not exist in DB.
+	common.UpdateTokenRequestAuditStatusCodeWhitelist(common.OptionMap[common.TokenRequestAuditStatusCodeWhitelistKey])
 }
 
 func SyncOptions(frequency int) {
@@ -463,6 +468,8 @@ func updateOptionMap(key string, value string) (err error) {
 		err = operation_setting.AutomaticDisableStatusCodesFromString(value)
 	case "AutomaticRetryStatusCodes":
 		err = operation_setting.AutomaticRetryStatusCodesFromString(value)
+	case common.TokenRequestAuditStatusCodeWhitelistKey:
+		common.UpdateTokenRequestAuditStatusCodeWhitelist(value)
 	case "StreamCacheQueueLength":
 		setting.StreamCacheQueueLength, _ = strconv.Atoi(value)
 	case "PayMethods":

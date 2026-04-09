@@ -24,7 +24,6 @@ import {
   Form,
   Row,
   Spin,
-  DatePicker,
   Typography,
   Modal,
 } from '@douyinfe/semi-ui';
@@ -46,6 +45,7 @@ export default function SettingsLog(props) {
   const [loadingCleanHistoryLog, setLoadingCleanHistoryLog] = useState(false);
   const [inputs, setInputs] = useState({
     LogConsumeEnabled: false,
+    TokenRequestAuditStatusCodeWhitelist: '',
     historyTimestamp: dayjs().subtract(1, 'month').toDate(),
   });
   const refForm = useRef();
@@ -187,9 +187,13 @@ export default function SettingsLog(props) {
       }
     }
     currentInputs['historyTimestamp'] = inputs.historyTimestamp;
-    setInputs(Object.assign(inputs, currentInputs));
-    setInputsRow(structuredClone(currentInputs));
-    refForm.current.setValues(currentInputs);
+    const merged = { ...inputs, ...currentInputs };
+
+    // Do NOT mutate previous state object; otherwise compareObjects may think
+    // nothing changed after user edits.
+    setInputs(merged);
+    setInputsRow(structuredClone(merged));
+    refForm.current.setValues(merged);
   }, [props.options]);
   return (
     <>
@@ -215,6 +219,29 @@ export default function SettingsLog(props) {
                     });
                   }}
                 />
+              </Col>
+
+              <Col xs={24} sm={24} md={16} lg={16} xl={16}>
+                <Form.Input
+                  field={'TokenRequestAuditStatusCodeWhitelist'}
+                  label={t('令牌请求审计入库状态码（逗号分隔）')}
+                  placeholder={t('留空表示全部入库，例如：200 或 400,401,429,500')}
+                  onChange={(value) => {
+                    setInputs({
+                      ...inputs,
+                      TokenRequestAuditStatusCodeWhitelist: value,
+                    });
+                  }}
+                />
+                <Text
+                  type='tertiary'
+                  size='small'
+                  style={{ display: 'block', marginTop: 4, marginBottom: 8 }}
+                >
+                  {t(
+                    '仅白名单中的状态码会写入令牌请求审计表；非法值会被忽略；清空后恢复为全部入库。',
+                  )}
+                </Text>
               </Col>
               <Col xs={24} sm={12} md={8} lg={8} xl={8}>
                 <Spin spinning={loadingCleanHistoryLog}>

@@ -1,7 +1,7 @@
-import "./chunk-UE53HML6.js";
+import './chunk-UE53HML6.js';
 
 // node_modules/react-fireworks/react-fireworks.js
-var fireworksField = "";
+var fireworksField = '';
 var opt = {};
 var particles = [];
 var rockets = [];
@@ -21,11 +21,11 @@ var Particle = class {
   constructor(pos) {
     this.pos = {
       x: pos ? pos.x : 0,
-      y: pos ? pos.y : 0
+      y: pos ? pos.y : 0,
     };
     this.vel = {
       x: 0,
-      y: 0
+      y: 0,
     };
     this.shrink = 0.97;
     this.size = 2;
@@ -50,15 +50,27 @@ var Particle = class {
       return;
     }
     c.save();
-    c.globalCompositeOperation = "lighter";
-    let x = this.pos.x, y = this.pos.y, r = this.size / 2;
+    c.globalCompositeOperation = 'lighter';
+    let x = this.pos.x,
+      y = this.pos.y,
+      r = this.size / 2;
     let gradient = c.createRadialGradient(x, y, 0.1, x, y, r);
-    gradient.addColorStop(0.1, "rgba(255,255,255," + this.alpha + ")");
-    gradient.addColorStop(0.8, "hsla(" + this.color + ", 100%, 50%, " + this.alpha + ")");
-    gradient.addColorStop(1, "hsla(" + this.color + ", 100%, 50%, 0.1)");
+    gradient.addColorStop(0.1, 'rgba(255,255,255,' + this.alpha + ')');
+    gradient.addColorStop(
+      0.8,
+      'hsla(' + this.color + ', 100%, 50%, ' + this.alpha + ')',
+    );
+    gradient.addColorStop(1, 'hsla(' + this.color + ', 100%, 50%, 0.1)');
     c.fillStyle = gradient;
     c.beginPath();
-    c.arc(this.pos.x, this.pos.y, this.flick ? Math.random() * this.size : this.size, 0, Math.PI * 2, true);
+    c.arc(
+      this.pos.x,
+      this.pos.y,
+      this.flick ? Math.random() * this.size : this.size,
+      0,
+      Math.PI * 2,
+      true,
+    );
     c.closePath();
     c.fill();
     c.restore();
@@ -71,7 +83,7 @@ var Rocket = class extends Particle {
   constructor(x) {
     super({
       x,
-      y: SCREEN_HEIGHT
+      y: SCREEN_HEIGHT,
     });
     this.explosionColor = 0;
   }
@@ -79,7 +91,7 @@ var Rocket = class extends Particle {
     for (let i = 0; i < opt.explode_debris_num; i++) {
       let particle = new Particle(this.pos);
       let angle = Math.random() * Math.PI * 2;
-      let speed = Math.cos(Math.random() * Math.PI / 2) * 15;
+      let speed = Math.cos((Math.random() * Math.PI) / 2) * 15;
       particle.vel.x = Math.cos(angle) * speed;
       particle.vel.y = Math.sin(angle) * speed;
       particle.size = opt.explode_particles_size;
@@ -96,14 +108,23 @@ var Rocket = class extends Particle {
       return;
     }
     c.save();
-    c.globalCompositeOperation = "lighter";
-    let x = this.pos.x, y = this.pos.y, r = this.size / 2;
+    c.globalCompositeOperation = 'lighter';
+    let x = this.pos.x,
+      y = this.pos.y,
+      r = this.size / 2;
     let gradient = c.createRadialGradient(x, y, 0.1, x, y, r);
-    gradient.addColorStop(0.1, "rgba(255, 255, 255 ," + this.alpha + ")");
-    gradient.addColorStop(1, "rgba(0, 0, 0, " + this.alpha + ")");
+    gradient.addColorStop(0.1, 'rgba(255, 255, 255 ,' + this.alpha + ')');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, ' + this.alpha + ')');
     c.fillStyle = gradient;
     c.beginPath();
-    c.arc(this.pos.x, this.pos.y, this.flick ? Math.random() * this.size / 2 + this.size / 2 : this.size, 0, Math.PI * 2, true);
+    c.arc(
+      this.pos.x,
+      this.pos.y,
+      this.flick ? (Math.random() * this.size) / 2 + this.size / 2 : this.size,
+      0,
+      Math.PI * 2,
+      true,
+    );
     c.closePath();
     c.fill();
     c.restore();
@@ -126,46 +147,51 @@ var react_fireworks_default = {
    * 8、z_index canvas层级
    * @returns {string}
    */
-  init: function(dom, options) {
-    if (!dom || typeof dom !== "string" || document.getElementById(dom) == null) {
-      console.log("id对象不存在");
+  init: function (dom, options) {
+    if (
+      !dom ||
+      typeof dom !== 'string' ||
+      document.getElementById(dom) == null
+    ) {
+      console.log('id对象不存在');
     } else {
       fireworksField = document.getElementById(dom);
       opt.frequency = options.frequency || 200;
       opt.launch_speed = options.launch_speed || 12;
       opt.launch_particles_size = options.launch_particles_size || 0;
       opt.explode_debris_num = Math.random() * 10 + (options.debris_num || 150);
-      opt.explode_particles_resistance = options.explode_particles_resistance || 5;
+      opt.explode_particles_resistance =
+        options.explode_particles_resistance || 5;
       opt.explode_particles_size = options.explode_particles_resistance || 10;
-      SCREEN_WIDTH = options.width || document.body.clientWidth + "px";
-      SCREEN_HEIGHT = options.height || document.body.clientHeight + "px";
-      SCREEN_TOP = options.top || "0px";
-      SCREEN_BOTTOM = options.bottom || "0px";
-      SCREEN_LEFT = options.left || "0px";
-      SCREEN_RIGHT = options.right || "0px";
+      SCREEN_WIDTH = options.width || document.body.clientWidth + 'px';
+      SCREEN_HEIGHT = options.height || document.body.clientHeight + 'px';
+      SCREEN_TOP = options.top || '0px';
+      SCREEN_BOTTOM = options.bottom || '0px';
+      SCREEN_LEFT = options.left || '0px';
+      SCREEN_RIGHT = options.right || '0px';
       Z_INDEX = options.zIndex || 100;
       MAX_PARTICLES = opt.explode_debris_num * 10;
-      canvas = document.createElement("canvas");
-      canvas.id = "fireworksField";
+      canvas = document.createElement('canvas');
+      canvas.id = 'fireworksField';
       canvas.style.width = SCREEN_WIDTH;
       canvas.style.height = SCREEN_HEIGHT;
-      canvas.style.position = "absolute";
+      canvas.style.position = 'absolute';
       canvas.style.top = SCREEN_TOP;
       canvas.style.bottom = SCREEN_BOTTOM;
       canvas.style.left = SCREEN_LEFT;
       canvas.style.right = SCREEN_RIGHT;
       canvas.style.opacity = 1;
       canvas.style.zIndex = Z_INDEX;
-      context = canvas.getContext("2d");
+      context = canvas.getContext('2d');
       fireworksField.appendChild(canvas);
       reloadTimer = setInterval(this.reload, opt.frequency);
       loopTimer = setInterval(this.loop, 50);
     }
   },
-  reload: function() {
+  reload: function () {
     if (rockets.length < 100) {
       let rocket = new Rocket(Math.random() * SCREEN_WIDTH);
-      rocket.explosionColor = Math.floor(Math.random() * 360 / 10) * 10;
+      rocket.explosionColor = Math.floor((Math.random() * 360) / 10) * 10;
       rocket.vel.y = -1 * opt.launch_speed;
       rocket.vel.x = Math.random() * 2 - 1;
       rocket.size = opt.launch_particles_size;
@@ -174,22 +200,33 @@ var react_fireworks_default = {
       rockets.push(rocket);
     }
   },
-  loop: function() {
+  loop: function () {
     if (SCREEN_WIDTH !== window.innerWidth) {
       canvas.width = SCREEN_WIDTH = window.innerWidth;
     }
     if (SCREEN_HEIGHT !== window.innerHeight) {
       canvas.height = SCREEN_HEIGHT = window.innerHeight;
     }
-    context.fillStyle = "rgba(0, 0, 0, 0.05)";
+    context.fillStyle = 'rgba(0, 0, 0, 0.05)';
     context.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     let existingRockets = [];
     for (let i = 0; i < rockets.length; i++) {
       rockets[i].update();
       rockets[i].render(context);
-      let distance = Math.sqrt(Math.pow(SCREEN_WIDTH - rockets[i].pos.x, 2) + Math.pow(SCREEN_HEIGHT - rockets[i].pos.y, 2));
-      let randomChance = rockets[i].pos.y < SCREEN_HEIGHT * 2 / 3 ? Math.random() * 100 <= 1 : false;
-      if (rockets[i].pos.y < SCREEN_HEIGHT / 5 || rockets[i].vel.y >= 0 || distance < 50 || randomChance) {
+      let distance = Math.sqrt(
+        Math.pow(SCREEN_WIDTH - rockets[i].pos.x, 2) +
+          Math.pow(SCREEN_HEIGHT - rockets[i].pos.y, 2),
+      );
+      let randomChance =
+        rockets[i].pos.y < (SCREEN_HEIGHT * 2) / 3
+          ? Math.random() * 100 <= 1
+          : false;
+      if (
+        rockets[i].pos.y < SCREEN_HEIGHT / 5 ||
+        rockets[i].vel.y >= 0 ||
+        distance < 50 ||
+        randomChance
+      ) {
         rockets[i].explode();
       } else {
         existingRockets.push(rockets[i]);
@@ -209,7 +246,7 @@ var react_fireworks_default = {
       particles.shift();
     }
   },
-  start: function() {
+  start: function () {
     if (reloadTimer) {
       clearInterval(reloadTimer);
     }
@@ -219,14 +256,12 @@ var react_fireworks_default = {
     reloadTimer = setInterval(this.reload, opt.frequency);
     loopTimer = setInterval(this.loop, 50);
   },
-  stop: function() {
+  stop: function () {
     clearInterval(reloadTimer);
-    setTimeout(function() {
+    setTimeout(function () {
       clearInterval(loopTimer);
     }, 2e4);
-  }
+  },
 };
-export {
-  react_fireworks_default as default
-};
+export { react_fireworks_default as default };
 //# sourceMappingURL=react-fireworks.js.map

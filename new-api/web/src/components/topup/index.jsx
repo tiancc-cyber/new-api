@@ -155,13 +155,13 @@ const TopUp = () => {
     window.open(topUpLink, '_blank');
   };
 
-	const showWeChatPayQRCode = (codeUrl, tradeNo) => {
-		setWxCodeUrl(codeUrl);
-		setWxTradeNo(tradeNo);
-		setWxPayModalVisible(true);
-	};
+  const showWeChatPayQRCode = (codeUrl, tradeNo) => {
+    setWxCodeUrl(codeUrl);
+    setWxTradeNo(tradeNo);
+    setWxPayModalVisible(true);
+  };
 
-	const refreshWeChatPayQRCode = async () => {
+  const refreshWeChatPayQRCode = async () => {
     if (!wxTradeNo) {
       Toast.error({ content: t('订单号为空，无法刷新') });
       return;
@@ -169,14 +169,14 @@ const TopUp = () => {
     const res = await API.post('/api/user/wechatpay/refresh', {
       trade_no: wxTradeNo,
     });
-		const { success, message, data } = res.data;
-		if (!success) {
-			Toast.error({ content: message || t('刷新失败') });
-			return;
-		}
-		setWxCodeUrl(data.code_url);
+    const { success, message, data } = res.data;
+    if (!success) {
+      Toast.error({ content: message || t('刷新失败') });
+      return;
+    }
+    setWxCodeUrl(data.code_url);
     // trade_no 不变，仅刷新二维码
-	};
+  };
 
   const preTopUp = async (payment) => {
     if (payment === 'stripe') {
@@ -258,38 +258,38 @@ const TopUp = () => {
       }
 
       if (res !== undefined) {
-          const { message, data } = res.data;
-          if (message === 'success') {
-            if (payWay === 'stripe') {
-              // Stripe 支付回调处理
-              window.open(data.pay_link, '_blank');
-            } else if (payWay === 'wxpay') {
-              // 微信支付处理 - 显示二维码
-              showWeChatPayQRCode(data.code_url, data.trade_no);
-            } else {
-              // 普通支付表单提交
-              let params = data;
-              let url = res.data.url;
-              let form = document.createElement('form');
-              form.action = url;
-              form.method = 'POST';
-              let isSafari =
-                navigator.userAgent.indexOf('Safari') > -1 &&
-                navigator.userAgent.indexOf('Chrome') < 1;
-              if (!isSafari) {
-                form.target = '_blank';
-              }
-              for (let key in params) {
-                let input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = params[key];
-                form.appendChild(input);
-              }
-              document.body.appendChild(form);
-              form.submit();
-              document.body.removeChild(form);
+        const { message, data } = res.data;
+        if (message === 'success') {
+          if (payWay === 'stripe') {
+            // Stripe 支付回调处理
+            window.open(data.pay_link, '_blank');
+          } else if (payWay === 'wxpay') {
+            // 微信支付处理 - 显示二维码
+            showWeChatPayQRCode(data.code_url, data.trade_no);
+          } else {
+            // 普通支付表单提交
+            let params = data;
+            let url = res.data.url;
+            let form = document.createElement('form');
+            form.action = url;
+            form.method = 'POST';
+            let isSafari =
+              navigator.userAgent.indexOf('Safari') > -1 &&
+              navigator.userAgent.indexOf('Chrome') < 1;
+            if (!isSafari) {
+              form.target = '_blank';
             }
+            for (let key in params) {
+              let input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = key;
+              input.value = params[key];
+              form.appendChild(input);
+            }
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+          }
         } else {
           const errorMsg =
             typeof data === 'string' ? data : message || t('支付失败');

@@ -2,24 +2,12 @@ import {
   insertEdge,
   insertEdgeLabel,
   markers_default,
-  positionEdgeLabel
-} from "./chunk-I2HSE6D7.js";
-import {
-  insertCluster,
-  insertNode,
-  labelHelper
-} from "./chunk-P32SJDBU.js";
-import {
-  interpolateToCurve
-} from "./chunk-IPOIRDR2.js";
-import {
-  common_default,
-  getConfig
-} from "./chunk-LQLXUK6X.js";
-import {
-  __name,
-  log
-} from "./chunk-OQUVF2X3.js";
+  positionEdgeLabel,
+} from './chunk-I2HSE6D7.js';
+import { insertCluster, insertNode, labelHelper } from './chunk-P32SJDBU.js';
+import { interpolateToCurve } from './chunk-IPOIRDR2.js';
+import { common_default, getConfig } from './chunk-LQLXUK6X.js';
+import { __name, log } from './chunk-OQUVF2X3.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/chunk-GLR3WWYH.mjs
 var internalHelpers = {
@@ -33,28 +21,36 @@ var internalHelpers = {
   interpolateToCurve,
   labelHelper,
   log,
-  positionEdgeLabel
+  positionEdgeLabel,
 };
 var layoutAlgorithms = {};
 var registerLayoutLoaders = __name((loaders) => {
   for (const loader of loaders) {
     layoutAlgorithms[loader.name] = loader;
   }
-}, "registerLayoutLoaders");
+}, 'registerLayoutLoaders');
 var registerDefaultLayoutLoaders = __name(() => {
   registerLayoutLoaders([
     {
-      name: "dagre",
-      loader: __name(async () => await import("./dagre-KLK3FWXG-BJOTLAIH.js"), "loader")
+      name: 'dagre',
+      loader: __name(
+        async () => await import('./dagre-KLK3FWXG-BJOTLAIH.js'),
+        'loader',
+      ),
     },
-    ...true ? [
-      {
-        name: "cose-bilkent",
-        loader: __name(async () => await import("./cose-bilkent-S5V4N54A-BWPCBIXA.js"), "loader")
-      }
-    ] : []
+    ...(true
+      ? [
+          {
+            name: 'cose-bilkent',
+            loader: __name(
+              async () => await import('./cose-bilkent-S5V4N54A-BWPCBIXA.js'),
+              'loader',
+            ),
+          },
+        ]
+      : []),
   ]);
-}, "registerDefaultLayoutLoaders");
+}, 'registerDefaultLayoutLoaders');
 registerDefaultLayoutLoaders();
 var render = __name(async (data4Layout, svg) => {
   if (!(data4Layout.layoutAlgorithm in layoutAlgorithms)) {
@@ -63,23 +59,26 @@ var render = __name(async (data4Layout, svg) => {
   const layoutDefinition = layoutAlgorithms[data4Layout.layoutAlgorithm];
   const layoutRenderer = await layoutDefinition.loader();
   return layoutRenderer.render(data4Layout, svg, internalHelpers, {
-    algorithm: layoutDefinition.algorithm
+    algorithm: layoutDefinition.algorithm,
   });
-}, "render");
-var getRegisteredLayoutAlgorithm = __name((algorithm = "", { fallback = "dagre" } = {}) => {
-  if (algorithm in layoutAlgorithms) {
-    return algorithm;
-  }
-  if (fallback in layoutAlgorithms) {
-    log.warn(`Layout algorithm ${algorithm} is not registered. Using ${fallback} as fallback.`);
-    return fallback;
-  }
-  throw new Error(`Both layout algorithms ${algorithm} and ${fallback} are not registered.`);
-}, "getRegisteredLayoutAlgorithm");
+}, 'render');
+var getRegisteredLayoutAlgorithm = __name(
+  (algorithm = '', { fallback = 'dagre' } = {}) => {
+    if (algorithm in layoutAlgorithms) {
+      return algorithm;
+    }
+    if (fallback in layoutAlgorithms) {
+      log.warn(
+        `Layout algorithm ${algorithm} is not registered. Using ${fallback} as fallback.`,
+      );
+      return fallback;
+    }
+    throw new Error(
+      `Both layout algorithms ${algorithm} and ${fallback} are not registered.`,
+    );
+  },
+  'getRegisteredLayoutAlgorithm',
+);
 
-export {
-  registerLayoutLoaders,
-  render,
-  getRegisteredLayoutAlgorithm
-};
+export { registerLayoutLoaders, render, getRegisteredLayoutAlgorithm };
 //# sourceMappingURL=chunk-NBEFCHMA.js.map

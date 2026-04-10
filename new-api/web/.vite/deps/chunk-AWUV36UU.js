@@ -1,5 +1,5 @@
 // node_modules/micromark-util-symbol/lib/codes.js
-var codes = (
+var codes =
   /** @type {const} */
   {
     carriageReturn: -5,
@@ -238,13 +238,12 @@ var codes = (
     // Unicode Specials block.
     byteOrderMarker: 65279,
     // Unicode Specials block.
-    replacementCharacter: 65533
+    replacementCharacter: 65533,
     // `�`
-  }
-);
+  };
 
 // node_modules/micromark-util-symbol/lib/constants.js
-var constants = (
+var constants =
   /** @type {const} */
   {
     attentionSideAfter: 2,
@@ -257,7 +256,7 @@ var constants = (
     // 63 characters is fine, 64 is too many.
     autolinkSchemeSizeMax: 32,
     // 32 characters is fine, 33 is too many.
-    cdataOpeningString: "CDATA[",
+    cdataOpeningString: 'CDATA[',
     // And preceded by `<![`.
     characterGroupPunctuation: 2,
     // Symbol used to indicate a character is punctuation
@@ -271,11 +270,11 @@ var constants = (
     // `&CounterClockwiseContourIntegral;`.
     codeFencedSequenceSizeMin: 3,
     // At least 3 ticks or tildes are needed.
-    contentTypeContent: "content",
-    contentTypeDocument: "document",
-    contentTypeFlow: "flow",
-    contentTypeString: "string",
-    contentTypeText: "text",
+    contentTypeContent: 'content',
+    contentTypeDocument: 'document',
+    contentTypeFlow: 'flow',
+    contentTypeString: 'string',
+    contentTypeText: 'text',
     hardBreakPrefixSizeMin: 2,
     // At least 2 trailing spaces are needed.
     htmlBasic: 6,
@@ -306,31 +305,30 @@ var constants = (
     // Tabs have a hard-coded size of 4, per CommonMark.
     thematicBreakMarkerCountMin: 3,
     // At least 3 asterisks, dashes, or underscores are needed.
-    v8MaxSafeChunkSize: 1e4
+    v8MaxSafeChunkSize: 1e4,
     // V8 (and potentially others) have problems injecting giant arrays into other arrays, hence we operate in chunks.
-  }
-);
+  };
 
 // node_modules/micromark-util-symbol/lib/types.js
-var types = (
+var types =
   /** @type {const} */
   {
     // Generic type for data, such as in a title, a destination, etc.
-    data: "data",
+    data: 'data',
     // Generic type for syntactic whitespace (tabs, virtual spaces, spaces).
     // Such as, between a fenced code fence and an info string.
-    whitespace: "whitespace",
+    whitespace: 'whitespace',
     // Generic type for line endings (line feed, carriage return, carriage return +
     // line feed).
-    lineEnding: "lineEnding",
+    lineEnding: 'lineEnding',
     // A line ending, but ending a blank line.
-    lineEndingBlank: "lineEndingBlank",
+    lineEndingBlank: 'lineEndingBlank',
     // Generic type for whitespace (tabs, virtual spaces, spaces) at the start of a
     // line.
-    linePrefix: "linePrefix",
+    linePrefix: 'linePrefix',
     // Generic type for whitespace (tabs, virtual spaces, spaces) at the end of a
     // line.
-    lineSuffix: "lineSuffix",
+    lineSuffix: 'lineSuffix',
     // Whole ATX heading:
     //
     // ```markdown
@@ -340,39 +338,39 @@ var types = (
     // ```
     //
     // Includes `atxHeadingSequence`, `whitespace`, `atxHeadingText`.
-    atxHeading: "atxHeading",
+    atxHeading: 'atxHeading',
     // Sequence of number signs in an ATX heading (`###`).
-    atxHeadingSequence: "atxHeadingSequence",
+    atxHeadingSequence: 'atxHeadingSequence',
     // Content in an ATX heading (`alpha`).
     // Includes text.
-    atxHeadingText: "atxHeadingText",
+    atxHeadingText: 'atxHeadingText',
     // Whole autolink (`<https://example.com>` or `<admin@example.com>`)
     // Includes `autolinkMarker` and `autolinkProtocol` or `autolinkEmail`.
-    autolink: "autolink",
+    autolink: 'autolink',
     // Email autolink w/o markers (`admin@example.com`)
-    autolinkEmail: "autolinkEmail",
+    autolinkEmail: 'autolinkEmail',
     // Marker around an `autolinkProtocol` or `autolinkEmail` (`<` or `>`).
-    autolinkMarker: "autolinkMarker",
+    autolinkMarker: 'autolinkMarker',
     // Protocol autolink w/o markers (`https://example.com`)
-    autolinkProtocol: "autolinkProtocol",
+    autolinkProtocol: 'autolinkProtocol',
     // A whole character escape (`\-`).
     // Includes `escapeMarker` and `characterEscapeValue`.
-    characterEscape: "characterEscape",
+    characterEscape: 'characterEscape',
     // The escaped character (`-`).
-    characterEscapeValue: "characterEscapeValue",
+    characterEscapeValue: 'characterEscapeValue',
     // A whole character reference (`&amp;`, `&#8800;`, or `&#x1D306;`).
     // Includes `characterReferenceMarker`, an optional
     // `characterReferenceMarkerNumeric`, in which case an optional
     // `characterReferenceMarkerHexadecimal`, and a `characterReferenceValue`.
-    characterReference: "characterReference",
+    characterReference: 'characterReference',
     // The start or end marker (`&` or `;`).
-    characterReferenceMarker: "characterReferenceMarker",
+    characterReferenceMarker: 'characterReferenceMarker',
     // Mark reference as numeric (`#`).
-    characterReferenceMarkerNumeric: "characterReferenceMarkerNumeric",
+    characterReferenceMarkerNumeric: 'characterReferenceMarkerNumeric',
     // Mark reference as numeric (`x` or `X`).
-    characterReferenceMarkerHexadecimal: "characterReferenceMarkerHexadecimal",
+    characterReferenceMarkerHexadecimal: 'characterReferenceMarkerHexadecimal',
     // Value of character reference w/o markers (`amp`, `8800`, or `1D306`).
-    characterReferenceValue: "characterReferenceValue",
+    characterReferenceValue: 'characterReferenceValue',
     // Whole fenced code:
     //
     // ````markdown
@@ -380,20 +378,20 @@ var types = (
     // alert(1)
     // ```
     // ````
-    codeFenced: "codeFenced",
+    codeFenced: 'codeFenced',
     // A fenced code fence, including whitespace, sequence, info, and meta
     // (` ```js `).
-    codeFencedFence: "codeFencedFence",
+    codeFencedFence: 'codeFencedFence',
     // Sequence of grave accent or tilde characters (` ``` `) in a fence.
-    codeFencedFenceSequence: "codeFencedFenceSequence",
+    codeFencedFenceSequence: 'codeFencedFenceSequence',
     // Info word (`js`) in a fence.
     // Includes string.
-    codeFencedFenceInfo: "codeFencedFenceInfo",
+    codeFencedFenceInfo: 'codeFencedFenceInfo',
     // Meta words (`highlight="1"`) in a fence.
     // Includes string.
-    codeFencedFenceMeta: "codeFencedFenceMeta",
+    codeFencedFenceMeta: 'codeFencedFenceMeta',
     // A line of code.
-    codeFlowValue: "codeFlowValue",
+    codeFlowValue: 'codeFlowValue',
     // Whole indented code:
     //
     // ```markdown
@@ -401,16 +399,16 @@ var types = (
     // ```
     //
     // Includes `lineEnding`, `linePrefix`, and `codeFlowValue`.
-    codeIndented: "codeIndented",
+    codeIndented: 'codeIndented',
     // A text code (``` `alpha` ```).
     // Includes `codeTextSequence`, `codeTextData`, `lineEnding`, and can include
     // `codeTextPadding`.
-    codeText: "codeText",
-    codeTextData: "codeTextData",
+    codeText: 'codeText',
+    codeTextData: 'codeTextData',
     // A space or line ending right after or before a tick.
-    codeTextPadding: "codeTextPadding",
+    codeTextPadding: 'codeTextPadding',
     // A text code fence (` `` `).
-    codeTextSequence: "codeTextSequence",
+    codeTextSequence: 'codeTextSequence',
     // Whole content:
     //
     // ```markdown
@@ -421,7 +419,7 @@ var types = (
     // ```
     //
     // Includes `paragraph` and `definition`.
-    content: "content",
+    content: 'content',
     // Whole definition:
     //
     // ```markdown
@@ -430,59 +428,59 @@ var types = (
     //
     // Includes `definitionLabel`, `definitionMarker`, `whitespace`,
     // `definitionDestination`, and optionally `lineEnding` and `definitionTitle`.
-    definition: "definition",
+    definition: 'definition',
     // Destination of a definition (`https://github.com/micromark/micromark` or
     // `<https://github.com/micromark/micromark>`).
     // Includes `definitionDestinationLiteral` or `definitionDestinationRaw`.
-    definitionDestination: "definitionDestination",
+    definitionDestination: 'definitionDestination',
     // Enclosed destination of a definition
     // (`<https://github.com/micromark/micromark>`).
     // Includes `definitionDestinationLiteralMarker` and optionally
     // `definitionDestinationString`.
-    definitionDestinationLiteral: "definitionDestinationLiteral",
+    definitionDestinationLiteral: 'definitionDestinationLiteral',
     // Markers of an enclosed definition destination (`<` or `>`).
-    definitionDestinationLiteralMarker: "definitionDestinationLiteralMarker",
+    definitionDestinationLiteralMarker: 'definitionDestinationLiteralMarker',
     // Unenclosed destination of a definition
     // (`https://github.com/micromark/micromark`).
     // Includes `definitionDestinationString`.
-    definitionDestinationRaw: "definitionDestinationRaw",
+    definitionDestinationRaw: 'definitionDestinationRaw',
     // Text in an destination (`https://github.com/micromark/micromark`).
     // Includes string.
-    definitionDestinationString: "definitionDestinationString",
+    definitionDestinationString: 'definitionDestinationString',
     // Label of a definition (`[micromark]`).
     // Includes `definitionLabelMarker` and `definitionLabelString`.
-    definitionLabel: "definitionLabel",
+    definitionLabel: 'definitionLabel',
     // Markers of a definition label (`[` or `]`).
-    definitionLabelMarker: "definitionLabelMarker",
+    definitionLabelMarker: 'definitionLabelMarker',
     // Value of a definition label (`micromark`).
     // Includes string.
-    definitionLabelString: "definitionLabelString",
+    definitionLabelString: 'definitionLabelString',
     // Marker between a label and a destination (`:`).
-    definitionMarker: "definitionMarker",
+    definitionMarker: 'definitionMarker',
     // Title of a definition (`"x"`, `'y'`, or `(z)`).
     // Includes `definitionTitleMarker` and optionally `definitionTitleString`.
-    definitionTitle: "definitionTitle",
+    definitionTitle: 'definitionTitle',
     // Marker around a title of a definition (`"`, `'`, `(`, or `)`).
-    definitionTitleMarker: "definitionTitleMarker",
+    definitionTitleMarker: 'definitionTitleMarker',
     // Data without markers in a title (`z`).
     // Includes string.
-    definitionTitleString: "definitionTitleString",
+    definitionTitleString: 'definitionTitleString',
     // Emphasis (`*alpha*`).
     // Includes `emphasisSequence` and `emphasisText`.
-    emphasis: "emphasis",
+    emphasis: 'emphasis',
     // Sequence of emphasis markers (`*` or `_`).
-    emphasisSequence: "emphasisSequence",
+    emphasisSequence: 'emphasisSequence',
     // Emphasis text (`alpha`).
     // Includes text.
-    emphasisText: "emphasisText",
+    emphasisText: 'emphasisText',
     // The character escape marker (`\`).
-    escapeMarker: "escapeMarker",
+    escapeMarker: 'escapeMarker',
     // A hard break created with a backslash (`\\n`).
     // Note: does not include the line ending.
-    hardBreakEscape: "hardBreakEscape",
+    hardBreakEscape: 'hardBreakEscape',
     // A hard break created with trailing spaces (`  \n`).
     // Does not include the line ending.
-    hardBreakTrailing: "hardBreakTrailing",
+    hardBreakTrailing: 'hardBreakTrailing',
     // Flow HTML:
     //
     // ```markdown
@@ -490,38 +488,38 @@ var types = (
     // ```
     //
     // Inlcudes `lineEnding`, `htmlFlowData`.
-    htmlFlow: "htmlFlow",
-    htmlFlowData: "htmlFlowData",
+    htmlFlow: 'htmlFlow',
+    htmlFlowData: 'htmlFlowData',
     // HTML in text (the tag in `a <i> b`).
     // Includes `lineEnding`, `htmlTextData`.
-    htmlText: "htmlText",
-    htmlTextData: "htmlTextData",
+    htmlText: 'htmlText',
+    htmlTextData: 'htmlTextData',
     // Whole image (`![alpha](bravo)`, `![alpha][bravo]`, `![alpha][]`, or
     // `![alpha]`).
     // Includes `label` and an optional `resource` or `reference`.
-    image: "image",
+    image: 'image',
     // Whole link label (`[*alpha*]`).
     // Includes `labelLink` or `labelImage`, `labelText`, and `labelEnd`.
-    label: "label",
+    label: 'label',
     // Text in an label (`*alpha*`).
     // Includes text.
-    labelText: "labelText",
+    labelText: 'labelText',
     // Start a link label (`[`).
     // Includes a `labelMarker`.
-    labelLink: "labelLink",
+    labelLink: 'labelLink',
     // Start an image label (`![`).
     // Includes `labelImageMarker` and `labelMarker`.
-    labelImage: "labelImage",
+    labelImage: 'labelImage',
     // Marker of a label (`[` or `]`).
-    labelMarker: "labelMarker",
+    labelMarker: 'labelMarker',
     // Marker to start an image (`!`).
-    labelImageMarker: "labelImageMarker",
+    labelImageMarker: 'labelImageMarker',
     // End a label (`]`).
     // Includes `labelMarker`.
-    labelEnd: "labelEnd",
+    labelEnd: 'labelEnd',
     // Whole link (`[alpha](bravo)`, `[alpha][bravo]`, `[alpha][]`, or `[alpha]`).
     // Includes `label` and an optional `resource` or `reference`.
-    link: "link",
+    link: 'link',
     // Whole paragraph:
     //
     // ```markdown
@@ -530,44 +528,44 @@ var types = (
     // ```
     //
     // Includes text.
-    paragraph: "paragraph",
+    paragraph: 'paragraph',
     // A reference (`[alpha]` or `[]`).
     // Includes `referenceMarker` and an optional `referenceString`.
-    reference: "reference",
+    reference: 'reference',
     // A reference marker (`[` or `]`).
-    referenceMarker: "referenceMarker",
+    referenceMarker: 'referenceMarker',
     // Reference text (`alpha`).
     // Includes string.
-    referenceString: "referenceString",
+    referenceString: 'referenceString',
     // A resource (`(https://example.com "alpha")`).
     // Includes `resourceMarker`, an optional `resourceDestination` with an optional
     // `whitespace` and `resourceTitle`.
-    resource: "resource",
+    resource: 'resource',
     // A resource destination (`https://example.com`).
     // Includes `resourceDestinationLiteral` or `resourceDestinationRaw`.
-    resourceDestination: "resourceDestination",
+    resourceDestination: 'resourceDestination',
     // A literal resource destination (`<https://example.com>`).
     // Includes `resourceDestinationLiteralMarker` and optionally
     // `resourceDestinationString`.
-    resourceDestinationLiteral: "resourceDestinationLiteral",
+    resourceDestinationLiteral: 'resourceDestinationLiteral',
     // A resource destination marker (`<` or `>`).
-    resourceDestinationLiteralMarker: "resourceDestinationLiteralMarker",
+    resourceDestinationLiteralMarker: 'resourceDestinationLiteralMarker',
     // A raw resource destination (`https://example.com`).
     // Includes `resourceDestinationString`.
-    resourceDestinationRaw: "resourceDestinationRaw",
+    resourceDestinationRaw: 'resourceDestinationRaw',
     // Resource destination text (`https://example.com`).
     // Includes string.
-    resourceDestinationString: "resourceDestinationString",
+    resourceDestinationString: 'resourceDestinationString',
     // A resource marker (`(` or `)`).
-    resourceMarker: "resourceMarker",
+    resourceMarker: 'resourceMarker',
     // A resource title (`"alpha"`, `'alpha'`, or `(alpha)`).
     // Includes `resourceTitleMarker` and optionally `resourceTitleString`.
-    resourceTitle: "resourceTitle",
+    resourceTitle: 'resourceTitle',
     // A resource title marker (`"`, `'`, `(`, or `)`).
-    resourceTitleMarker: "resourceTitleMarker",
+    resourceTitleMarker: 'resourceTitleMarker',
     // Resource destination title (`alpha`).
     // Includes string.
-    resourceTitleString: "resourceTitleString",
+    resourceTitleString: 'resourceTitleString',
     // Whole setext heading:
     //
     // ```markdown
@@ -578,23 +576,23 @@ var types = (
     //
     // Includes `setextHeadingText`, `lineEnding`, `linePrefix`, and
     // `setextHeadingLine`.
-    setextHeading: "setextHeading",
+    setextHeading: 'setextHeading',
     // Content in a setext heading (`alpha\nbravo`).
     // Includes text.
-    setextHeadingText: "setextHeadingText",
+    setextHeadingText: 'setextHeadingText',
     // Underline in a setext heading, including whitespace suffix (`==`).
     // Includes `setextHeadingLineSequence`.
-    setextHeadingLine: "setextHeadingLine",
+    setextHeadingLine: 'setextHeadingLine',
     // Sequence of equals or dash characters in underline in a setext heading (`-`).
-    setextHeadingLineSequence: "setextHeadingLineSequence",
+    setextHeadingLineSequence: 'setextHeadingLineSequence',
     // Strong (`**alpha**`).
     // Includes `strongSequence` and `strongText`.
-    strong: "strong",
+    strong: 'strong',
     // Sequence of strong markers (`**` or `__`).
-    strongSequence: "strongSequence",
+    strongSequence: 'strongSequence',
     // Strong text (`alpha`).
     // Includes text.
-    strongText: "strongText",
+    strongText: 'strongText',
     // Whole thematic break:
     //
     // ```markdown
@@ -602,9 +600,9 @@ var types = (
     // ```
     //
     // Includes `thematicBreakSequence` and `whitespace`.
-    thematicBreak: "thematicBreak",
+    thematicBreak: 'thematicBreak',
     // A sequence of one or more thematic break markers (`***`).
-    thematicBreakSequence: "thematicBreakSequence",
+    thematicBreakSequence: 'thematicBreakSequence',
     // Whole block quote:
     //
     // ```markdown
@@ -614,13 +612,13 @@ var types = (
     // ```
     //
     // Includes `blockQuotePrefix` and flow.
-    blockQuote: "blockQuote",
+    blockQuote: 'blockQuote',
     // The `>` or `> ` of a block quote.
-    blockQuotePrefix: "blockQuotePrefix",
+    blockQuotePrefix: 'blockQuotePrefix',
     // The `>` of a block quote prefix.
-    blockQuoteMarker: "blockQuoteMarker",
+    blockQuoteMarker: 'blockQuoteMarker',
     // The optional ` ` of a block quote prefix.
-    blockQuotePrefixWhitespace: "blockQuotePrefixWhitespace",
+    blockQuotePrefixWhitespace: 'blockQuotePrefixWhitespace',
     // Whole ordered list:
     //
     // ```markdown
@@ -630,7 +628,7 @@ var types = (
     //
     // Includes `listItemPrefix`, flow, and optionally  `listItemIndent` on further
     // lines.
-    listOrdered: "listOrdered",
+    listOrdered: 'listOrdered',
     // Whole unordered list:
     //
     // ```markdown
@@ -640,133 +638,131 @@ var types = (
     //
     // Includes `listItemPrefix`, flow, and optionally  `listItemIndent` on further
     // lines.
-    listUnordered: "listUnordered",
+    listUnordered: 'listUnordered',
     // The indent of further list item lines.
-    listItemIndent: "listItemIndent",
+    listItemIndent: 'listItemIndent',
     // A marker, as in, `*`, `+`, `-`, `.`, or `)`.
-    listItemMarker: "listItemMarker",
+    listItemMarker: 'listItemMarker',
     // The thing that starts a list item, such as `1. `.
     // Includes `listItemValue` if ordered, `listItemMarker`, and
     // `listItemPrefixWhitespace` (unless followed by a line ending).
-    listItemPrefix: "listItemPrefix",
+    listItemPrefix: 'listItemPrefix',
     // The whitespace after a marker.
-    listItemPrefixWhitespace: "listItemPrefixWhitespace",
+    listItemPrefixWhitespace: 'listItemPrefixWhitespace',
     // The numerical value of an ordered item.
-    listItemValue: "listItemValue",
+    listItemValue: 'listItemValue',
     // Internal types used for subtokenizers, compiled away
-    chunkDocument: "chunkDocument",
-    chunkContent: "chunkContent",
-    chunkFlow: "chunkFlow",
-    chunkText: "chunkText",
-    chunkString: "chunkString"
-  }
-);
+    chunkDocument: 'chunkDocument',
+    chunkContent: 'chunkContent',
+    chunkFlow: 'chunkFlow',
+    chunkText: 'chunkText',
+    chunkString: 'chunkString',
+  };
 
 // node_modules/micromark-util-symbol/lib/values.js
-var values = (
+var values =
   /** @type {const} */
   {
-    ht: "	",
-    lf: "\n",
-    cr: "\r",
-    space: " ",
-    exclamationMark: "!",
+    ht: '	',
+    lf: '\n',
+    cr: '\r',
+    space: ' ',
+    exclamationMark: '!',
     quotationMark: '"',
-    numberSign: "#",
-    dollarSign: "$",
-    percentSign: "%",
-    ampersand: "&",
+    numberSign: '#',
+    dollarSign: '$',
+    percentSign: '%',
+    ampersand: '&',
     apostrophe: "'",
-    leftParenthesis: "(",
-    rightParenthesis: ")",
-    asterisk: "*",
-    plusSign: "+",
-    comma: ",",
-    dash: "-",
-    dot: ".",
-    slash: "/",
-    digit0: "0",
-    digit1: "1",
-    digit2: "2",
-    digit3: "3",
-    digit4: "4",
-    digit5: "5",
-    digit6: "6",
-    digit7: "7",
-    digit8: "8",
-    digit9: "9",
-    colon: ":",
-    semicolon: ";",
-    lessThan: "<",
-    equalsTo: "=",
-    greaterThan: ">",
-    questionMark: "?",
-    atSign: "@",
-    uppercaseA: "A",
-    uppercaseB: "B",
-    uppercaseC: "C",
-    uppercaseD: "D",
-    uppercaseE: "E",
-    uppercaseF: "F",
-    uppercaseG: "G",
-    uppercaseH: "H",
-    uppercaseI: "I",
-    uppercaseJ: "J",
-    uppercaseK: "K",
-    uppercaseL: "L",
-    uppercaseM: "M",
-    uppercaseN: "N",
-    uppercaseO: "O",
-    uppercaseP: "P",
-    uppercaseQ: "Q",
-    uppercaseR: "R",
-    uppercaseS: "S",
-    uppercaseT: "T",
-    uppercaseU: "U",
-    uppercaseV: "V",
-    uppercaseW: "W",
-    uppercaseX: "X",
-    uppercaseY: "Y",
-    uppercaseZ: "Z",
-    leftSquareBracket: "[",
-    backslash: "\\",
-    rightSquareBracket: "]",
-    caret: "^",
-    underscore: "_",
-    graveAccent: "`",
-    lowercaseA: "a",
-    lowercaseB: "b",
-    lowercaseC: "c",
-    lowercaseD: "d",
-    lowercaseE: "e",
-    lowercaseF: "f",
-    lowercaseG: "g",
-    lowercaseH: "h",
-    lowercaseI: "i",
-    lowercaseJ: "j",
-    lowercaseK: "k",
-    lowercaseL: "l",
-    lowercaseM: "m",
-    lowercaseN: "n",
-    lowercaseO: "o",
-    lowercaseP: "p",
-    lowercaseQ: "q",
-    lowercaseR: "r",
-    lowercaseS: "s",
-    lowercaseT: "t",
-    lowercaseU: "u",
-    lowercaseV: "v",
-    lowercaseW: "w",
-    lowercaseX: "x",
-    lowercaseY: "y",
-    lowercaseZ: "z",
-    leftCurlyBrace: "{",
-    verticalBar: "|",
-    rightCurlyBrace: "}",
-    tilde: "~",
-    replacementCharacter: "�"
-  }
-);
+    leftParenthesis: '(',
+    rightParenthesis: ')',
+    asterisk: '*',
+    plusSign: '+',
+    comma: ',',
+    dash: '-',
+    dot: '.',
+    slash: '/',
+    digit0: '0',
+    digit1: '1',
+    digit2: '2',
+    digit3: '3',
+    digit4: '4',
+    digit5: '5',
+    digit6: '6',
+    digit7: '7',
+    digit8: '8',
+    digit9: '9',
+    colon: ':',
+    semicolon: ';',
+    lessThan: '<',
+    equalsTo: '=',
+    greaterThan: '>',
+    questionMark: '?',
+    atSign: '@',
+    uppercaseA: 'A',
+    uppercaseB: 'B',
+    uppercaseC: 'C',
+    uppercaseD: 'D',
+    uppercaseE: 'E',
+    uppercaseF: 'F',
+    uppercaseG: 'G',
+    uppercaseH: 'H',
+    uppercaseI: 'I',
+    uppercaseJ: 'J',
+    uppercaseK: 'K',
+    uppercaseL: 'L',
+    uppercaseM: 'M',
+    uppercaseN: 'N',
+    uppercaseO: 'O',
+    uppercaseP: 'P',
+    uppercaseQ: 'Q',
+    uppercaseR: 'R',
+    uppercaseS: 'S',
+    uppercaseT: 'T',
+    uppercaseU: 'U',
+    uppercaseV: 'V',
+    uppercaseW: 'W',
+    uppercaseX: 'X',
+    uppercaseY: 'Y',
+    uppercaseZ: 'Z',
+    leftSquareBracket: '[',
+    backslash: '\\',
+    rightSquareBracket: ']',
+    caret: '^',
+    underscore: '_',
+    graveAccent: '`',
+    lowercaseA: 'a',
+    lowercaseB: 'b',
+    lowercaseC: 'c',
+    lowercaseD: 'd',
+    lowercaseE: 'e',
+    lowercaseF: 'f',
+    lowercaseG: 'g',
+    lowercaseH: 'h',
+    lowercaseI: 'i',
+    lowercaseJ: 'j',
+    lowercaseK: 'k',
+    lowercaseL: 'l',
+    lowercaseM: 'm',
+    lowercaseN: 'n',
+    lowercaseO: 'o',
+    lowercaseP: 'p',
+    lowercaseQ: 'q',
+    lowercaseR: 'r',
+    lowercaseS: 's',
+    lowercaseT: 't',
+    lowercaseU: 'u',
+    lowercaseV: 'v',
+    lowercaseW: 'w',
+    lowercaseX: 'x',
+    lowercaseY: 'y',
+    lowercaseZ: 'z',
+    leftCurlyBrace: '{',
+    verticalBar: '|',
+    rightCurlyBrace: '}',
+    tilde: '~',
+    replacementCharacter: '�',
+  };
 
 // node_modules/micromark-util-character/dev/index.js
 var asciiAlpha = regexCheck(/[A-Za-z]/);
@@ -789,9 +785,13 @@ function markdownLineEndingOrSpace(code) {
   return code !== null && (code < codes.nul || code === codes.space);
 }
 function markdownSpace(code) {
-  return code === codes.horizontalTab || code === codes.virtualSpace || code === codes.space;
+  return (
+    code === codes.horizontalTab ||
+    code === codes.virtualSpace ||
+    code === codes.space
+  );
 }
-var unicodePunctuation = regexCheck(new RegExp("\\p{P}|\\p{S}", "u"));
+var unicodePunctuation = regexCheck(new RegExp('\\p{P}|\\p{S}', 'u'));
 var unicodeWhitespace = regexCheck(/\s/);
 function regexCheck(regex) {
   return check;
@@ -839,6 +839,6 @@ export {
   markdownSpace,
   unicodePunctuation,
   unicodeWhitespace,
-  factorySpace
+  factorySpace,
 };
 //# sourceMappingURL=chunk-AWUV36UU.js.map

@@ -22,8 +22,8 @@ function zwitch(key, options) {
 // node_modules/ccount/index.js
 function ccount(value, character) {
   const source = String(value);
-  if (typeof character !== "string") {
-    throw new TypeError("Expected character");
+  if (typeof character !== 'string') {
+    throw new TypeError('Expected character');
   }
   let count = 0;
   let index = source.indexOf(character);
@@ -34,8 +34,5 @@ function ccount(value, character) {
   return count;
 }
 
-export {
-  zwitch,
-  ccount
-};
+export { zwitch, ccount };
 //# sourceMappingURL=chunk-BU3XFUIC.js.map

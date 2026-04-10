@@ -1,5 +1,5 @@
 // node_modules/unist-util-is/lib/index.js
-var convert = (
+var convert =
   // Note: overloads in JSDoc can’t yet use different `@template`s.
   /**
    * @type {(
@@ -14,29 +14,28 @@ var convert = (
    * @param {Test} [test]
    * @returns {Check}
    */
-  function(test) {
+  function (test) {
     if (test === null || test === void 0) {
       return ok;
     }
-    if (typeof test === "function") {
+    if (typeof test === 'function') {
       return castFactory(test);
     }
-    if (typeof test === "object") {
-      return Array.isArray(test) ? anyFactory(test) : (
-        // Cast because `ReadonlyArray` goes into the above but `isArray`
-        // narrows to `Array`.
-        propertiesFactory(
-          /** @type {Props} */
-          test
-        )
-      );
+    if (typeof test === 'object') {
+      return Array.isArray(test)
+        ? anyFactory(test)
+        : // Cast because `ReadonlyArray` goes into the above but `isArray`
+          // narrows to `Array`.
+          propertiesFactory(
+            /** @type {Props} */
+            test,
+          );
     }
-    if (typeof test === "string") {
+    if (typeof test === 'string') {
       return typeFactory(test);
     }
-    throw new Error("Expected function, string, or object as test");
-  }
-);
+    throw new Error('Expected function, string, or object as test');
+  };
 function anyFactory(tests) {
   const checks = [];
   let index = -1;
@@ -53,17 +52,15 @@ function anyFactory(tests) {
   }
 }
 function propertiesFactory(check) {
-  const checkAsRecord = (
+  const checkAsRecord =
     /** @type {Record<string, unknown>} */
-    check
-  );
+    check;
   return castFactory(all);
   function all(node) {
-    const nodeAsRecord = (
+    const nodeAsRecord =
       /** @type {Record<string, unknown>} */
       /** @type {unknown} */
-      node
-    );
+      node;
     let key;
     for (key in check) {
       if (nodeAsRecord[key] !== checkAsRecord[key]) return false;
@@ -81,12 +78,13 @@ function castFactory(testFunction) {
   return check;
   function check(value, index, parent) {
     return Boolean(
-      looksLikeANode(value) && testFunction.call(
-        this,
-        value,
-        typeof index === "number" ? index : void 0,
-        parent || void 0
-      )
+      looksLikeANode(value) &&
+        testFunction.call(
+          this,
+          value,
+          typeof index === 'number' ? index : void 0,
+          parent || void 0,
+        ),
     );
   }
 }
@@ -94,7 +92,7 @@ function ok() {
   return true;
 }
 function looksLikeANode(value) {
-  return value !== null && typeof value === "object" && "type" in value;
+  return value !== null && typeof value === 'object' && 'type' in value;
 }
 
 // node_modules/unist-util-visit-parents/lib/color.js
@@ -106,10 +104,10 @@ function color(d) {
 var empty = [];
 var CONTINUE = true;
 var EXIT = false;
-var SKIP = "skip";
+var SKIP = 'skip';
 function visitParents(tree, test, visitor, reverse) {
   let check;
-  if (typeof test === "function" && typeof visitor !== "function") {
+  if (typeof test === 'function' && typeof visitor !== 'function') {
     reverse = visitor;
     visitor = test;
   } else {
@@ -119,20 +117,21 @@ function visitParents(tree, test, visitor, reverse) {
   const step = reverse ? -1 : 1;
   factory(tree, void 0, [])();
   function factory(node, index, parents) {
-    const value = (
+    const value =
       /** @type {Record<string, unknown>} */
-      node && typeof node === "object" ? node : {}
-    );
-    if (typeof value.type === "string") {
-      const name = (
+      node && typeof node === 'object' ? node : {};
+    if (typeof value.type === 'string') {
+      const name =
         // `hast`
-        typeof value.tagName === "string" ? value.tagName : (
-          // `xast`
-          typeof value.name === "string" ? value.name : void 0
-        )
-      );
-      Object.defineProperty(visit, "name", {
-        value: "node (" + color(node.type + (name ? "<" + name + ">" : "")) + ")"
+        typeof value.tagName === 'string'
+          ? value.tagName
+          : // `xast`
+            typeof value.name === 'string'
+            ? value.name
+            : void 0;
+      Object.defineProperty(visit, 'name', {
+        value:
+          'node (' + color(node.type + (name ? '<' + name + '>' : '')) + ')',
       });
     }
     return visit;
@@ -147,11 +146,10 @@ function visitParents(tree, test, visitor, reverse) {
           return result;
         }
       }
-      if ("children" in node && node.children) {
-        const nodeAsParent = (
+      if ('children' in node && node.children) {
+        const nodeAsParent =
           /** @type {UnistParent} */
-          node
-        );
+          node;
         if (nodeAsParent.children && result[0] !== SKIP) {
           offset = (reverse ? nodeAsParent.children.length : -1) + step;
           grandparents = parents.concat(nodeAsParent);
@@ -161,7 +159,8 @@ function visitParents(tree, test, visitor, reverse) {
             if (subresult[0] === EXIT) {
               return subresult;
             }
-            offset = typeof subresult[1] === "number" ? subresult[1] : offset + step;
+            offset =
+              typeof subresult[1] === 'number' ? subresult[1] : offset + step;
           }
         }
       }
@@ -173,17 +172,11 @@ function toResult(value) {
   if (Array.isArray(value)) {
     return value;
   }
-  if (typeof value === "number") {
+  if (typeof value === 'number') {
     return [CONTINUE, value];
   }
   return value === null || value === void 0 ? empty : [value];
 }
 
-export {
-  convert,
-  CONTINUE,
-  EXIT,
-  SKIP,
-  visitParents
-};
+export { convert, CONTINUE, EXIT, SKIP, visitParents };
 //# sourceMappingURL=chunk-ZKVPYPB3.js.map

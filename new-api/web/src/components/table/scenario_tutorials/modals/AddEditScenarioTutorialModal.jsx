@@ -85,7 +85,7 @@ const AddEditScenarioTutorialModal = ({
 
     if (values.published_time) {
       payload.published_at = Math.floor(
-        new Date(values.published_time).getTime() / 1000
+        new Date(values.published_time).getTime() / 1000,
       );
     }
 
@@ -107,7 +107,12 @@ const AddEditScenarioTutorialModal = ({
       footer={
         <Space>
           <Button onClick={handleClose}>{t('取消')}</Button>
-          <Button type='primary' theme='solid' loading={submitting} onClick={submit}>
+          <Button
+            type='primary'
+            theme='solid'
+            loading={submitting}
+            onClick={submit}
+          >
             {t('保存')}
           </Button>
         </Space>
@@ -120,8 +125,17 @@ const AddEditScenarioTutorialModal = ({
           placeholder={t('请输入标题')}
           rules={[{ required: true, message: t('标题不能为空') }]}
         />
-        <Form.TextArea field='intro' label={t('简介')} placeholder={t('请输入简介')} autosize />
-        <Form.Input field='tags' label={t('标签')} placeholder={t('多个标签用逗号分隔')} />
+        <Form.TextArea
+          field='intro'
+          label={t('简介')}
+          placeholder={t('请输入简介')}
+          autosize
+        />
+        <Form.Input
+          field='tags'
+          label={t('标签')}
+          placeholder={t('多个标签用逗号分隔')}
+        />
         <Form.Select
           field='content_type'
           label={t('内容类型')}
@@ -163,4 +177,3 @@ const AddEditScenarioTutorialModal = ({
 };
 
 export default AddEditScenarioTutorialModal;
-

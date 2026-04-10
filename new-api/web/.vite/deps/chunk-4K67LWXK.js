@@ -1,23 +1,19 @@
-import {
-  findAndReplace
-} from "./chunk-6KNJ5NRM.js";
+import { findAndReplace } from './chunk-6KNJ5NRM.js';
 
 // node_modules/mdast-util-newline-to-break/lib/index.js
 function newlineToBreak(tree) {
   findAndReplace(tree, [/\r?\n|\r/g, replace]);
 }
 function replace() {
-  return { type: "break" };
+  return { type: 'break' };
 }
 
 // node_modules/remark-breaks/lib/index.js
 function remarkBreaks() {
-  return function(tree) {
+  return function (tree) {
     newlineToBreak(tree);
   };
 }
 
-export {
-  remarkBreaks
-};
+export { remarkBreaks };
 //# sourceMappingURL=chunk-4K67LWXK.js.map

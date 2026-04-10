@@ -1,13 +1,7 @@
-import {
-  selectSvgElement
-} from "./chunk-LGR27ENT.js";
-import {
-  at
-} from "./chunk-5XJNJXN5.js";
-import {
-  cleanAndMerge
-} from "./chunk-IPOIRDR2.js";
-import "./chunk-O5N4F7PX.js";
+import { selectSvgElement } from './chunk-LGR27ENT.js';
+import { at } from './chunk-5XJNJXN5.js';
+import { cleanAndMerge } from './chunk-IPOIRDR2.js';
+import './chunk-O5N4F7PX.js';
 import {
   clear,
   configureSvgSize,
@@ -22,21 +16,20 @@ import {
   setAccDescription,
   setAccTitle,
   setDiagramTitle,
-  transparentize_default
-} from "./chunk-LQLXUK6X.js";
-import {
-  __name,
-  select_default
-} from "./chunk-OQUVF2X3.js";
-import "./chunk-YFRUBO2K.js";
-import "./chunk-SW2NX7BB.js";
-import "./chunk-UE53HML6.js";
+  transparentize_default,
+} from './chunk-LQLXUK6X.js';
+import { __name, select_default } from './chunk-OQUVF2X3.js';
+import './chunk-YFRUBO2K.js';
+import './chunk-SW2NX7BB.js';
+import './chunk-UE53HML6.js';
 
 // node_modules/@upsetjs/venn.js/build/venn.esm.js
 var SMALL$1 = 1e-10;
 function intersectionArea(circles, stats) {
   const intersectionPoints = getIntersectionPoints(circles);
-  const innerPoints = intersectionPoints.filter((p) => containedInCircles(p, circles));
+  const innerPoints = intersectionPoints.filter((p) =>
+    containedInCircles(p, circles),
+  );
   let arcArea = 0;
   let polygonArea = 0;
   const arcs = [];
@@ -65,13 +58,20 @@ function intersectionArea(circles, stats) {
           const a = a2 - angleDiff / 2;
           let width = distance(midPoint, {
             x: circle.x + circle.radius * Math.sin(a),
-            y: circle.y + circle.radius * Math.cos(a)
+            y: circle.y + circle.radius * Math.cos(a),
           });
           if (width > circle.radius * 2) {
             width = circle.radius * 2;
           }
           if (arc == null || arc.width > width) {
-            arc = { circle, width, p1, p2, large: width > circle.radius, sweep: true };
+            arc = {
+              circle,
+              width,
+              p1,
+              p2,
+              large: width > circle.radius,
+              sweep: true,
+            };
           }
         }
       }
@@ -90,7 +90,10 @@ function intersectionArea(circles, stats) {
     }
     let disjoint = false;
     for (let i = 0; i < circles.length; ++i) {
-      if (distance(circles[i], smallest) > Math.abs(smallest.radius - circles[i].radius)) {
+      if (
+        distance(circles[i], smallest) >
+        Math.abs(smallest.radius - circles[i].radius)
+      ) {
         disjoint = true;
         break;
       }
@@ -105,7 +108,7 @@ function intersectionArea(circles, stats) {
         p2: { x: smallest.x - SMALL$1, y: smallest.y + smallest.radius },
         width: smallest.radius * 2,
         large: true,
-        sweep: true
+        sweep: true,
       });
     }
   }
@@ -121,7 +124,9 @@ function intersectionArea(circles, stats) {
   return arcArea + polygonArea;
 }
 function containedInCircles(point, circles) {
-  return circles.every((circle) => distance(point, circle) < circle.radius + SMALL$1);
+  return circles.every(
+    (circle) => distance(point, circle) < circle.radius + SMALL$1,
+  );
 }
 function getIntersectionPoints(circles) {
   const ret = [];
@@ -137,10 +142,15 @@ function getIntersectionPoints(circles) {
   return ret;
 }
 function circleArea(r, width) {
-  return r * r * Math.acos(1 - width / r) - (r - width) * Math.sqrt(width * (2 * r - width));
+  return (
+    r * r * Math.acos(1 - width / r) -
+    (r - width) * Math.sqrt(width * (2 * r - width))
+  );
 }
 function distance(p1, p2) {
-  return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+  return Math.sqrt(
+    (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y),
+  );
 }
 function circleOverlap(r1, r2, d) {
   if (d >= r1 + r2) {
@@ -162,13 +172,13 @@ function circleCircleIntersection(p1, p2) {
   }
   const a = (r1 * r1 - r2 * r2 + d * d) / (2 * d);
   const h = Math.sqrt(r1 * r1 - a * a);
-  const x0 = p1.x + a * (p2.x - p1.x) / d;
-  const y0 = p1.y + a * (p2.y - p1.y) / d;
+  const x0 = p1.x + (a * (p2.x - p1.x)) / d;
+  const y0 = p1.y + (a * (p2.y - p1.y)) / d;
   const rx = -(p2.y - p1.y) * (h / d);
   const ry = -(p2.x - p1.x) * (h / d);
   return [
     { x: x0 + rx, y: y0 - ry },
-    { x: x0 - rx, y: y0 + ry }
+    { x: x0 - rx, y: y0 + ry },
   ];
 }
 function getCenter(points) {
@@ -189,7 +199,7 @@ function bisect(f, a, b, parameters) {
   const fB = f(b);
   let delta = b - a;
   if (fA * fB > 0) {
-    throw "Initial bisect points must have opposite signs";
+    throw 'Initial bisect points must have opposite signs';
   }
   if (fA === 0) return a;
   if (fB === 0) return b;
@@ -284,14 +294,17 @@ function nelderMead(f, x0, parameters) {
       parameters.history.push({
         x: simplex[0].slice(),
         fx: simplex[0].fx,
-        simplex: sortedSimplex
+        simplex: sortedSimplex,
       });
     }
     maxDiff = 0;
     for (let i = 0; i < N; ++i) {
       maxDiff = Math.max(maxDiff, Math.abs(simplex[0][i] - simplex[1][i]));
     }
-    if (Math.abs(simplex[0].fx - simplex[N].fx) < minErrorDelta && maxDiff < minTolerance) {
+    if (
+      Math.abs(simplex[0].fx - simplex[N].fx) < minErrorDelta &&
+      maxDiff < minTolerance
+    ) {
       break;
     }
     for (let i = 0; i < N; ++i) {
@@ -380,7 +393,7 @@ function wolfeLineSearch(f, pk, current, next, a, c1, c2) {
     weightedSum(next.x, 1, current.x, a, pk);
     phi = next.fx = f(next.x, next.fxprime);
     phiPrime = dot(next.fxprime, pk);
-    if (phi > phi0 + c1 * a * phiPrime0 || iteration && phi >= phi_old) {
+    if (phi > phi0 + c1 * a * phiPrime0 || (iteration && phi >= phi_old)) {
       return zoom(a0, a, phi_old);
     }
     if (Math.abs(phiPrime) <= -c2 * phiPrime0) {
@@ -415,7 +428,7 @@ function conjugateGradient(f, initial, params) {
         x: current.x.slice(),
         fx: current.fx,
         fxprime: current.fxprime.slice(),
-        alpha: a
+        alpha: a,
       });
     }
     if (!a) {
@@ -438,7 +451,7 @@ function conjugateGradient(f, initial, params) {
       x: current.x.slice(),
       fx: current.fx,
       fxprime: current.fxprime.slice(),
-      alpha: a
+      alpha: a,
     });
   }
   return current;
@@ -463,14 +476,14 @@ function venn(sets, parameters = {}) {
         current[setid] = {
           x: values[2 * i],
           y: values[2 * i + 1],
-          radius: circles[setid].radius
+          radius: circles[setid].radius,
           // size : circles[setid].size
         };
       }
       return loss(current, areas);
     },
     initial,
-    parameters
+    parameters,
   );
   const positions = solution.x;
   for (let i = 0; i < setids.length; ++i) {
@@ -485,13 +498,17 @@ function distanceFromIntersectArea(r1, r2, overlap) {
   if (Math.min(r1, r2) * Math.min(r1, r2) * Math.PI <= overlap + SMALL) {
     return Math.abs(r1 - r2);
   }
-  return bisect((distance2) => circleOverlap(r1, r2, distance2) - overlap, 0, r1 + r2);
+  return bisect(
+    (distance2) => circleOverlap(r1, r2, distance2) - overlap,
+    0,
+    r1 + r2,
+  );
 }
 function addMissingAreas(areas, parameters = {}) {
   const distinct = parameters.distinct;
   const r = areas.map((s) => Object.assign({}, s));
   function toKey(arr) {
-    return arr.join(";");
+    return arr.join(';');
   }
   if (distinct) {
     const count = /* @__PURE__ */ new Map();
@@ -526,7 +543,7 @@ function addMissingAreas(areas, parameters = {}) {
       pairs.add(toKey([b, a]));
     }
   }
-  ids.sort((a, b) => a === b ? 0 : a < b ? -1 : 1);
+  ids.sort((a, b) => (a === b ? 0 : a < b ? -1 : 1));
   for (let i = 0; i < ids.length; ++i) {
     const a = ids[i];
     for (let j = i + 1; j < ids.length; ++j) {
@@ -541,21 +558,23 @@ function addMissingAreas(areas, parameters = {}) {
 function getDistanceMatrices(areas, sets, setids) {
   const distances = zerosM(sets.length, sets.length);
   const constraints = zerosM(sets.length, sets.length);
-  areas.filter((x) => x.sets.length === 2).forEach((current) => {
-    const left = setids[current.sets[0]];
-    const right = setids[current.sets[1]];
-    const r1 = Math.sqrt(sets[left].size / Math.PI);
-    const r2 = Math.sqrt(sets[right].size / Math.PI);
-    const distance2 = distanceFromIntersectArea(r1, r2, current.size);
-    distances[left][right] = distances[right][left] = distance2;
-    let c = 0;
-    if (current.size + 1e-10 >= Math.min(sets[left].size, sets[right].size)) {
-      c = 1;
-    } else if (current.size <= 1e-10) {
-      c = -1;
-    }
-    constraints[left][right] = constraints[right][left] = c;
-  });
+  areas
+    .filter((x) => x.sets.length === 2)
+    .forEach((current) => {
+      const left = setids[current.sets[0]];
+      const right = setids[current.sets[1]];
+      const r1 = Math.sqrt(sets[left].size / Math.PI);
+      const r2 = Math.sqrt(sets[right].size / Math.PI);
+      const distance2 = distanceFromIntersectArea(r1, r2, current.size);
+      distances[left][right] = distances[right][left] = distance2;
+      let c = 0;
+      if (current.size + 1e-10 >= Math.min(sets[left].size, sets[right].size)) {
+        c = 1;
+      } else if (current.size <= 1e-10) {
+        c = -1;
+      }
+      constraints[left][right] = constraints[right][left] = c;
+    });
   return { distances, constraints };
 }
 function constrainedMDSGradient(x, fxprime, distances, constraints) {
@@ -574,7 +593,10 @@ function constrainedMDSGradient(x, fxprime, distances, constraints) {
       const squaredDistance = (xj - xi) * (xj - xi) + (yj - yi) * (yj - yi);
       const distance2 = Math.sqrt(squaredDistance);
       const delta = squaredDistance - dij * dij;
-      if (constraint > 0 && distance2 <= dij || constraint < 0 && distance2 >= dij) {
+      if (
+        (constraint > 0 && distance2 <= dij) ||
+        (constraint < 0 && distance2 >= dij)
+      ) {
         continue;
       }
       loss += 2 * delta * delta;
@@ -612,7 +634,8 @@ function constrainedMDSLayout(areas, params = {}) {
   let { distances, constraints } = getDistanceMatrices(areas, sets, setids);
   const norm = norm2(distances.map(norm2)) / distances.length;
   distances = distances.map((row) => row.map((value) => value / norm));
-  const obj = (x, fxprime) => constrainedMDSGradient(x, fxprime, distances, constraints);
+  const obj = (x, fxprime) =>
+    constrainedMDSGradient(x, fxprime, distances, constraints);
   let best = null;
   for (let i = 0; i < restarts; ++i) {
     const initial = zeros(distances.length * 2).map(Math.random);
@@ -628,7 +651,7 @@ function constrainedMDSLayout(areas, params = {}) {
     circles[set.sets[0]] = {
       x: positions[2 * i] * norm,
       y: positions[2 * i + 1] * norm,
-      radius: Math.sqrt(set.size / Math.PI)
+      radius: Math.sqrt(set.size / Math.PI),
     };
   }
   if (params.history) {
@@ -639,7 +662,8 @@ function constrainedMDSLayout(areas, params = {}) {
   return circles;
 }
 function greedyLayout(areas, params) {
-  const loss = params && params.lossFunction ? params.lossFunction : lossFunction;
+  const loss =
+    params && params.lossFunction ? params.lossFunction : lossFunction;
   const circles = {};
   const setOverlaps = {};
   for (const area of areas) {
@@ -650,7 +674,7 @@ function greedyLayout(areas, params) {
         y: 1e10,
         rowid: circles.length,
         size: area.size,
-        radius: Math.sqrt(area.size / Math.PI)
+        radius: Math.sqrt(area.size / Math.PI),
       };
       setOverlaps[set] = [];
     }
@@ -660,7 +684,10 @@ function greedyLayout(areas, params) {
     let weight = current.weight != null ? current.weight : 1;
     const left = current.sets[0];
     const right = current.sets[1];
-    if (current.size + SMALL >= Math.min(circles[left].size, circles[right].size)) {
+    if (
+      current.size + SMALL >=
+      Math.min(circles[left].size, circles[right].size)
+    ) {
       weight = 0;
     }
     setOverlaps[left].push({ set: right, size: current.size, weight });
@@ -694,22 +721,30 @@ function greedyLayout(areas, params) {
     const set = circles[setIndex];
     overlap.sort(sortOrder);
     if (overlap.length === 0) {
-      throw "ERROR: missing pairwise overlap information";
+      throw 'ERROR: missing pairwise overlap information';
     }
     const points = [];
     for (var j = 0; j < overlap.length; ++j) {
       const p1 = circles[overlap[j].set];
-      const d1 = distanceFromIntersectArea(set.radius, p1.radius, overlap[j].size);
+      const d1 = distanceFromIntersectArea(
+        set.radius,
+        p1.radius,
+        overlap[j].size,
+      );
       points.push({ x: p1.x + d1, y: p1.y });
       points.push({ x: p1.x - d1, y: p1.y });
       points.push({ y: p1.y + d1, x: p1.x });
       points.push({ y: p1.y - d1, x: p1.x });
       for (let k = j + 1; k < overlap.length; ++k) {
         const p2 = circles[overlap[k].set];
-        const d2 = distanceFromIntersectArea(set.radius, p2.radius, overlap[k].size);
+        const d2 = distanceFromIntersectArea(
+          set.radius,
+          p2.radius,
+          overlap[k].size,
+        );
         const extraPoints = circleCircleIntersection(
           { x: p1.x, y: p1.y, radius: d1 },
-          { x: p2.x, y: p2.y, radius: d2 }
+          { x: p2.x, y: p2.y, radius: d2 },
         );
         points.push(...extraPoints);
       }
@@ -785,7 +820,8 @@ function orientateCircles(circles, orientation, orientationOrder) {
   if (circles.length === 2) {
     const dist = distance(circles[0], circles[1]);
     if (dist < Math.abs(circles[1].radius - circles[0].radius)) {
-      circles[1].x = circles[0].x + circles[0].radius - circles[1].radius - 1e-10;
+      circles[1].x =
+        circles[0].x + circles[0].radius - circles[1].radius - 1e-10;
       circles[1].y = circles[0].y;
     }
   }
@@ -856,11 +892,17 @@ function disjointCluster(circles) {
 }
 function getBoundingBox(circles) {
   const minMax = (d) => {
-    const hi = circles.reduce((acc, c) => Math.max(acc, c[d] + c.radius), Number.NEGATIVE_INFINITY);
-    const lo = circles.reduce((acc, c) => Math.min(acc, c[d] - c.radius), Number.POSITIVE_INFINITY);
+    const hi = circles.reduce(
+      (acc, c) => Math.max(acc, c[d] + c.radius),
+      Number.NEGATIVE_INFINITY,
+    );
+    const lo = circles.reduce(
+      (acc, c) => Math.min(acc, c[d] - c.radius),
+      Number.POSITIVE_INFINITY,
+    );
     return { max: hi, min: lo };
   };
-  return { xRange: minMax("x"), yRange: minMax("y") };
+  return { xRange: minMax('x'), yRange: minMax('y') };
 }
 function normalizeSolution(solution, orientation, orientationOrder) {
   if (orientation == null) {
@@ -871,7 +913,9 @@ function normalizeSolution(solution, orientation, orientationOrder) {
   for (const cluster of clusters) {
     orientateCircles(cluster, orientation, orientationOrder);
     const bounds = getBoundingBox(cluster);
-    cluster.size = (bounds.xRange.max - bounds.xRange.min) * (bounds.yRange.max - bounds.yRange.min);
+    cluster.size =
+      (bounds.xRange.max - bounds.xRange.min) *
+      (bounds.yRange.max - bounds.yRange.min);
     cluster.bounds = bounds;
   }
   clusters.sort((a, b) => b.size - a.size);
@@ -889,7 +933,9 @@ function normalizeSolution(solution, orientation, orientationOrder) {
       xOffset = returnBounds.xRange.max - bounds.xRange.min + spacing;
     } else {
       xOffset = returnBounds.xRange.max - bounds.xRange.max;
-      const centreing = (bounds.xRange.max - bounds.xRange.min) / 2 - (returnBounds.xRange.max - returnBounds.xRange.min) / 2;
+      const centreing =
+        (bounds.xRange.max - bounds.xRange.min) / 2 -
+        (returnBounds.xRange.max - returnBounds.xRange.min) / 2;
       if (centreing < 0) {
         xOffset += centreing;
       }
@@ -898,7 +944,9 @@ function normalizeSolution(solution, orientation, orientationOrder) {
       yOffset = returnBounds.yRange.max - bounds.yRange.min + spacing;
     } else {
       yOffset = returnBounds.yRange.max - bounds.yRange.max;
-      const centreing = (bounds.yRange.max - bounds.yRange.min) / 2 - (returnBounds.yRange.max - returnBounds.yRange.min) / 2;
+      const centreing =
+        (bounds.yRange.max - bounds.yRange.min) / 2 -
+        (returnBounds.yRange.max - returnBounds.yRange.min) / 2;
       if (centreing < 0) {
         yOffset += centreing;
       }
@@ -925,7 +973,7 @@ function scaleSolution(solution, width, height, padding, scaleToFit) {
   height -= 2 * padding;
   const { xRange, yRange } = getBoundingBox(circles);
   if (xRange.max === xRange.min || yRange.max === yRange.min) {
-    console.log("not scaling solution: zero size detected");
+    console.log('not scaling solution: zero size detected');
     return solution;
   }
   let xScaling;
@@ -946,8 +994,8 @@ function scaleSolution(solution, width, height, padding, scaleToFit) {
       radius: scaling * circle.radius,
       x: padding + xOffset + (circle.x - xRange.min) * scaling,
       y: padding + yOffset + (circle.y - yRange.min) * scaling,
-      setid: circle.setid
-    }))
+      setid: circle.setid,
+    })),
   );
 }
 function toObjectNotation(circles) {
@@ -962,28 +1010,56 @@ function fromObjectNotation(solution) {
   return setids.map((id) => Object.assign(solution[id], { setid: id }));
 }
 function VennDiagram(options = {}) {
-  let useViewBox = false, width = 600, height = 350, padding = 15, duration = 1e3, orientation = Math.PI / 2, normalize = true, scaleToFit = null, wrap = true, styled = true, fontSize = null, orientationOrder = null, distinct = false, round = null, symmetricalTextCentre = options && options.symmetricalTextCentre ? options.symmetricalTextCentre : false, colourMap = {}, colourScheme = options && options.colourScheme ? options.colourScheme : options && options.colorScheme ? options.colorScheme : [
-    "#1f77b4",
-    "#ff7f0e",
-    "#2ca02c",
-    "#d62728",
-    "#9467bd",
-    "#8c564b",
-    "#e377c2",
-    "#7f7f7f",
-    "#bcbd22",
-    "#17becf"
-  ], colourIndex = 0, colours = function(key) {
-    if (key in colourMap) {
-      return colourMap[key];
-    }
-    var ret = colourMap[key] = colourScheme[colourIndex];
-    colourIndex += 1;
-    if (colourIndex >= colourScheme.length) {
-      colourIndex = 0;
-    }
-    return ret;
-  }, layoutFunction = venn, loss = lossFunction;
+  let useViewBox = false,
+    width = 600,
+    height = 350,
+    padding = 15,
+    duration = 1e3,
+    orientation = Math.PI / 2,
+    normalize = true,
+    scaleToFit = null,
+    wrap = true,
+    styled = true,
+    fontSize = null,
+    orientationOrder = null,
+    distinct = false,
+    round = null,
+    symmetricalTextCentre =
+      options && options.symmetricalTextCentre
+        ? options.symmetricalTextCentre
+        : false,
+    colourMap = {},
+    colourScheme =
+      options && options.colourScheme
+        ? options.colourScheme
+        : options && options.colorScheme
+          ? options.colorScheme
+          : [
+              '#1f77b4',
+              '#ff7f0e',
+              '#2ca02c',
+              '#d62728',
+              '#9467bd',
+              '#8c564b',
+              '#e377c2',
+              '#7f7f7f',
+              '#bcbd22',
+              '#17becf',
+            ],
+    colourIndex = 0,
+    colours = function (key) {
+      if (key in colourMap) {
+        return colourMap[key];
+      }
+      var ret = (colourMap[key] = colourScheme[colourIndex]);
+      colourIndex += 1;
+      if (colourIndex >= colourScheme.length) {
+        colourIndex = 0;
+      }
+      return ret;
+    },
+    layoutFunction = venn,
+    loss = lossFunction;
   function chart(selection) {
     let data = selection.datum();
     const toRemove = /* @__PURE__ */ new Set();
@@ -1014,20 +1090,20 @@ function VennDiagram(options = {}) {
         return labels[d.sets];
       }
       if (d.sets.length == 1) {
-        return "" + d.sets[0];
+        return '' + d.sets[0];
       }
     }
-    selection.selectAll("svg").data([circles]).enter().append("svg");
-    const svg = selection.select("svg");
+    selection.selectAll('svg').data([circles]).enter().append('svg');
+    const svg = selection.select('svg');
     if (useViewBox) {
-      svg.attr("viewBox", `0 0 ${width} ${height}`);
+      svg.attr('viewBox', `0 0 ${width} ${height}`);
     } else {
-      svg.attr("width", width).attr("height", height);
+      svg.attr('width', width).attr('height', height);
     }
     const previous = {};
     let hasPrevious = false;
-    svg.selectAll(".venn-area path").each(function(d) {
-      const path = this.getAttribute("d");
+    svg.selectAll('.venn-area path').each(function (d) {
+      const path = this.getAttribute('d');
       if (d.sets.length == 1 && path && !distinct) {
         hasPrevious = true;
         previous[d.sets[0]] = circleFromPath(path);
@@ -1047,164 +1123,201 @@ function VennDiagram(options = {}) {
           return {
             x: start.x * (1 - t) + end.x * t,
             y: start.y * (1 - t) + end.y * t,
-            radius: start.radius * (1 - t) + end.radius * t
+            radius: start.radius * (1 - t) + end.radius * t,
           };
         });
         return intersectionAreaPath(c, round);
       };
     }
-    const nodes = svg.selectAll(".venn-area").data(data, (d) => d.sets);
-    const enter = nodes.enter().append("g").attr(
-      "class",
-      (d) => `venn-area venn-${d.sets.length == 1 ? "circle" : "intersection"}${d.colour || d.color ? " venn-coloured" : ""}`
-    ).attr("data-venn-sets", (d) => d.sets.join("_"));
-    const enterPath = enter.append("path");
-    const enterText = enter.append("text").attr("class", "label").text((d) => label(d)).attr("text-anchor", "middle").attr("dy", ".35em").attr("x", width / 2).attr("y", height / 2);
+    const nodes = svg.selectAll('.venn-area').data(data, (d) => d.sets);
+    const enter = nodes
+      .enter()
+      .append('g')
+      .attr(
+        'class',
+        (d) =>
+          `venn-area venn-${d.sets.length == 1 ? 'circle' : 'intersection'}${d.colour || d.color ? ' venn-coloured' : ''}`,
+      )
+      .attr('data-venn-sets', (d) => d.sets.join('_'));
+    const enterPath = enter.append('path');
+    const enterText = enter
+      .append('text')
+      .attr('class', 'label')
+      .text((d) => label(d))
+      .attr('text-anchor', 'middle')
+      .attr('dy', '.35em')
+      .attr('x', width / 2)
+      .attr('y', height / 2);
     if (styled) {
-      enterPath.style("fill-opacity", "0").filter((d) => d.sets.length == 1).style("fill", (d) => d.colour ? d.colour : d.color ? d.color : colours(d.sets)).style("fill-opacity", ".25");
-      enterText.style("fill", (d) => {
+      enterPath
+        .style('fill-opacity', '0')
+        .filter((d) => d.sets.length == 1)
+        .style('fill', (d) =>
+          d.colour ? d.colour : d.color ? d.color : colours(d.sets),
+        )
+        .style('fill-opacity', '.25');
+      enterText.style('fill', (d) => {
         if (d.colour || d.color) {
-          return "#FFF";
+          return '#FFF';
         }
         if (options.textFill) {
           return options.textFill;
         }
-        return d.sets.length == 1 ? colours(d.sets) : "#444";
+        return d.sets.length == 1 ? colours(d.sets) : '#444';
       });
     }
     function asTransition(s) {
-      if (typeof s.transition === "function") {
-        return s.transition("venn").duration(duration);
+      if (typeof s.transition === 'function') {
+        return s.transition('venn').duration(duration);
       }
       return s;
     }
     let update = selection;
-    if (hasPrevious && typeof update.transition === "function") {
+    if (hasPrevious && typeof update.transition === 'function') {
       update = asTransition(selection);
-      update.selectAll("path").attrTween("d", pathTween);
+      update.selectAll('path').attrTween('d', pathTween);
     } else {
-      update.selectAll("path").attr("d", (d) => intersectionAreaPath(d.sets.map((set) => circles[set])), round);
+      update
+        .selectAll('path')
+        .attr(
+          'd',
+          (d) => intersectionAreaPath(d.sets.map((set) => circles[set])),
+          round,
+        );
     }
-    const updateText = update.selectAll("text").filter((d) => d.sets in textCentres).text((d) => label(d)).attr("x", (d) => Math.floor(textCentres[d.sets].x)).attr("y", (d) => Math.floor(textCentres[d.sets].y));
+    const updateText = update
+      .selectAll('text')
+      .filter((d) => d.sets in textCentres)
+      .text((d) => label(d))
+      .attr('x', (d) => Math.floor(textCentres[d.sets].x))
+      .attr('y', (d) => Math.floor(textCentres[d.sets].y));
     if (wrap) {
       if (hasPrevious) {
-        if ("on" in updateText) {
-          updateText.on("end", wrapText(circles, label));
+        if ('on' in updateText) {
+          updateText.on('end', wrapText(circles, label));
         } else {
-          updateText.each("end", wrapText(circles, label));
+          updateText.each('end', wrapText(circles, label));
         }
       } else {
         updateText.each(wrapText(circles, label));
       }
     }
     const exit = asTransition(nodes.exit()).remove();
-    if (typeof nodes.transition === "function") {
-      exit.selectAll("path").attrTween("d", pathTween);
+    if (typeof nodes.transition === 'function') {
+      exit.selectAll('path').attrTween('d', pathTween);
     }
-    const exitText = exit.selectAll("text").attr("x", width / 2).attr("y", height / 2);
+    const exitText = exit
+      .selectAll('text')
+      .attr('x', width / 2)
+      .attr('y', height / 2);
     if (fontSize !== null) {
-      enterText.style("font-size", "0px");
-      updateText.style("font-size", fontSize);
-      exitText.style("font-size", "0px");
+      enterText.style('font-size', '0px');
+      updateText.style('font-size', fontSize);
+      exitText.style('font-size', '0px');
     }
     return { circles, textCentres, nodes, enter, update, exit };
   }
-  chart.wrap = function(_) {
+  chart.wrap = function (_) {
     if (!arguments.length) return wrap;
     wrap = _;
     return chart;
   };
-  chart.useViewBox = function() {
+  chart.useViewBox = function () {
     useViewBox = true;
     return chart;
   };
-  chart.width = function(_) {
+  chart.width = function (_) {
     if (!arguments.length) return width;
     width = _;
     return chart;
   };
-  chart.height = function(_) {
+  chart.height = function (_) {
     if (!arguments.length) return height;
     height = _;
     return chart;
   };
-  chart.padding = function(_) {
+  chart.padding = function (_) {
     if (!arguments.length) return padding;
     padding = _;
     return chart;
   };
-  chart.distinct = function(_) {
+  chart.distinct = function (_) {
     if (!arguments.length) return distinct;
     distinct = _;
     return chart;
   };
-  chart.colours = function(_) {
+  chart.colours = function (_) {
     if (!arguments.length) return colours;
     colours = _;
     return chart;
   };
-  chart.colors = function(_) {
+  chart.colors = function (_) {
     if (!arguments.length) return colours;
     colours = _;
     return chart;
   };
-  chart.fontSize = function(_) {
+  chart.fontSize = function (_) {
     if (!arguments.length) return fontSize;
     fontSize = _;
     return chart;
   };
-  chart.round = function(_) {
+  chart.round = function (_) {
     if (!arguments.length) return round;
     round = _;
     return chart;
   };
-  chart.duration = function(_) {
+  chart.duration = function (_) {
     if (!arguments.length) return duration;
     duration = _;
     return chart;
   };
-  chart.layoutFunction = function(_) {
+  chart.layoutFunction = function (_) {
     if (!arguments.length) return layoutFunction;
     layoutFunction = _;
     return chart;
   };
-  chart.normalize = function(_) {
+  chart.normalize = function (_) {
     if (!arguments.length) return normalize;
     normalize = _;
     return chart;
   };
-  chart.scaleToFit = function(_) {
+  chart.scaleToFit = function (_) {
     if (!arguments.length) return scaleToFit;
     scaleToFit = _;
     return chart;
   };
-  chart.styled = function(_) {
+  chart.styled = function (_) {
     if (!arguments.length) return styled;
     styled = _;
     return chart;
   };
-  chart.orientation = function(_) {
+  chart.orientation = function (_) {
     if (!arguments.length) return orientation;
     orientation = _;
     return chart;
   };
-  chart.orientationOrder = function(_) {
+  chart.orientationOrder = function (_) {
     if (!arguments.length) return orientationOrder;
     orientationOrder = _;
     return chart;
   };
-  chart.lossFunction = function(_) {
+  chart.lossFunction = function (_) {
     if (!arguments.length) return loss;
-    loss = _ === "default" ? lossFunction : _ === "logRatio" ? logRatioLossFunction : _;
+    loss =
+      _ === 'default'
+        ? lossFunction
+        : _ === 'logRatio'
+          ? logRatioLossFunction
+          : _;
     return chart;
   };
   return chart;
 }
 function wrapText(circles, labeller) {
-  return function(data) {
+  return function (data) {
     const text = this;
     const width = circles[data.sets[0]].radius || 50;
-    const label = labeller(data) || "";
+    const label = labeller(data) || '';
     const words = label.split(/\s+/).reverse();
     const maxLines = 3;
     const minChars = (label.length + words.length) / maxLines;
@@ -1215,7 +1328,10 @@ function wrapText(circles, labeller) {
     text.textContent = null;
     const tspans = [];
     function append(word2) {
-      const tspan2 = text.ownerDocument.createElementNS(text.namespaceURI, "tspan");
+      const tspan2 = text.ownerDocument.createElementNS(
+        text.namespaceURI,
+        'tspan',
+      );
       tspan2.textContent = word2;
       tspans.push(tspan2);
       text.append(tspan2);
@@ -1228,23 +1344,23 @@ function wrapText(circles, labeller) {
         break;
       }
       line.push(word);
-      const joined = line.join(" ");
+      const joined = line.join(' ');
       tspan.textContent = joined;
       if (joined.length > minChars && tspan.getComputedTextLength() > width) {
         line.pop();
-        tspan.textContent = line.join(" ");
+        tspan.textContent = line.join(' ');
         line = [word];
         tspan = append(word);
         lineNumber++;
       }
     }
-    const initial = 0.35 - lineNumber * lineHeight / 2;
-    const x = text.getAttribute("x");
-    const y = text.getAttribute("y");
+    const initial = 0.35 - (lineNumber * lineHeight) / 2;
+    const x = text.getAttribute('x');
+    const y = text.getAttribute('y');
     tspans.forEach((t, i) => {
-      t.setAttribute("x", x);
-      t.setAttribute("y", y);
-      t.setAttribute("dy", `${initial + i * lineHeight}em`);
+      t.setAttribute('x', x);
+      t.setAttribute('y', y);
+      t.setAttribute('dy', `${initial + i * lineHeight}em`);
     });
   };
 }
@@ -1285,7 +1401,7 @@ function computeTextCentre(interior, exterior, symmetricalTextCentre) {
   const solution = nelderMead(
     (p) => -1 * circleMargin({ x: p[0], y: p[1] }, interior, exterior),
     [initial.x, initial.y],
-    { maxIterations: 500, minErrorDelta: 1e-10 }
+    { maxIterations: 500, minErrorDelta: 1e-10 },
   ).x;
   const ret = { x: symmetricalTextCentre ? 0 : solution[0], y: solution[1] };
   let valid = true;
@@ -1368,22 +1484,26 @@ function computeTextCentres(circles, areas, symmetricalTextCentre) {
     const centre = computeTextCentre(interior, exterior, symmetricalTextCentre);
     ret[area] = centre;
     if (centre.disjoint && areas[i].size > 0) {
-      console.log("WARNING: area " + area + " not represented on screen");
+      console.log('WARNING: area ' + area + ' not represented on screen');
     }
   }
   return ret;
 }
 function circlePath(x, y, r) {
   const ret = [];
-  ret.push("\nM", x, y);
-  ret.push("\nm", -r, 0);
-  ret.push("\na", r, r, 0, 1, 0, r * 2, 0);
-  ret.push("\na", r, r, 0, 1, 0, -r * 2, 0);
-  return ret.join(" ");
+  ret.push('\nM', x, y);
+  ret.push('\nm', -r, 0);
+  ret.push('\na', r, r, 0, 1, 0, r * 2, 0);
+  ret.push('\na', r, r, 0, 1, 0, -r * 2, 0);
+  return ret.join(' ');
 }
 function circleFromPath(path) {
-  const tokens = path.split(" ");
-  return { x: Number.parseFloat(tokens[1]), y: Number.parseFloat(tokens[2]), radius: -Number.parseFloat(tokens[4]) };
+  const tokens = path.split(' ');
+  return {
+    x: Number.parseFloat(tokens[1]),
+    y: Number.parseFloat(tokens[2]),
+    radius: -Number.parseFloat(tokens[4]),
+  };
 }
 function intersectionAreaArcs(circles) {
   if (circles.length === 0) {
@@ -1395,7 +1515,7 @@ function intersectionAreaArcs(circles) {
 }
 function arcsToPath(arcs, round) {
   if (arcs.length === 0) {
-    return "M 0 0";
+    return 'M 0 0';
   }
   const rFactor = Math.pow(10, round || 0);
   const r = round != null ? (v) => Math.round(v * rFactor) / rFactor : (v) => v;
@@ -1403,12 +1523,21 @@ function arcsToPath(arcs, round) {
     const circle = arcs[0].circle;
     return circlePath(r(circle.x), r(circle.y), r(circle.radius));
   }
-  const ret = ["\nM", r(arcs[0].p2.x), r(arcs[0].p2.y)];
+  const ret = ['\nM', r(arcs[0].p2.x), r(arcs[0].p2.y)];
   for (const arc of arcs) {
     const radius = r(arc.circle.radius);
-    ret.push("\nA", radius, radius, 0, arc.large ? 1 : 0, arc.sweep ? 1 : 0, r(arc.p1.x), r(arc.p1.y));
+    ret.push(
+      '\nA',
+      radius,
+      radius,
+      0,
+      arc.large ? 1 : 0,
+      arc.sweep ? 1 : 0,
+      r(arc.p1.x),
+      r(arc.p1.y),
+    );
   }
-  return ret.join(" ");
+  return ret.join(' ');
 }
 function intersectionAreaPath(circles, round) {
   return arcsToPath(intersectionAreaArcs(circles), round);
@@ -1426,11 +1555,16 @@ function layout(data, options = {}) {
     scaleToFit = false,
     symmetricalTextCentre = false,
     distinct,
-    round = 2
+    round = 2,
   } = options;
   let solution = layout2(data, {
-    lossFunction: loss === "default" || !loss ? lossFunction : loss === "logRatio" ? logRatioLossFunction : loss,
-    distinct
+    lossFunction:
+      loss === 'default' || !loss
+        ? lossFunction
+        : loss === 'logRatio'
+          ? logRatioLossFunction
+          : loss,
+    distinct,
   });
   if (normalize) {
     solution = normalizeSolution(solution, orientation, orientationOrder);
@@ -1444,9 +1578,9 @@ function layout(data, options = {}) {
         set,
         x: circles[set].x,
         y: circles[set].y,
-        radius: circles[set].radius
-      }
-    ])
+        radius: circles[set].radius,
+      },
+    ]),
   );
   const helpers = data.map((area) => {
     const circles2 = area.sets.map((s) => circleLookup.get(s));
@@ -1455,10 +1589,10 @@ function layout(data, options = {}) {
     return { circles: circles2, arcs, path, area, has: new Set(area.sets) };
   });
   function genDistinctPath(sets) {
-    let r = "";
+    let r = '';
     for (const e of helpers) {
       if (e.has.size > sets.length && sets.every((s) => e.has.has(s))) {
-        r += " " + e.path;
+        r += ' ' + e.path;
       }
     }
     return r;
@@ -1470,25 +1604,147 @@ function layout(data, options = {}) {
       circles: circles2,
       arcs,
       path,
-      distinctPath: path + genDistinctPath(area.sets)
+      distinctPath: path + genDistinctPath(area.sets),
     };
   });
 }
 
 // node_modules/mermaid/dist/chunks/mermaid.core/vennDiagram-LZ73GAT5.mjs
-var parser = function() {
-  var o = __name(function(k, v, o2, l) {
-    for (o2 = o2 || {}, l = k.length; l--; o2[k[l]] = v) ;
-    return o2;
-  }, "o"), $V0 = [5, 8], $V1 = [7, 8, 11, 12, 17, 19, 22, 24], $V2 = [1, 17], $V3 = [1, 18], $V4 = [7, 8, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 24, 27], $V5 = [1, 31], $V6 = [1, 39], $V7 = [7, 8, 11, 12, 17, 19, 22, 24, 27], $V8 = [1, 57], $V9 = [1, 56], $Va = [1, 58], $Vb = [1, 59], $Vc = [1, 60], $Vd = [7, 8, 11, 12, 16, 17, 19, 20, 22, 24, 27, 31, 32, 33];
+var parser = (function () {
+  var o = __name(function (k, v, o2, l) {
+      for (o2 = o2 || {}, l = k.length; l--; o2[k[l]] = v);
+      return o2;
+    }, 'o'),
+    $V0 = [5, 8],
+    $V1 = [7, 8, 11, 12, 17, 19, 22, 24],
+    $V2 = [1, 17],
+    $V3 = [1, 18],
+    $V4 = [7, 8, 11, 12, 14, 15, 16, 17, 19, 20, 21, 22, 24, 27],
+    $V5 = [1, 31],
+    $V6 = [1, 39],
+    $V7 = [7, 8, 11, 12, 17, 19, 22, 24, 27],
+    $V8 = [1, 57],
+    $V9 = [1, 56],
+    $Va = [1, 58],
+    $Vb = [1, 59],
+    $Vc = [1, 60],
+    $Vd = [7, 8, 11, 12, 16, 17, 19, 20, 22, 24, 27, 31, 32, 33];
   var parser2 = {
-    trace: __name(function trace() {
-    }, "trace"),
+    trace: __name(function trace() {}, 'trace'),
     yy: {},
-    symbols_: { "error": 2, "start": 3, "optNewlines": 4, "VENN": 5, "document": 6, "EOF": 7, "NEWLINE": 8, "line": 9, "statement": 10, "TITLE": 11, "SET": 12, "identifier": 13, "BRACKET_LABEL": 14, "COLON": 15, "NUMERIC": 16, "UNION": 17, "identifierList": 18, "TEXT": 19, "IDENTIFIER": 20, "STRING": 21, "INDENT_TEXT": 22, "indentedTextTail": 23, "STYLE": 24, "stylesOpt": 25, "styleField": 26, "COMMA": 27, "styleValue": 28, "valueTokens": 29, "valueToken": 30, "HEXCOLOR": 31, "RGBCOLOR": 32, "RGBACOLOR": 33, "$accept": 0, "$end": 1 },
-    terminals_: { 2: "error", 5: "VENN", 7: "EOF", 8: "NEWLINE", 11: "TITLE", 12: "SET", 14: "BRACKET_LABEL", 15: "COLON", 16: "NUMERIC", 17: "UNION", 19: "TEXT", 20: "IDENTIFIER", 21: "STRING", 22: "INDENT_TEXT", 24: "STYLE", 27: "COMMA", 31: "HEXCOLOR", 32: "RGBCOLOR", 33: "RGBACOLOR" },
-    productions_: [0, [3, 4], [4, 0], [4, 2], [6, 0], [6, 2], [9, 1], [9, 1], [10, 1], [10, 2], [10, 3], [10, 4], [10, 5], [10, 2], [10, 3], [10, 4], [10, 5], [10, 3], [10, 3], [10, 3], [10, 4], [10, 4], [10, 2], [10, 3], [23, 1], [23, 1], [23, 1], [23, 2], [23, 2], [25, 1], [25, 3], [26, 3], [28, 1], [28, 1], [29, 1], [29, 2], [30, 1], [30, 1], [30, 1], [30, 1], [30, 1], [18, 1], [18, 3], [13, 1], [13, 1]],
-    performAction: __name(function anonymous(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
+    symbols_: {
+      error: 2,
+      start: 3,
+      optNewlines: 4,
+      VENN: 5,
+      document: 6,
+      EOF: 7,
+      NEWLINE: 8,
+      line: 9,
+      statement: 10,
+      TITLE: 11,
+      SET: 12,
+      identifier: 13,
+      BRACKET_LABEL: 14,
+      COLON: 15,
+      NUMERIC: 16,
+      UNION: 17,
+      identifierList: 18,
+      TEXT: 19,
+      IDENTIFIER: 20,
+      STRING: 21,
+      INDENT_TEXT: 22,
+      indentedTextTail: 23,
+      STYLE: 24,
+      stylesOpt: 25,
+      styleField: 26,
+      COMMA: 27,
+      styleValue: 28,
+      valueTokens: 29,
+      valueToken: 30,
+      HEXCOLOR: 31,
+      RGBCOLOR: 32,
+      RGBACOLOR: 33,
+      $accept: 0,
+      $end: 1,
+    },
+    terminals_: {
+      2: 'error',
+      5: 'VENN',
+      7: 'EOF',
+      8: 'NEWLINE',
+      11: 'TITLE',
+      12: 'SET',
+      14: 'BRACKET_LABEL',
+      15: 'COLON',
+      16: 'NUMERIC',
+      17: 'UNION',
+      19: 'TEXT',
+      20: 'IDENTIFIER',
+      21: 'STRING',
+      22: 'INDENT_TEXT',
+      24: 'STYLE',
+      27: 'COMMA',
+      31: 'HEXCOLOR',
+      32: 'RGBCOLOR',
+      33: 'RGBACOLOR',
+    },
+    productions_: [
+      0,
+      [3, 4],
+      [4, 0],
+      [4, 2],
+      [6, 0],
+      [6, 2],
+      [9, 1],
+      [9, 1],
+      [10, 1],
+      [10, 2],
+      [10, 3],
+      [10, 4],
+      [10, 5],
+      [10, 2],
+      [10, 3],
+      [10, 4],
+      [10, 5],
+      [10, 3],
+      [10, 3],
+      [10, 3],
+      [10, 4],
+      [10, 4],
+      [10, 2],
+      [10, 3],
+      [23, 1],
+      [23, 1],
+      [23, 1],
+      [23, 2],
+      [23, 2],
+      [25, 1],
+      [25, 3],
+      [26, 3],
+      [28, 1],
+      [28, 1],
+      [29, 1],
+      [29, 2],
+      [30, 1],
+      [30, 1],
+      [30, 1],
+      [30, 1],
+      [30, 1],
+      [18, 1],
+      [18, 3],
+      [13, 1],
+      [13, 1],
+    ],
+    performAction: __name(function anonymous(
+      yytext,
+      yyleng,
+      yylineno,
+      yy,
+      yystate,
+      $$,
+      _$,
+    ) {
       var $0 = $$.length - 1;
       switch (yystate) {
         case 1:
@@ -1546,7 +1802,7 @@ var parser = function() {
           break;
         case 13:
           if ($$[$0].length < 2) {
-            throw new Error("union requires multiple identifiers");
+            throw new Error('union requires multiple identifiers');
           }
           if (yy.validateUnionIdentifiers) {
             yy.validateUnionIdentifiers($$[$0]);
@@ -1558,7 +1814,7 @@ var parser = function() {
           break;
         case 14:
           if ($$[$0 - 1].length < 2) {
-            throw new Error("union requires multiple identifiers");
+            throw new Error('union requires multiple identifiers');
           }
           if (yy.validateUnionIdentifiers) {
             yy.validateUnionIdentifiers($$[$0 - 1]);
@@ -1570,7 +1826,7 @@ var parser = function() {
           break;
         case 15:
           if ($$[$0 - 2].length < 2) {
-            throw new Error("union requires multiple identifiers");
+            throw new Error('union requires multiple identifiers');
           }
           if (yy.validateUnionIdentifiers) {
             yy.validateUnionIdentifiers($$[$0 - 2]);
@@ -1582,7 +1838,7 @@ var parser = function() {
           break;
         case 16:
           if ($$[$0 - 3].length < 2) {
-            throw new Error("union requires multiple identifiers");
+            throw new Error('union requires multiple identifiers');
           }
           if (yy.validateUnionIdentifiers) {
             yy.validateUnionIdentifiers($$[$0 - 3]);
@@ -1608,13 +1864,13 @@ var parser = function() {
         case 25:
         case 26:
           var cs = yy.getCurrentSets();
-          if (!cs) throw new Error("text requires set");
+          if (!cs) throw new Error('text requires set');
           yy.addTextData(cs, $$[$0], void 0);
           break;
         case 27:
         case 28:
           var cs = yy.getCurrentSets();
-          if (!cs) throw new Error("text requires set");
+          if (!cs) throw new Error('text requires set');
           yy.addTextData(cs, $$[$0 - 1], $$[$0]);
           break;
         case 29:
@@ -1629,7 +1885,7 @@ var parser = function() {
           this.$ = [$$[$0 - 2], $$[$0]];
           break;
         case 33:
-          this.$ = $$[$0].join(" ");
+          this.$ = $$[$0].join(' ');
           break;
         case 34:
           this.$ = [$$[$0]];
@@ -1643,8 +1899,92 @@ var parser = function() {
           this.$ = $$[$0];
           break;
       }
-    }, "anonymous"),
-    table: [o($V0, [2, 2], { 3: 1, 4: 2 }), { 1: [3] }, { 5: [1, 3], 8: [1, 4] }, o($V1, [2, 4], { 6: 5 }), o($V0, [2, 3]), { 7: [1, 6], 8: [1, 8], 9: 7, 10: 9, 11: [1, 10], 12: [1, 11], 17: [1, 12], 19: [1, 13], 22: [1, 14], 24: [1, 15] }, { 1: [2, 1] }, o($V1, [2, 5]), o($V1, [2, 6]), o($V1, [2, 7]), o($V1, [2, 8]), { 13: 16, 20: $V2, 21: $V3 }, { 13: 20, 18: 19, 20: $V2, 21: $V3 }, { 13: 20, 18: 21, 20: $V2, 21: $V3 }, { 16: [1, 25], 20: [1, 23], 21: [1, 24], 23: 22 }, { 13: 20, 18: 26, 20: $V2, 21: $V3 }, o($V1, [2, 9], { 14: [1, 27], 15: [1, 28] }), o($V4, [2, 43]), o($V4, [2, 44]), o($V1, [2, 13], { 14: [1, 29], 15: [1, 30], 27: $V5 }), o($V4, [2, 41]), { 16: [1, 34], 20: [1, 32], 21: [1, 33], 27: $V5 }, o($V1, [2, 22]), o($V1, [2, 24], { 14: [1, 35] }), o($V1, [2, 25], { 14: [1, 36] }), o($V1, [2, 26]), { 20: $V6, 25: 37, 26: 38, 27: $V5 }, o($V1, [2, 10], { 15: [1, 40] }), { 16: [1, 41] }, o($V1, [2, 14], { 15: [1, 42] }), { 16: [1, 43] }, { 13: 44, 20: $V2, 21: $V3 }, o($V1, [2, 17], { 14: [1, 45] }), o($V1, [2, 18], { 14: [1, 46] }), o($V1, [2, 19]), o($V1, [2, 27]), o($V1, [2, 28]), o($V1, [2, 23], { 27: [1, 47] }), o($V7, [2, 29]), { 15: [1, 48] }, { 16: [1, 49] }, o($V1, [2, 11]), { 16: [1, 50] }, o($V1, [2, 15]), o($V4, [2, 42]), o($V1, [2, 20]), o($V1, [2, 21]), { 20: $V6, 26: 51 }, { 16: $V8, 20: $V9, 21: [1, 53], 28: 52, 29: 54, 30: 55, 31: $Va, 32: $Vb, 33: $Vc }, o($V1, [2, 12]), o($V1, [2, 16]), o($V7, [2, 30]), o($V7, [2, 31]), o($V7, [2, 32]), o($V7, [2, 33], { 30: 61, 16: $V8, 20: $V9, 31: $Va, 32: $Vb, 33: $Vc }), o($Vd, [2, 34]), o($Vd, [2, 36]), o($Vd, [2, 37]), o($Vd, [2, 38]), o($Vd, [2, 39]), o($Vd, [2, 40]), o($Vd, [2, 35])],
+    }, 'anonymous'),
+    table: [
+      o($V0, [2, 2], { 3: 1, 4: 2 }),
+      { 1: [3] },
+      { 5: [1, 3], 8: [1, 4] },
+      o($V1, [2, 4], { 6: 5 }),
+      o($V0, [2, 3]),
+      {
+        7: [1, 6],
+        8: [1, 8],
+        9: 7,
+        10: 9,
+        11: [1, 10],
+        12: [1, 11],
+        17: [1, 12],
+        19: [1, 13],
+        22: [1, 14],
+        24: [1, 15],
+      },
+      { 1: [2, 1] },
+      o($V1, [2, 5]),
+      o($V1, [2, 6]),
+      o($V1, [2, 7]),
+      o($V1, [2, 8]),
+      { 13: 16, 20: $V2, 21: $V3 },
+      { 13: 20, 18: 19, 20: $V2, 21: $V3 },
+      { 13: 20, 18: 21, 20: $V2, 21: $V3 },
+      { 16: [1, 25], 20: [1, 23], 21: [1, 24], 23: 22 },
+      { 13: 20, 18: 26, 20: $V2, 21: $V3 },
+      o($V1, [2, 9], { 14: [1, 27], 15: [1, 28] }),
+      o($V4, [2, 43]),
+      o($V4, [2, 44]),
+      o($V1, [2, 13], { 14: [1, 29], 15: [1, 30], 27: $V5 }),
+      o($V4, [2, 41]),
+      { 16: [1, 34], 20: [1, 32], 21: [1, 33], 27: $V5 },
+      o($V1, [2, 22]),
+      o($V1, [2, 24], { 14: [1, 35] }),
+      o($V1, [2, 25], { 14: [1, 36] }),
+      o($V1, [2, 26]),
+      { 20: $V6, 25: 37, 26: 38, 27: $V5 },
+      o($V1, [2, 10], { 15: [1, 40] }),
+      { 16: [1, 41] },
+      o($V1, [2, 14], { 15: [1, 42] }),
+      { 16: [1, 43] },
+      { 13: 44, 20: $V2, 21: $V3 },
+      o($V1, [2, 17], { 14: [1, 45] }),
+      o($V1, [2, 18], { 14: [1, 46] }),
+      o($V1, [2, 19]),
+      o($V1, [2, 27]),
+      o($V1, [2, 28]),
+      o($V1, [2, 23], { 27: [1, 47] }),
+      o($V7, [2, 29]),
+      { 15: [1, 48] },
+      { 16: [1, 49] },
+      o($V1, [2, 11]),
+      { 16: [1, 50] },
+      o($V1, [2, 15]),
+      o($V4, [2, 42]),
+      o($V1, [2, 20]),
+      o($V1, [2, 21]),
+      { 20: $V6, 26: 51 },
+      {
+        16: $V8,
+        20: $V9,
+        21: [1, 53],
+        28: 52,
+        29: 54,
+        30: 55,
+        31: $Va,
+        32: $Vb,
+        33: $Vc,
+      },
+      o($V1, [2, 12]),
+      o($V1, [2, 16]),
+      o($V7, [2, 30]),
+      o($V7, [2, 31]),
+      o($V7, [2, 32]),
+      o($V7, [2, 33], { 30: 61, 16: $V8, 20: $V9, 31: $Va, 32: $Vb, 33: $Vc }),
+      o($Vd, [2, 34]),
+      o($Vd, [2, 36]),
+      o($Vd, [2, 37]),
+      o($Vd, [2, 38]),
+      o($Vd, [2, 39]),
+      o($Vd, [2, 40]),
+      o($Vd, [2, 35]),
+    ],
     defaultActions: { 6: [2, 1] },
     parseError: __name(function parseError(str, hash) {
       if (hash.recoverable) {
@@ -1654,9 +1994,20 @@ var parser = function() {
         error.hash = hash;
         throw error;
       }
-    }, "parseError"),
+    }, 'parseError'),
     parse: __name(function parse(input) {
-      var self = this, stack = [0], tstack = [], vstack = [null], lstack = [], table = this.table, yytext = "", yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
+      var self = this,
+        stack = [0],
+        tstack = [],
+        vstack = [null],
+        lstack = [],
+        table = this.table,
+        yytext = '',
+        yylineno = 0,
+        yyleng = 0,
+        recovering = 0,
+        TERROR = 2,
+        EOF = 1;
       var args = lstack.slice.call(arguments, 1);
       var lexer2 = Object.create(this.lexer);
       var sharedState = { yy: {} };
@@ -1668,13 +2019,13 @@ var parser = function() {
       lexer2.setInput(input, sharedState.yy);
       sharedState.yy.lexer = lexer2;
       sharedState.yy.parser = this;
-      if (typeof lexer2.yylloc == "undefined") {
+      if (typeof lexer2.yylloc == 'undefined') {
         lexer2.yylloc = {};
       }
       var yyloc = lexer2.yylloc;
       lstack.push(yyloc);
       var ranges = lexer2.options && lexer2.options.ranges;
-      if (typeof sharedState.yy.parseError === "function") {
+      if (typeof sharedState.yy.parseError === 'function') {
         this.parseError = sharedState.yy.parseError;
       } else {
         this.parseError = Object.getPrototypeOf(this).parseError;
@@ -1684,11 +2035,11 @@ var parser = function() {
         vstack.length = vstack.length - n;
         lstack.length = lstack.length - n;
       }
-      __name(popStack, "popStack");
+      __name(popStack, 'popStack');
       function lex() {
         var token;
         token = tstack.pop() || lexer2.lex() || EOF;
-        if (typeof token !== "number") {
+        if (typeof token !== 'number') {
           if (token instanceof Array) {
             tstack = token;
             token = tstack.pop();
@@ -1697,20 +2048,30 @@ var parser = function() {
         }
         return token;
       }
-      __name(lex, "lex");
-      var symbol, preErrorSymbol, state, action, a, r, yyval = {}, p, len, newState, expected;
+      __name(lex, 'lex');
+      var symbol,
+        preErrorSymbol,
+        state,
+        action,
+        a,
+        r,
+        yyval = {},
+        p,
+        len,
+        newState,
+        expected;
       while (true) {
         state = stack[stack.length - 1];
         if (this.defaultActions[state]) {
           action = this.defaultActions[state];
         } else {
-          if (symbol === null || typeof symbol == "undefined") {
+          if (symbol === null || typeof symbol == 'undefined') {
             symbol = lex();
           }
           action = table[state] && table[state][symbol];
         }
-        if (typeof action === "undefined" || !action.length || !action[0]) {
-          var errStr = "";
+        if (typeof action === 'undefined' || !action.length || !action[0]) {
+          var errStr = '';
           expected = [];
           for (p in table[state]) {
             if (this.terminals_[p] && p > TERROR) {
@@ -1718,20 +2079,40 @@ var parser = function() {
             }
           }
           if (lexer2.showPosition) {
-            errStr = "Parse error on line " + (yylineno + 1) + ":\n" + lexer2.showPosition() + "\nExpecting " + expected.join(", ") + ", got '" + (this.terminals_[symbol] || symbol) + "'";
+            errStr =
+              'Parse error on line ' +
+              (yylineno + 1) +
+              ':\n' +
+              lexer2.showPosition() +
+              '\nExpecting ' +
+              expected.join(', ') +
+              ", got '" +
+              (this.terminals_[symbol] || symbol) +
+              "'";
           } else {
-            errStr = "Parse error on line " + (yylineno + 1) + ": Unexpected " + (symbol == EOF ? "end of input" : "'" + (this.terminals_[symbol] || symbol) + "'");
+            errStr =
+              'Parse error on line ' +
+              (yylineno + 1) +
+              ': Unexpected ' +
+              (symbol == EOF
+                ? 'end of input'
+                : "'" + (this.terminals_[symbol] || symbol) + "'");
           }
           this.parseError(errStr, {
             text: lexer2.match,
             token: this.terminals_[symbol] || symbol,
             line: lexer2.yylineno,
             loc: yyloc,
-            expected
+            expected,
           });
         }
         if (action[0] instanceof Array && action.length > 1) {
-          throw new Error("Parse Error: multiple actions possible at state: " + state + ", token: " + symbol);
+          throw new Error(
+            'Parse Error: multiple actions possible at state: ' +
+              state +
+              ', token: ' +
+              symbol,
+          );
         }
         switch (action[0]) {
           case 1:
@@ -1760,24 +2141,27 @@ var parser = function() {
               first_line: lstack[lstack.length - (len || 1)].first_line,
               last_line: lstack[lstack.length - 1].last_line,
               first_column: lstack[lstack.length - (len || 1)].first_column,
-              last_column: lstack[lstack.length - 1].last_column
+              last_column: lstack[lstack.length - 1].last_column,
             };
             if (ranges) {
               yyval._$.range = [
                 lstack[lstack.length - (len || 1)].range[0],
-                lstack[lstack.length - 1].range[1]
+                lstack[lstack.length - 1].range[1],
               ];
             }
-            r = this.performAction.apply(yyval, [
-              yytext,
-              yyleng,
-              yylineno,
-              sharedState.yy,
-              action[1],
-              vstack,
-              lstack
-            ].concat(args));
-            if (typeof r !== "undefined") {
+            r = this.performAction.apply(
+              yyval,
+              [
+                yytext,
+                yyleng,
+                yylineno,
+                sharedState.yy,
+                action[1],
+                vstack,
+                lstack,
+              ].concat(args),
+            );
+            if (typeof r !== 'undefined') {
               return r;
             }
             if (len) {
@@ -1796,9 +2180,9 @@ var parser = function() {
         }
       }
       return true;
-    }, "parse")
+    }, 'parse'),
   };
-  var lexer = function() {
+  var lexer = (function () {
     var lexer2 = {
       EOF: 1,
       parseError: __name(function parseError(str, hash) {
@@ -1807,29 +2191,29 @@ var parser = function() {
         } else {
           throw new Error(str);
         }
-      }, "parseError"),
+      }, 'parseError'),
       // resets the lexer, sets new input
-      setInput: __name(function(input, yy) {
+      setInput: __name(function (input, yy) {
         this.yy = yy || this.yy || {};
         this._input = input;
         this._more = this._backtrack = this.done = false;
         this.yylineno = this.yyleng = 0;
-        this.yytext = this.matched = this.match = "";
-        this.conditionStack = ["INITIAL"];
+        this.yytext = this.matched = this.match = '';
+        this.conditionStack = ['INITIAL'];
         this.yylloc = {
           first_line: 1,
           first_column: 0,
           last_line: 1,
-          last_column: 0
+          last_column: 0,
         };
         if (this.options.ranges) {
           this.yylloc.range = [0, 0];
         }
         this.offset = 0;
         return this;
-      }, "setInput"),
+      }, 'setInput'),
       // consumes and returns one char from the input
-      input: __name(function() {
+      input: __name(function () {
         var ch = this._input[0];
         this.yytext += ch;
         this.yyleng++;
@@ -1848,9 +2232,9 @@ var parser = function() {
         }
         this._input = this._input.slice(1);
         return ch;
-      }, "input"),
+      }, 'input'),
       // unshifts one char (or a string) into the input
-      unput: __name(function(ch) {
+      unput: __name(function (ch) {
         var len = ch.length;
         var lines = ch.split(/(?:\r\n?|\n)/g);
         this._input = ch + this._input;
@@ -1867,57 +2251,77 @@ var parser = function() {
           first_line: this.yylloc.first_line,
           last_line: this.yylineno + 1,
           first_column: this.yylloc.first_column,
-          last_column: lines ? (lines.length === oldLines.length ? this.yylloc.first_column : 0) + oldLines[oldLines.length - lines.length].length - lines[0].length : this.yylloc.first_column - len
+          last_column: lines
+            ? (lines.length === oldLines.length
+                ? this.yylloc.first_column
+                : 0) +
+              oldLines[oldLines.length - lines.length].length -
+              lines[0].length
+            : this.yylloc.first_column - len,
         };
         if (this.options.ranges) {
           this.yylloc.range = [r[0], r[0] + this.yyleng - len];
         }
         this.yyleng = this.yytext.length;
         return this;
-      }, "unput"),
+      }, 'unput'),
       // When called from action, caches matched text and appends it on next action
-      more: __name(function() {
+      more: __name(function () {
         this._more = true;
         return this;
-      }, "more"),
+      }, 'more'),
       // When called from action, signals the lexer that this rule fails to match the input, so the next matching rule (regex) should be tested instead.
-      reject: __name(function() {
+      reject: __name(function () {
         if (this.options.backtrack_lexer) {
           this._backtrack = true;
         } else {
-          return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n" + this.showPosition(), {
-            text: "",
-            token: null,
-            line: this.yylineno
-          });
+          return this.parseError(
+            'Lexical error on line ' +
+              (this.yylineno + 1) +
+              '. You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n' +
+              this.showPosition(),
+            {
+              text: '',
+              token: null,
+              line: this.yylineno,
+            },
+          );
         }
         return this;
-      }, "reject"),
+      }, 'reject'),
       // retain first n characters of the match
-      less: __name(function(n) {
+      less: __name(function (n) {
         this.unput(this.match.slice(n));
-      }, "less"),
+      }, 'less'),
       // displays already matched input, i.e. for error messages
-      pastInput: __name(function() {
-        var past = this.matched.substr(0, this.matched.length - this.match.length);
-        return (past.length > 20 ? "..." : "") + past.substr(-20).replace(/\n/g, "");
-      }, "pastInput"),
+      pastInput: __name(function () {
+        var past = this.matched.substr(
+          0,
+          this.matched.length - this.match.length,
+        );
+        return (
+          (past.length > 20 ? '...' : '') + past.substr(-20).replace(/\n/g, '')
+        );
+      }, 'pastInput'),
       // displays upcoming input, i.e. for error messages
-      upcomingInput: __name(function() {
+      upcomingInput: __name(function () {
         var next = this.match;
         if (next.length < 20) {
           next += this._input.substr(0, 20 - next.length);
         }
-        return (next.substr(0, 20) + (next.length > 20 ? "..." : "")).replace(/\n/g, "");
-      }, "upcomingInput"),
+        return (next.substr(0, 20) + (next.length > 20 ? '...' : '')).replace(
+          /\n/g,
+          '',
+        );
+      }, 'upcomingInput'),
       // displays the character position where the lexing error occurred, i.e. for error messages
-      showPosition: __name(function() {
+      showPosition: __name(function () {
         var pre = this.pastInput();
-        var c = new Array(pre.length + 1).join("-");
-        return pre + this.upcomingInput() + "\n" + c + "^";
-      }, "showPosition"),
+        var c = new Array(pre.length + 1).join('-');
+        return pre + this.upcomingInput() + '\n' + c + '^';
+      }, 'showPosition'),
       // test the lexed token: return FALSE when not a match, otherwise return token
-      test_match: __name(function(match, indexed_rule) {
+      test_match: __name(function (match, indexed_rule) {
         var token, lines, backup;
         if (this.options.backtrack_lexer) {
           backup = {
@@ -1926,7 +2330,7 @@ var parser = function() {
               first_line: this.yylloc.first_line,
               last_line: this.last_line,
               first_column: this.yylloc.first_column,
-              last_column: this.yylloc.last_column
+              last_column: this.yylloc.last_column,
             },
             yytext: this.yytext,
             match: this.match,
@@ -1938,7 +2342,7 @@ var parser = function() {
             _input: this._input,
             yy: this.yy,
             conditionStack: this.conditionStack.slice(0),
-            done: this.done
+            done: this.done,
           };
           if (this.options.ranges) {
             backup.yylloc.range = this.yylloc.range.slice(0);
@@ -1952,20 +2356,29 @@ var parser = function() {
           first_line: this.yylloc.last_line,
           last_line: this.yylineno + 1,
           first_column: this.yylloc.last_column,
-          last_column: lines ? lines[lines.length - 1].length - lines[lines.length - 1].match(/\r?\n?/)[0].length : this.yylloc.last_column + match[0].length
+          last_column: lines
+            ? lines[lines.length - 1].length -
+              lines[lines.length - 1].match(/\r?\n?/)[0].length
+            : this.yylloc.last_column + match[0].length,
         };
         this.yytext += match[0];
         this.match += match[0];
         this.matches = match;
         this.yyleng = this.yytext.length;
         if (this.options.ranges) {
-          this.yylloc.range = [this.offset, this.offset += this.yyleng];
+          this.yylloc.range = [this.offset, (this.offset += this.yyleng)];
         }
         this._more = false;
         this._backtrack = false;
         this._input = this._input.slice(match[0].length);
         this.matched += match[0];
-        token = this.performAction.call(this, this.yy, this, indexed_rule, this.conditionStack[this.conditionStack.length - 1]);
+        token = this.performAction.call(
+          this,
+          this.yy,
+          this,
+          indexed_rule,
+          this.conditionStack[this.conditionStack.length - 1],
+        );
         if (this.done && this._input) {
           this.done = false;
         }
@@ -1978,9 +2391,9 @@ var parser = function() {
           return false;
         }
         return false;
-      }, "test_match"),
+      }, 'test_match'),
       // return next match in input
-      next: __name(function() {
+      next: __name(function () {
         if (this.done) {
           return this.EOF;
         }
@@ -1989,8 +2402,8 @@ var parser = function() {
         }
         var token, match, tempMatch, index;
         if (!this._more) {
-          this.yytext = "";
-          this.match = "";
+          this.yytext = '';
+          this.match = '';
         }
         var rules = this._currentRules();
         for (var i = 0; i < rules.length; i++) {
@@ -2020,16 +2433,22 @@ var parser = function() {
           }
           return false;
         }
-        if (this._input === "") {
+        if (this._input === '') {
           return this.EOF;
         } else {
-          return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), {
-            text: "",
-            token: null,
-            line: this.yylineno
-          });
+          return this.parseError(
+            'Lexical error on line ' +
+              (this.yylineno + 1) +
+              '. Unrecognized text.\n' +
+              this.showPosition(),
+            {
+              text: '',
+              token: null,
+              line: this.yylineno,
+            },
+          );
         }
-      }, "next"),
+      }, 'next'),
       // return next match that has a token
       lex: __name(function lex() {
         var r = this.next();
@@ -2038,11 +2457,11 @@ var parser = function() {
         } else {
           return this.lex();
         }
-      }, "lex"),
+      }, 'lex'),
       // activates a new lexer condition state (pushes the new lexer condition state onto the condition stack)
       begin: __name(function begin(condition) {
         this.conditionStack.push(condition);
-      }, "begin"),
+      }, 'begin'),
       // pop the previously active lexer condition state off the condition stack
       popState: __name(function popState() {
         var n = this.conditionStack.length - 1;
@@ -2051,34 +2470,44 @@ var parser = function() {
         } else {
           return this.conditionStack[0];
         }
-      }, "popState"),
+      }, 'popState'),
       // produce the lexer rule set which is active for the currently active lexer condition state
       _currentRules: __name(function _currentRules() {
-        if (this.conditionStack.length && this.conditionStack[this.conditionStack.length - 1]) {
-          return this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules;
+        if (
+          this.conditionStack.length &&
+          this.conditionStack[this.conditionStack.length - 1]
+        ) {
+          return this.conditions[
+            this.conditionStack[this.conditionStack.length - 1]
+          ].rules;
         } else {
-          return this.conditions["INITIAL"].rules;
+          return this.conditions['INITIAL'].rules;
         }
-      }, "_currentRules"),
+      }, '_currentRules'),
       // return the currently active lexer condition state; when an index argument is provided it produces the N-th previous condition state, if available
       topState: __name(function topState(n) {
         n = this.conditionStack.length - 1 - Math.abs(n || 0);
         if (n >= 0) {
           return this.conditionStack[n];
         } else {
-          return "INITIAL";
+          return 'INITIAL';
         }
-      }, "topState"),
+      }, 'topState'),
       // alias for begin(condition)
       pushState: __name(function pushState(condition) {
         this.begin(condition);
-      }, "pushState"),
+      }, 'pushState'),
       // return the number of states currently on the stack
       stateStackSize: __name(function stateStackSize() {
         return this.conditionStack.length;
-      }, "stateStackSize"),
-      options: { "case-insensitive": true },
-      performAction: __name(function anonymous(yy, yy_, $avoiding_name_collisions, YY_START) {
+      }, 'stateStackSize'),
+      options: { 'case-insensitive': true },
+      performAction: __name(function anonymous(
+        yy,
+        yy_,
+        $avoiding_name_collisions,
+        YY_START,
+      ) {
         var YYSTATE = YY_START;
         switch ($avoiding_name_collisions) {
           case 0:
@@ -2090,7 +2519,7 @@ var parser = function() {
           case 3:
             if (yy.getIndentMode && yy.getIndentMode()) {
               yy.consumeIndentText = true;
-              this.begin("INITIAL");
+              this.begin('INITIAL');
               return 22;
             }
             break;
@@ -2100,11 +2529,11 @@ var parser = function() {
             if (yy.setIndentMode) {
               yy.setIndentMode(false);
             }
-            this.begin("INITIAL");
+            this.begin('INITIAL');
             this.unput(yy_.yytext);
             break;
           case 6:
-            this.begin("bol");
+            this.begin('bol');
             return 8;
             break;
           case 7:
@@ -2169,21 +2598,63 @@ var parser = function() {
             return 15;
             break;
         }
-      }, "anonymous"),
-      rules: [/^(?:%%(?!\{)[^\n]*)/i, /^(?:[^\}]%%[^\n]*)/i, /^(?:[ \t]+(?=[\n\r]))/i, /^(?:[ \t]+(?=text\b))/i, /^(?:[ \t]+)/i, /^(?:[^ \t\n\r])/i, /^(?:[\n\r]+)/i, /^(?:%%[^\n]*)/i, /^(?:[ \t]+)/i, /^(?:$)/i, /^(?:title\s[^#\n;]+)/i, /^(?:venn-beta\b)/i, /^(?:set\b)/i, /^(?:union\b)/i, /^(?:text\b)/i, /^(?:style\b)/i, /^(?:\["[^\"]*"\])/i, /^(?:\[[^\]\"]+\])/i, /^(?:[+-]?(\d+(\.\d+)?|\.\d+))/i, /^(?:#[0-9a-fA-F]{3,8})/i, /^(?:rgba\(\s*[0-9.]+\s*[,]\s*[0-9.]+\s*[,]\s*[0-9.]+\s*[,]\s*[0-9.]+\s*\))/i, /^(?:rgb\(\s*[0-9.]+\s*[,]\s*[0-9.]+\s*[,]\s*[0-9.]+\s*\))/i, /^(?:[A-Za-z_][A-Za-z0-9\-_]*)/i, /^(?:"[^\"]*")/i, /^(?:,)/i, /^(?::)/i],
-      conditions: { "bol": { "rules": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], "inclusive": true }, "INITIAL": { "rules": [0, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], "inclusive": true } }
+      }, 'anonymous'),
+      rules: [
+        /^(?:%%(?!\{)[^\n]*)/i,
+        /^(?:[^\}]%%[^\n]*)/i,
+        /^(?:[ \t]+(?=[\n\r]))/i,
+        /^(?:[ \t]+(?=text\b))/i,
+        /^(?:[ \t]+)/i,
+        /^(?:[^ \t\n\r])/i,
+        /^(?:[\n\r]+)/i,
+        /^(?:%%[^\n]*)/i,
+        /^(?:[ \t]+)/i,
+        /^(?:$)/i,
+        /^(?:title\s[^#\n;]+)/i,
+        /^(?:venn-beta\b)/i,
+        /^(?:set\b)/i,
+        /^(?:union\b)/i,
+        /^(?:text\b)/i,
+        /^(?:style\b)/i,
+        /^(?:\["[^\"]*"\])/i,
+        /^(?:\[[^\]\"]+\])/i,
+        /^(?:[+-]?(\d+(\.\d+)?|\.\d+))/i,
+        /^(?:#[0-9a-fA-F]{3,8})/i,
+        /^(?:rgba\(\s*[0-9.]+\s*[,]\s*[0-9.]+\s*[,]\s*[0-9.]+\s*[,]\s*[0-9.]+\s*\))/i,
+        /^(?:rgb\(\s*[0-9.]+\s*[,]\s*[0-9.]+\s*[,]\s*[0-9.]+\s*\))/i,
+        /^(?:[A-Za-z_][A-Za-z0-9\-_]*)/i,
+        /^(?:"[^\"]*")/i,
+        /^(?:,)/i,
+        /^(?::)/i,
+      ],
+      conditions: {
+        bol: {
+          rules: [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20, 21, 22, 23, 24, 25,
+          ],
+          inclusive: true,
+        },
+        INITIAL: {
+          rules: [
+            0, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+            22, 23, 24, 25,
+          ],
+          inclusive: true,
+        },
+      },
     };
     return lexer2;
-  }();
+  })();
   parser2.lexer = lexer;
   function Parser() {
     this.yy = {};
   }
-  __name(Parser, "Parser");
+  __name(Parser, 'Parser');
   Parser.prototype = parser2;
   parser2.Parser = Parser;
   return new Parser();
-}();
+})();
 parser.parser = parser;
 var venn_default = parser;
 var subsets = [];
@@ -2202,30 +2673,30 @@ var addSubsetData = __name((identifierList, label, size) => {
   subsets.push({
     sets,
     size: resolvedSize,
-    label: label ? normalizeText(label) : void 0
+    label: label ? normalizeText(label) : void 0,
   });
-}, "addSubsetData");
+}, 'addSubsetData');
 var getSubsetData = __name(() => {
   return subsets;
-}, "getSubsetData");
+}, 'getSubsetData');
 var normalizeText = __name((text) => {
   const trimmed = text.trim();
   if (trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')) {
     return trimmed.slice(1, -1);
   }
   return trimmed;
-}, "normalizeText");
+}, 'normalizeText');
 var normalizeStyleValue = __name((value) => {
   return value ? normalizeText(value) : value;
-}, "normalizeStyleValue");
+}, 'normalizeStyleValue');
 var addTextData = __name((identifierList, id, label) => {
   const normalizedId = normalizeText(id);
   textNodes.push({
     sets: normalizeIdentifierList(identifierList).sort(),
     id: normalizedId,
-    label: label ? normalizeText(label) : void 0
+    label: label ? normalizeText(label) : void 0,
   });
-}, "addTextData");
+}, 'addTextData');
 var addStyleData = __name((identifierList, data) => {
   const targets = normalizeIdentifierList(identifierList).sort();
   const styles = {};
@@ -2233,33 +2704,33 @@ var addStyleData = __name((identifierList, data) => {
     styles[key] = normalizeStyleValue(value) ?? value;
   }
   styleEntries.push({ targets, styles });
-}, "addStyleData");
+}, 'addStyleData');
 var getStyleData = __name(() => {
   return styleEntries;
-}, "getStyleData");
+}, 'getStyleData');
 var normalizeIdentifierList = __name((identifierList) => {
   return identifierList.map((identifier) => normalizeText(identifier));
-}, "normalizeIdentifierList");
+}, 'normalizeIdentifierList');
 var validateUnionIdentifiers = __name((identifierList) => {
   const normalized = normalizeIdentifierList(identifierList);
   const unknown = normalized.filter((identifier) => !knownSets.has(identifier));
   if (unknown.length > 0) {
-    throw new Error(`unknown set identifier: ${unknown.join(", ")}`);
+    throw new Error(`unknown set identifier: ${unknown.join(', ')}`);
   }
-}, "validateUnionIdentifiers");
+}, 'validateUnionIdentifiers');
 var getTextData = __name(() => {
   return textNodes;
-}, "getTextData");
-var getCurrentSets = __name(() => currentSets, "getCurrentSets");
-var getIndentMode = __name(() => indentMode, "getIndentMode");
+}, 'getTextData');
+var getCurrentSets = __name(() => currentSets, 'getCurrentSets');
+var getIndentMode = __name(() => indentMode, 'getIndentMode');
 var setIndentMode = __name((enabled) => {
   indentMode = enabled;
-}, "setIndentMode");
+}, 'setIndentMode');
 var DEFAULT_VENN_CONFIG = defaultConfig_default.venn;
 function getConfig2() {
   return cleanAndMerge(DEFAULT_VENN_CONFIG, getConfig().venn);
 }
-__name(getConfig2, "getConfig");
+__name(getConfig2, 'getConfig');
 var customClear = __name(() => {
   clear();
   subsets.length = 0;
@@ -2268,7 +2739,7 @@ var customClear = __name(() => {
   knownSets.clear();
   currentSets = void 0;
   indentMode = false;
-}, "customClear");
+}, 'customClear');
 var db = {
   getConfig: getConfig2,
   clear: customClear,
@@ -2287,9 +2758,10 @@ var db = {
   getStyleData,
   getCurrentSets,
   getIndentMode,
-  setIndentMode
+  setIndentMode,
 };
-var getStyles = __name((options) => `
+var getStyles = __name(
+  (options) => `
   .venn-title {
     font-size: 32px;
     fill: ${options.vennTitleTextColor};
@@ -2311,12 +2783,14 @@ var getStyles = __name((options) => `
     font-family: ${options.fontFamily};
     color: ${options.vennSetTextColor};
   }
-`, "getStyles");
+`,
+  'getStyles',
+);
 var styles_default = getStyles;
 function buildStyleByKey(styleData) {
   const map = /* @__PURE__ */ new Map();
   for (const entry of styleData) {
-    const key = entry.targets.join("|");
+    const key = entry.targets.join('|');
     const existing = map.get(key);
     if (existing) {
       Object.assign(existing, entry.styles);
@@ -2326,13 +2800,13 @@ function buildStyleByKey(styleData) {
   }
   return map;
 }
-__name(buildStyleByKey, "buildStyleByKey");
+__name(buildStyleByKey, 'buildStyleByKey');
 var draw = __name((_text, id, _version, diagObj) => {
   var _a, _b, _c;
   const db2 = diagObj.db;
   const config = (_a = db2.getConfig) == null ? void 0 : _a.call(db2);
   const { themeVariables, look, handDrawnSeed } = getConfig();
-  const isHandDrawn = look === "handDrawn";
+  const isHandDrawn = look === 'handDrawn';
   const themeColors = [
     themeVariables.venn1,
     themeVariables.venn2,
@@ -2341,7 +2815,7 @@ var draw = __name((_text, id, _version, diagObj) => {
     themeVariables.venn5,
     themeVariables.venn6,
     themeVariables.venn7,
-    themeVariables.venn8
+    themeVariables.venn8,
   ].filter(Boolean);
   const title = (_b = db2.getDiagramTitle) == null ? void 0 : _b.call(db2);
   const sets = db2.getSubsetData();
@@ -2352,20 +2826,37 @@ var draw = __name((_text, id, _version, diagObj) => {
   const REFERENCE_WIDTH = 1600;
   const scale2 = svgWidth / REFERENCE_WIDTH;
   const titleHeight = title ? 48 * scale2 : 0;
-  const defaultTextColor = themeVariables.primaryTextColor ?? themeVariables.textColor;
+  const defaultTextColor =
+    themeVariables.primaryTextColor ?? themeVariables.textColor;
   const svg = selectSvgElement(id);
-  svg.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+  svg.attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
   if (title) {
-    svg.append("text").text(title).attr("class", "venn-title").attr("font-size", `${32 * scale2}px`).attr("text-anchor", "middle").attr("dominant-baseline", "middle").attr("x", "50%").attr("y", 32 * scale2).style("fill", themeVariables.vennTitleTextColor || themeVariables.titleColor);
+    svg
+      .append('text')
+      .text(title)
+      .attr('class', 'venn-title')
+      .attr('font-size', `${32 * scale2}px`)
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .attr('x', '50%')
+      .attr('y', 32 * scale2)
+      .style(
+        'fill',
+        themeVariables.vennTitleTextColor || themeVariables.titleColor,
+      );
   }
-  const dummyD3root = select_default(document.createElement("div"));
-  const vennDiagram = VennDiagram().width(svgWidth).height(svgHeight - titleHeight);
+  const dummyD3root = select_default(document.createElement('div'));
+  const vennDiagram = VennDiagram()
+    .width(svgWidth)
+    .height(svgHeight - titleHeight);
   dummyD3root.datum(sets).call(vennDiagram);
-  const roughSvg = isHandDrawn ? at.svg(dummyD3root.select("svg").node()) : void 0;
+  const roughSvg = isHandDrawn
+    ? at.svg(dummyD3root.select('svg').node())
+    : void 0;
   const layoutAreas = layout(sets, {
     width: svgWidth,
     height: svgHeight - titleHeight,
-    padding: (config == null ? void 0 : config.padding) ?? 15
+    padding: (config == null ? void 0 : config.padding) ?? 15,
   });
   const layoutByKey = /* @__PURE__ */ new Map();
   for (const area of layoutAreas) {
@@ -2373,20 +2864,34 @@ var draw = __name((_text, id, _version, diagObj) => {
     layoutByKey.set(key, area);
   }
   if (textNodes2.length > 0) {
-    renderTextNodes(config, layoutByKey, dummyD3root, textNodes2, scale2, styleByKey);
+    renderTextNodes(
+      config,
+      layoutByKey,
+      dummyD3root,
+      textNodes2,
+      scale2,
+      styleByKey,
+    );
   }
-  const themeDark = is_dark_default(themeVariables.background || "#f4f4f4");
-  dummyD3root.selectAll(".venn-circle").each(function(d, i) {
+  const themeDark = is_dark_default(themeVariables.background || '#f4f4f4');
+  dummyD3root.selectAll('.venn-circle').each(function (d, i) {
     var _a2;
     const group = select_default(this);
     const data = d;
     const setsKey = stableSetsKey([...data.sets].sort());
     const customStyle = styleByKey.get(setsKey);
-    const baseColor = (customStyle == null ? void 0 : customStyle.fill) || themeColors[i % themeColors.length] || themeVariables.primaryColor;
+    const baseColor =
+      (customStyle == null ? void 0 : customStyle.fill) ||
+      themeColors[i % themeColors.length] ||
+      themeVariables.primaryColor;
     group.classed(`venn-set-${i % 8}`, true);
-    const fillOpacity = (customStyle == null ? void 0 : customStyle["fill-opacity"]) ?? 0.1;
-    const strokeColor = (customStyle == null ? void 0 : customStyle.stroke) || baseColor;
-    const strokeWidthVal = (customStyle == null ? void 0 : customStyle["stroke-width"]) || `${5 * scale2}`;
+    const fillOpacity =
+      (customStyle == null ? void 0 : customStyle['fill-opacity']) ?? 0.1;
+    const strokeColor =
+      (customStyle == null ? void 0 : customStyle.stroke) || baseColor;
+    const strokeWidthVal =
+      (customStyle == null ? void 0 : customStyle['stroke-width']) ||
+      `${5 * scale2}`;
     if (isHandDrawn && roughSvg) {
       const layoutArea = layoutByKey.get(setsKey);
       if (layoutArea && layoutArea.circles.length > 0) {
@@ -2395,24 +2900,39 @@ var draw = __name((_text, id, _version, diagObj) => {
           roughness: 0.7,
           seed: handDrawnSeed,
           fill: transparentize_default(baseColor, 0.7),
-          fillStyle: "hachure",
+          fillStyle: 'hachure',
           fillWeight: 2,
           hachureGap: 8,
           hachureAngle: -41 + i * 60,
           stroke: strokeColor,
-          strokeWidth: parseFloat(String(strokeWidthVal))
+          strokeWidth: parseFloat(String(strokeWidthVal)),
         });
-        group.select("path").remove();
-        (_a2 = group.node()) == null ? void 0 : _a2.insertBefore(roughNode, group.select("text").node());
+        group.select('path').remove();
+        (_a2 = group.node()) == null
+          ? void 0
+          : _a2.insertBefore(roughNode, group.select('text').node());
       }
     } else {
-      group.select("path").style("fill", baseColor).style("fill-opacity", fillOpacity).style("stroke", strokeColor).style("stroke-width", strokeWidthVal).style("stroke-opacity", 0.95);
+      group
+        .select('path')
+        .style('fill', baseColor)
+        .style('fill-opacity', fillOpacity)
+        .style('stroke', strokeColor)
+        .style('stroke-width', strokeWidthVal)
+        .style('stroke-opacity', 0.95);
     }
-    const textColor = (customStyle == null ? void 0 : customStyle.color) || (themeDark ? lighten_default(baseColor, 30) : darken_default(baseColor, 30));
-    group.select("text").style("font-size", `${48 * scale2}px`).style("fill", textColor);
+    const textColor =
+      (customStyle == null ? void 0 : customStyle.color) ||
+      (themeDark
+        ? lighten_default(baseColor, 30)
+        : darken_default(baseColor, 30));
+    group
+      .select('text')
+      .style('font-size', `${48 * scale2}px`)
+      .style('fill', textColor);
   });
   if (isHandDrawn && roughSvg) {
-    dummyD3root.selectAll(".venn-intersection").each(function(d) {
+    dummyD3root.selectAll('.venn-intersection').each(function (d) {
       var _a2;
       const group = select_default(this);
       const data = d;
@@ -2420,65 +2940,106 @@ var draw = __name((_text, id, _version, diagObj) => {
       const customStyle = styleByKey.get(setsKey);
       const customFill = customStyle == null ? void 0 : customStyle.fill;
       if (customFill) {
-        const pathEl = group.select("path");
-        const pathD = pathEl.attr("d");
+        const pathEl = group.select('path');
+        const pathD = pathEl.attr('d');
         if (pathD) {
           const roughNode = roughSvg.path(pathD, {
             roughness: 0.7,
             seed: handDrawnSeed,
             fill: transparentize_default(customFill, 0.3),
-            fillStyle: "cross-hatch",
+            fillStyle: 'cross-hatch',
             fillWeight: 2,
             hachureGap: 6,
             hachureAngle: 60,
-            stroke: "none"
+            stroke: 'none',
           });
           const existingPath = pathEl.node();
-          (_a2 = existingPath == null ? void 0 : existingPath.parentNode) == null ? void 0 : _a2.insertBefore(roughNode, existingPath);
+          (_a2 = existingPath == null ? void 0 : existingPath.parentNode) ==
+          null
+            ? void 0
+            : _a2.insertBefore(roughNode, existingPath);
           pathEl.remove();
         }
       } else {
-        group.select("path").style("fill-opacity", 0);
+        group.select('path').style('fill-opacity', 0);
       }
-      group.select("text").style("font-size", `${48 * scale2}px`).style("fill", (customStyle == null ? void 0 : customStyle.color) ?? themeVariables.vennSetTextColor ?? defaultTextColor);
+      group
+        .select('text')
+        .style('font-size', `${48 * scale2}px`)
+        .style(
+          'fill',
+          (customStyle == null ? void 0 : customStyle.color) ??
+            themeVariables.vennSetTextColor ??
+            defaultTextColor,
+        );
     });
   } else {
-    dummyD3root.selectAll(".venn-intersection text").style("font-size", `${48 * scale2}px`).style("fill", (e) => {
-      var _a2;
-      const data = e;
-      const setsKey = stableSetsKey([...data.sets].sort());
-      return ((_a2 = styleByKey.get(setsKey)) == null ? void 0 : _a2.color) ?? themeVariables.vennSetTextColor ?? defaultTextColor;
-    });
-    dummyD3root.selectAll(".venn-intersection path").style("fill-opacity", (e) => {
-      var _a2;
-      const data = e;
-      const setsKey = stableSetsKey([...data.sets].sort());
-      return ((_a2 = styleByKey.get(setsKey)) == null ? void 0 : _a2.fill) ? 1 : 0;
-    }).style("fill", (e) => {
-      var _a2;
-      const data = e;
-      const setsKey = stableSetsKey([...data.sets].sort());
-      return ((_a2 = styleByKey.get(setsKey)) == null ? void 0 : _a2.fill) ?? "transparent";
-    });
+    dummyD3root
+      .selectAll('.venn-intersection text')
+      .style('font-size', `${48 * scale2}px`)
+      .style('fill', (e) => {
+        var _a2;
+        const data = e;
+        const setsKey = stableSetsKey([...data.sets].sort());
+        return (
+          ((_a2 = styleByKey.get(setsKey)) == null ? void 0 : _a2.color) ??
+          themeVariables.vennSetTextColor ??
+          defaultTextColor
+        );
+      });
+    dummyD3root
+      .selectAll('.venn-intersection path')
+      .style('fill-opacity', (e) => {
+        var _a2;
+        const data = e;
+        const setsKey = stableSetsKey([...data.sets].sort());
+        return ((_a2 = styleByKey.get(setsKey)) == null ? void 0 : _a2.fill)
+          ? 1
+          : 0;
+      })
+      .style('fill', (e) => {
+        var _a2;
+        const data = e;
+        const setsKey = stableSetsKey([...data.sets].sort());
+        return (
+          ((_a2 = styleByKey.get(setsKey)) == null ? void 0 : _a2.fill) ??
+          'transparent'
+        );
+      });
   }
-  const vennGroup = svg.append("g").attr("transform", `translate(0, ${titleHeight})`);
-  const dummySvg = dummyD3root.select("svg").node();
-  if (dummySvg && "childNodes" in dummySvg) {
+  const vennGroup = svg
+    .append('g')
+    .attr('transform', `translate(0, ${titleHeight})`);
+  const dummySvg = dummyD3root.select('svg').node();
+  if (dummySvg && 'childNodes' in dummySvg) {
     for (const child of [...dummySvg.childNodes]) {
       (_c = vennGroup.node()) == null ? void 0 : _c.appendChild(child);
     }
   }
-  configureSvgSize(svg, svgHeight, svgWidth, (config == null ? void 0 : config.useMaxWidth) ?? true);
-}, "draw");
+  configureSvgSize(
+    svg,
+    svgHeight,
+    svgWidth,
+    (config == null ? void 0 : config.useMaxWidth) ?? true,
+  );
+}, 'draw');
 function stableSetsKey(setIds) {
-  return setIds.join("|");
+  return setIds.join('|');
 }
-__name(stableSetsKey, "stableSetsKey");
-function renderTextNodes(config, layoutByKey, dummyD3root, textNodes2, scale2, styleByKey) {
+__name(stableSetsKey, 'stableSetsKey');
+function renderTextNodes(
+  config,
+  layoutByKey,
+  dummyD3root,
+  textNodes2,
+  scale2,
+  styleByKey,
+) {
   var _a;
-  const useDebugLayout = (config == null ? void 0 : config.useDebugLayout) ?? false;
-  const vennSvg = dummyD3root.select("svg");
-  const textGroup = vennSvg.append("g").attr("class", "venn-text-nodes");
+  const useDebugLayout =
+    (config == null ? void 0 : config.useDebugLayout) ?? false;
+  const vennSvg = dummyD3root.select('svg');
+  const textGroup = vennSvg.append('g').attr('class', 'venn-text-nodes');
   const nodesByArea = /* @__PURE__ */ new Map();
   for (const node of textNodes2) {
     const key = stableSetsKey(node.sets);
@@ -2498,20 +3059,38 @@ function renderTextNodes(config, layoutByKey, dummyD3root, textNodes2, scale2, s
     const centerY = area.text.y;
     const minCircleRadius = Math.min(...area.circles.map((c) => c.radius));
     const innerRadiusRaw = Math.min(
-      ...area.circles.map((c) => c.radius - Math.hypot(centerX - c.x, centerY - c.y))
+      ...area.circles.map(
+        (c) => c.radius - Math.hypot(centerX - c.x, centerY - c.y),
+      ),
     );
-    let innerRadius = Number.isFinite(innerRadiusRaw) ? Math.max(0, innerRadiusRaw) : 0;
+    let innerRadius = Number.isFinite(innerRadiusRaw)
+      ? Math.max(0, innerRadiusRaw)
+      : 0;
     if (innerRadius === 0 && Number.isFinite(minCircleRadius)) {
       innerRadius = minCircleRadius * 0.6;
     }
-    const areaGroup = textGroup.append("g").attr("class", "venn-text-area").attr("font-size", `${40 * scale2}px`);
+    const areaGroup = textGroup
+      .append('g')
+      .attr('class', 'venn-text-area')
+      .attr('font-size', `${40 * scale2}px`);
     if (useDebugLayout) {
-      areaGroup.append("circle").attr("class", "venn-text-debug-circle").attr("cx", centerX).attr("cy", centerY).attr("r", innerRadius).attr("fill", "none").attr("stroke", "purple").attr("stroke-width", 1.5 * scale2).attr("stroke-dasharray", `${6 * scale2} ${4 * scale2}`);
+      areaGroup
+        .append('circle')
+        .attr('class', 'venn-text-debug-circle')
+        .attr('cx', centerX)
+        .attr('cy', centerY)
+        .attr('r', innerRadius)
+        .attr('fill', 'none')
+        .attr('stroke', 'purple')
+        .attr('stroke-width', 1.5 * scale2)
+        .attr('stroke-dasharray', `${6 * scale2} ${4 * scale2}`);
     }
     const innerWidth = Math.max(80 * scale2, innerRadius * 2 * 0.95);
     const innerHeight = Math.max(60 * scale2, innerRadius * 2 * 0.95);
     const hasLabel = area.data.label && area.data.label.length > 0;
-    const labelOffsetBase = hasLabel ? Math.min(32 * scale2, innerRadius * 0.25) : 0;
+    const labelOffsetBase = hasLabel
+      ? Math.min(32 * scale2, innerRadius * 0.25)
+      : 0;
     const labelOffset = labelOffsetBase + (nodes.length <= 2 ? 30 * scale2 : 0);
     const startX = centerX - innerWidth / 2;
     const startY = centerY - innerHeight / 2 + labelOffset;
@@ -2525,28 +3104,56 @@ function renderTextNodes(config, layoutByKey, dummyD3root, textNodes2, scale2, s
       const x = startX + cellWidth * (col + 0.5);
       const y = startY + cellHeight * (row + 0.5);
       if (useDebugLayout) {
-        areaGroup.append("rect").attr("class", "venn-text-debug-cell").attr("x", startX + cellWidth * col).attr("y", startY + cellHeight * row).attr("width", cellWidth).attr("height", cellHeight).attr("fill", "none").attr("stroke", "teal").attr("stroke-width", 1 * scale2).attr("stroke-dasharray", `${4 * scale2} ${3 * scale2}`);
+        areaGroup
+          .append('rect')
+          .attr('class', 'venn-text-debug-cell')
+          .attr('x', startX + cellWidth * col)
+          .attr('y', startY + cellHeight * row)
+          .attr('width', cellWidth)
+          .attr('height', cellHeight)
+          .attr('fill', 'none')
+          .attr('stroke', 'teal')
+          .attr('stroke-width', 1 * scale2)
+          .attr('stroke-dasharray', `${4 * scale2} ${3 * scale2}`);
       }
       const boxWidth = cellWidth * 0.9;
       const boxHeight = cellHeight * 0.9;
-      const container = areaGroup.append("foreignObject").attr("class", "venn-text-node-fo").attr("width", boxWidth).attr("height", boxHeight).attr("x", x - boxWidth / 2).attr("y", y - boxHeight / 2).attr("overflow", "visible");
-      const textColor = (_a = styleByKey.get(node.id)) == null ? void 0 : _a.color;
-      const text = container.append("xhtml:span").attr("class", "venn-text-node").style("display", "flex").style("width", "100%").style("height", "100%").style("white-space", "normal").style("align-items", "center").style("justify-content", "center").style("text-align", "center").style("overflow-wrap", "normal").style("word-break", "normal").text(node.label ?? node.id);
+      const container = areaGroup
+        .append('foreignObject')
+        .attr('class', 'venn-text-node-fo')
+        .attr('width', boxWidth)
+        .attr('height', boxHeight)
+        .attr('x', x - boxWidth / 2)
+        .attr('y', y - boxHeight / 2)
+        .attr('overflow', 'visible');
+      const textColor =
+        (_a = styleByKey.get(node.id)) == null ? void 0 : _a.color;
+      const text = container
+        .append('xhtml:span')
+        .attr('class', 'venn-text-node')
+        .style('display', 'flex')
+        .style('width', '100%')
+        .style('height', '100%')
+        .style('white-space', 'normal')
+        .style('align-items', 'center')
+        .style('justify-content', 'center')
+        .style('text-align', 'center')
+        .style('overflow-wrap', 'normal')
+        .style('word-break', 'normal')
+        .text(node.label ?? node.id);
       if (textColor) {
-        text.style("color", textColor);
+        text.style('color', textColor);
       }
     }
   }
 }
-__name(renderTextNodes, "renderTextNodes");
+__name(renderTextNodes, 'renderTextNodes');
 var renderer = { draw };
 var diagram = {
   parser: venn_default,
   db,
   renderer,
-  styles: styles_default
+  styles: styles_default,
 };
-export {
-  diagram
-};
+export { diagram };
 //# sourceMappingURL=vennDiagram-LZ73GAT5-6XV2EVPB.js.map

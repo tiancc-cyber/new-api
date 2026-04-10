@@ -5,28 +5,32 @@ import {
   keys_default,
   reduce_default,
   union_default,
-  values_default
-} from "./chunk-ZXFBJHF7.js";
-import {
-  isEmpty_default
-} from "./chunk-J6ANVC7P.js";
-import {
-  constant_default,
-  isFunction_default
-} from "./chunk-YFRUBO2K.js";
+  values_default,
+} from './chunk-ZXFBJHF7.js';
+import { isEmpty_default } from './chunk-J6ANVC7P.js';
+import { constant_default, isFunction_default } from './chunk-YFRUBO2K.js';
 
 // node_modules/dagre-d3-es/src/graphlib/graph.js
-var DEFAULT_EDGE_NAME = "\0";
-var GRAPH_NODE = "\0";
-var EDGE_KEY_DELIM = "";
+var DEFAULT_EDGE_NAME = '\0';
+var GRAPH_NODE = '\0';
+var EDGE_KEY_DELIM = '';
 var Graph = class {
   /**
    * @param {GraphOptions} [opts] - Graph options.
    */
   constructor(opts = {}) {
-    this._isDirected = Object.prototype.hasOwnProperty.call(opts, "directed") ? opts.directed : true;
-    this._isMultigraph = Object.prototype.hasOwnProperty.call(opts, "multigraph") ? opts.multigraph : false;
-    this._isCompound = Object.prototype.hasOwnProperty.call(opts, "compound") ? opts.compound : false;
+    this._isDirected = Object.prototype.hasOwnProperty.call(opts, 'directed')
+      ? opts.directed
+      : true;
+    this._isMultigraph = Object.prototype.hasOwnProperty.call(
+      opts,
+      'multigraph',
+    )
+      ? opts.multigraph
+      : false;
+    this._isCompound = Object.prototype.hasOwnProperty.call(opts, 'compound')
+      ? opts.compound
+      : false;
     this._label = void 0;
     this._defaultNodeLabelFn = constant_default(void 0);
     this._defaultEdgeLabelFn = constant_default(void 0);
@@ -146,7 +150,7 @@ var Graph = class {
    */
   sources() {
     var self = this;
-    return filter_default(this.nodes(), function(v) {
+    return filter_default(this.nodes(), function (v) {
       return isEmpty_default(self._in[v]);
     });
   }
@@ -156,7 +160,7 @@ var Graph = class {
    */
   sinks() {
     var self = this;
-    return filter_default(this.nodes(), function(v) {
+    return filter_default(this.nodes(), function (v) {
       return isEmpty_default(self._out[v]);
     });
   }
@@ -171,7 +175,7 @@ var Graph = class {
   setNodes(vs, value) {
     var args = arguments;
     var self = this;
-    forEach_default(vs, function(v) {
+    forEach_default(vs, function (v) {
       if (args.length > 1) {
         self.setNode(v, value);
       } else {
@@ -277,15 +281,25 @@ var Graph = class {
    */
   setParent(v, parent) {
     if (!this._isCompound) {
-      throw new Error("Cannot set parent in a non-compound graph");
+      throw new Error('Cannot set parent in a non-compound graph');
     }
     if (isUndefined_default(parent)) {
       parent = GRAPH_NODE;
     } else {
-      parent += "";
-      for (var ancestor = parent; !isUndefined_default(ancestor); ancestor = this.parent(ancestor)) {
+      parent += '';
+      for (
+        var ancestor = parent;
+        !isUndefined_default(ancestor);
+        ancestor = this.parent(ancestor)
+      ) {
         if (ancestor === v) {
-          throw new Error("Setting " + parent + " as parent of " + v + " would create a cycle");
+          throw new Error(
+            'Setting ' +
+              parent +
+              ' as parent of ' +
+              v +
+              ' would create a cycle',
+          );
         }
       }
       this.setNode(parent);
@@ -416,16 +430,16 @@ var Graph = class {
     var copy = new this.constructor({
       directed: this._isDirected,
       multigraph: this._isMultigraph,
-      compound: this._isCompound
+      compound: this._isCompound,
     });
     copy.setGraph(this.graph());
     var self = this;
-    forEach_default(this._nodes, function(value, v) {
+    forEach_default(this._nodes, function (value, v) {
       if (filter(v)) {
         copy.setNode(v, value);
       }
     });
-    forEach_default(this._edgeObjs, function(e) {
+    forEach_default(this._edgeObjs, function (e) {
       if (copy.hasNode(e.v) && copy.hasNode(e.w)) {
         copy.setEdge(e, self.edge(e));
       }
@@ -443,7 +457,7 @@ var Graph = class {
       }
     }
     if (this._isCompound) {
-      forEach_default(copy.nodes(), function(v) {
+      forEach_default(copy.nodes(), function (v) {
         copy.setParent(v, findParent(v));
       });
     }
@@ -501,7 +515,7 @@ var Graph = class {
   setPath(vs, value) {
     var self = this;
     var args = arguments;
-    reduce_default(vs, function(v, w) {
+    reduce_default(vs, function (v, w) {
       if (args.length > 1) {
         self.setEdge(v, w, value);
       } else {
@@ -541,7 +555,7 @@ var Graph = class {
     var v, w, name, value;
     var valueSpecified = false;
     var arg0 = arguments[0];
-    if (typeof arg0 === "object" && arg0 !== null && "v" in arg0) {
+    if (typeof arg0 === 'object' && arg0 !== null && 'v' in arg0) {
       v = arg0.v;
       w = arg0.w;
       name = arg0.name;
@@ -558,10 +572,10 @@ var Graph = class {
         valueSpecified = true;
       }
     }
-    v = "" + v;
-    w = "" + w;
+    v = '' + v;
+    w = '' + w;
     if (!isUndefined_default(name)) {
-      name = "" + name;
+      name = '' + name;
     }
     var e = edgeArgsToId(this._isDirected, v, w, name);
     if (Object.prototype.hasOwnProperty.call(this._edgeLabels, e)) {
@@ -571,11 +585,13 @@ var Graph = class {
       return this;
     }
     if (!isUndefined_default(name) && !this._isMultigraph) {
-      throw new Error("Cannot set a named edge when isMultigraph = false");
+      throw new Error('Cannot set a named edge when isMultigraph = false');
     }
     this.setNode(v);
     this.setNode(w);
-    this._edgeLabels[e] = valueSpecified ? value : this._defaultEdgeLabelFn(v, w, name);
+    this._edgeLabels[e] = valueSpecified
+      ? value
+      : this._defaultEdgeLabelFn(v, w, name);
     var edgeObj = edgeArgsToObj(this._isDirected, v, w, name);
     v = edgeObj.v;
     w = edgeObj.w;
@@ -615,7 +631,10 @@ var Graph = class {
    * Takes `O(1)` time.
    */
   edge(v, w, name) {
-    var e = arguments.length === 1 ? edgeObjToId(this._isDirected, arguments[0]) : edgeArgsToId(this._isDirected, v, w, name);
+    var e =
+      arguments.length === 1
+        ? edgeObjToId(this._isDirected, arguments[0])
+        : edgeArgsToId(this._isDirected, v, w, name);
     return this._edgeLabels[e];
   }
   /**
@@ -645,7 +664,10 @@ var Graph = class {
    * Takes `O(1)` time.
    */
   hasEdge(v, w, name) {
-    var e = arguments.length === 1 ? edgeObjToId(this._isDirected, arguments[0]) : edgeArgsToId(this._isDirected, v, w, name);
+    var e =
+      arguments.length === 1
+        ? edgeObjToId(this._isDirected, arguments[0])
+        : edgeArgsToId(this._isDirected, v, w, name);
     return Object.prototype.hasOwnProperty.call(this._edgeLabels, e);
   }
   /**
@@ -674,7 +696,10 @@ var Graph = class {
    * Takes `O(1)` time.
    */
   removeEdge(v, w, name) {
-    var e = arguments.length === 1 ? edgeObjToId(this._isDirected, arguments[0]) : edgeArgsToId(this._isDirected, v, w, name);
+    var e =
+      arguments.length === 1
+        ? edgeObjToId(this._isDirected, arguments[0])
+        : edgeArgsToId(this._isDirected, v, w, name);
     var edge = this._edgeObjs[e];
     if (edge) {
       v = edge.v;
@@ -706,7 +731,7 @@ var Graph = class {
       if (!u) {
         return edges;
       }
-      return filter_default(edges, function(edge) {
+      return filter_default(edges, function (edge) {
         return edge.v === u;
       });
     }
@@ -728,7 +753,7 @@ var Graph = class {
       if (!w) {
         return edges;
       }
-      return filter_default(edges, function(edge) {
+      return filter_default(edges, function (edge) {
         return edge.w === w;
       });
     }
@@ -763,18 +788,24 @@ function decrementOrRemoveEntry(map, k) {
   }
 }
 function edgeArgsToId(isDirected, v_, w_, name) {
-  var v = "" + v_;
-  var w = "" + w_;
+  var v = '' + v_;
+  var w = '' + w_;
   if (!isDirected && v > w) {
     var tmp = v;
     v = w;
     w = tmp;
   }
-  return v + EDGE_KEY_DELIM + w + EDGE_KEY_DELIM + (isUndefined_default(name) ? DEFAULT_EDGE_NAME : name);
+  return (
+    v +
+    EDGE_KEY_DELIM +
+    w +
+    EDGE_KEY_DELIM +
+    (isUndefined_default(name) ? DEFAULT_EDGE_NAME : name)
+  );
 }
 function edgeArgsToObj(isDirected, v_, w_, name) {
-  var v = "" + v_;
-  var w = "" + w_;
+  var v = '' + v_;
+  var w = '' + w_;
   if (!isDirected && v > w) {
     var tmp = v;
     v = w;
@@ -790,7 +821,5 @@ function edgeObjToId(isDirected, edgeObj) {
   return edgeArgsToId(isDirected, edgeObj.v, edgeObj.w, edgeObj.name);
 }
 
-export {
-  Graph
-};
+export { Graph };
 //# sourceMappingURL=chunk-ZWCNTER3.js.map

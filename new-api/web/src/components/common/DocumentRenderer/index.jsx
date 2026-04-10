@@ -28,7 +28,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../markdown/MarkdownRenderer';
 
-import { isHtmlContent, sanitizeHtmlToSafePayload } from '../../../helpers/safeHtml';
+import {
+  isHtmlContent,
+  sanitizeHtmlToSafePayload,
+} from '../../../helpers/safeHtml';
 
 // 检查是否为 URL
 const isUrl = (content) => {

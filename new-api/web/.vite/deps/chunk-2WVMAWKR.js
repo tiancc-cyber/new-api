@@ -1,29 +1,29 @@
-import {
-  __name
-} from "./chunk-OQUVF2X3.js";
+import { __name } from './chunk-OQUVF2X3.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/chunk-MX3YWQON.mjs
 var computeLabelTransform = __name((bbox, useHtmlLabels) => {
   if (useHtmlLabels) {
-    return "translate(" + -bbox.width / 2 + ", " + -bbox.height / 2 + ")";
+    return 'translate(' + -bbox.width / 2 + ', ' + -bbox.height / 2 + ')';
   }
   const x = bbox.x ?? 0;
   const y = bbox.y ?? 0;
-  return "translate(" + -(x + bbox.width / 2) + ", " + -(y + bbox.height / 2) + ")";
-}, "computeLabelTransform");
+  return (
+    'translate(' + -(x + bbox.width / 2) + ', ' + -(y + bbox.height / 2) + ')'
+  );
+}, 'computeLabelTransform');
 var markerOffsets = {
   aggregation: 17.25,
   extension: 17.25,
   composition: 17.25,
   dependency: 6,
   lollipop: 13.5,
-  arrow_point: 4
+  arrow_point: 4,
   //arrow_cross: 24,
 };
 var markerOffsets2 = {
   arrow_point: 9,
   arrow_cross: 12.5,
-  arrow_circle: 12.5
+  arrow_circle: 12.5,
 };
 function calculateDeltaAndAngle(point1, point2) {
   if (point1 === void 0 || point2 === void 0) {
@@ -37,124 +37,174 @@ function calculateDeltaAndAngle(point1, point2) {
   const deltaY = y2 - y1;
   return { angle: Math.atan(deltaY / deltaX), deltaX, deltaY };
 }
-__name(calculateDeltaAndAngle, "calculateDeltaAndAngle");
+__name(calculateDeltaAndAngle, 'calculateDeltaAndAngle');
 var pointTransformer = __name((data) => {
   if (Array.isArray(data)) {
     return { x: data[0], y: data[1] };
   }
   return data;
-}, "pointTransformer");
+}, 'pointTransformer');
 var getLineFunctionsWithOffset = __name((edge) => {
   return {
-    x: __name(function(d, i, data) {
+    x: __name(function (d, i, data) {
       let offset = 0;
-      const DIRECTION = pointTransformer(data[0]).x < pointTransformer(data[data.length - 1]).x ? "left" : "right";
+      const DIRECTION =
+        pointTransformer(data[0]).x < pointTransformer(data[data.length - 1]).x
+          ? 'left'
+          : 'right';
       if (i === 0 && Object.hasOwn(markerOffsets, edge.arrowTypeStart)) {
         const { angle, deltaX } = calculateDeltaAndAngle(data[0], data[1]);
-        offset = markerOffsets[edge.arrowTypeStart] * Math.cos(angle) * (deltaX >= 0 ? 1 : -1);
-      } else if (i === data.length - 1 && Object.hasOwn(markerOffsets, edge.arrowTypeEnd)) {
+        offset =
+          markerOffsets[edge.arrowTypeStart] *
+          Math.cos(angle) *
+          (deltaX >= 0 ? 1 : -1);
+      } else if (
+        i === data.length - 1 &&
+        Object.hasOwn(markerOffsets, edge.arrowTypeEnd)
+      ) {
         const { angle, deltaX } = calculateDeltaAndAngle(
           data[data.length - 1],
-          data[data.length - 2]
+          data[data.length - 2],
         );
-        offset = markerOffsets[edge.arrowTypeEnd] * Math.cos(angle) * (deltaX >= 0 ? 1 : -1);
+        offset =
+          markerOffsets[edge.arrowTypeEnd] *
+          Math.cos(angle) *
+          (deltaX >= 0 ? 1 : -1);
       }
       const differenceToEnd = Math.abs(
-        pointTransformer(d).x - pointTransformer(data[data.length - 1]).x
+        pointTransformer(d).x - pointTransformer(data[data.length - 1]).x,
       );
       const differenceInYEnd = Math.abs(
-        pointTransformer(d).y - pointTransformer(data[data.length - 1]).y
+        pointTransformer(d).y - pointTransformer(data[data.length - 1]).y,
       );
-      const differenceToStart = Math.abs(pointTransformer(d).x - pointTransformer(data[0]).x);
-      const differenceInYStart = Math.abs(pointTransformer(d).y - pointTransformer(data[0]).y);
+      const differenceToStart = Math.abs(
+        pointTransformer(d).x - pointTransformer(data[0]).x,
+      );
+      const differenceInYStart = Math.abs(
+        pointTransformer(d).y - pointTransformer(data[0]).y,
+      );
       const startMarkerHeight = markerOffsets[edge.arrowTypeStart];
       const endMarkerHeight = markerOffsets[edge.arrowTypeEnd];
       const extraRoom = 1;
-      if (differenceToEnd < endMarkerHeight && differenceToEnd > 0 && differenceInYEnd < endMarkerHeight) {
+      if (
+        differenceToEnd < endMarkerHeight &&
+        differenceToEnd > 0 &&
+        differenceInYEnd < endMarkerHeight
+      ) {
         let adjustment = endMarkerHeight + extraRoom - differenceToEnd;
-        adjustment *= DIRECTION === "right" ? -1 : 1;
+        adjustment *= DIRECTION === 'right' ? -1 : 1;
         offset -= adjustment;
       }
-      if (differenceToStart < startMarkerHeight && differenceToStart > 0 && differenceInYStart < startMarkerHeight) {
+      if (
+        differenceToStart < startMarkerHeight &&
+        differenceToStart > 0 &&
+        differenceInYStart < startMarkerHeight
+      ) {
         let adjustment = startMarkerHeight + extraRoom - differenceToStart;
-        adjustment *= DIRECTION === "right" ? -1 : 1;
+        adjustment *= DIRECTION === 'right' ? -1 : 1;
         offset += adjustment;
       }
       return pointTransformer(d).x + offset;
-    }, "x"),
-    y: __name(function(d, i, data) {
+    }, 'x'),
+    y: __name(function (d, i, data) {
       let offset = 0;
-      const DIRECTION = pointTransformer(data[0]).y < pointTransformer(data[data.length - 1]).y ? "down" : "up";
+      const DIRECTION =
+        pointTransformer(data[0]).y < pointTransformer(data[data.length - 1]).y
+          ? 'down'
+          : 'up';
       if (i === 0 && Object.hasOwn(markerOffsets, edge.arrowTypeStart)) {
         const { angle, deltaY } = calculateDeltaAndAngle(data[0], data[1]);
-        offset = markerOffsets[edge.arrowTypeStart] * Math.abs(Math.sin(angle)) * (deltaY >= 0 ? 1 : -1);
-      } else if (i === data.length - 1 && Object.hasOwn(markerOffsets, edge.arrowTypeEnd)) {
+        offset =
+          markerOffsets[edge.arrowTypeStart] *
+          Math.abs(Math.sin(angle)) *
+          (deltaY >= 0 ? 1 : -1);
+      } else if (
+        i === data.length - 1 &&
+        Object.hasOwn(markerOffsets, edge.arrowTypeEnd)
+      ) {
         const { angle, deltaY } = calculateDeltaAndAngle(
           data[data.length - 1],
-          data[data.length - 2]
+          data[data.length - 2],
         );
-        offset = markerOffsets[edge.arrowTypeEnd] * Math.abs(Math.sin(angle)) * (deltaY >= 0 ? 1 : -1);
+        offset =
+          markerOffsets[edge.arrowTypeEnd] *
+          Math.abs(Math.sin(angle)) *
+          (deltaY >= 0 ? 1 : -1);
       }
       const differenceToEnd = Math.abs(
-        pointTransformer(d).y - pointTransformer(data[data.length - 1]).y
+        pointTransformer(d).y - pointTransformer(data[data.length - 1]).y,
       );
       const differenceInXEnd = Math.abs(
-        pointTransformer(d).x - pointTransformer(data[data.length - 1]).x
+        pointTransformer(d).x - pointTransformer(data[data.length - 1]).x,
       );
-      const differenceToStart = Math.abs(pointTransformer(d).y - pointTransformer(data[0]).y);
-      const differenceInXStart = Math.abs(pointTransformer(d).x - pointTransformer(data[0]).x);
+      const differenceToStart = Math.abs(
+        pointTransformer(d).y - pointTransformer(data[0]).y,
+      );
+      const differenceInXStart = Math.abs(
+        pointTransformer(d).x - pointTransformer(data[0]).x,
+      );
       const startMarkerHeight = markerOffsets[edge.arrowTypeStart];
       const endMarkerHeight = markerOffsets[edge.arrowTypeEnd];
       const extraRoom = 1;
-      if (differenceToEnd < endMarkerHeight && differenceToEnd > 0 && differenceInXEnd < endMarkerHeight) {
+      if (
+        differenceToEnd < endMarkerHeight &&
+        differenceToEnd > 0 &&
+        differenceInXEnd < endMarkerHeight
+      ) {
         let adjustment = endMarkerHeight + extraRoom - differenceToEnd;
-        adjustment *= DIRECTION === "up" ? -1 : 1;
+        adjustment *= DIRECTION === 'up' ? -1 : 1;
         offset -= adjustment;
       }
-      if (differenceToStart < startMarkerHeight && differenceToStart > 0 && differenceInXStart < startMarkerHeight) {
+      if (
+        differenceToStart < startMarkerHeight &&
+        differenceToStart > 0 &&
+        differenceInXStart < startMarkerHeight
+      ) {
         let adjustment = startMarkerHeight + extraRoom - differenceToStart;
-        adjustment *= DIRECTION === "up" ? -1 : 1;
+        adjustment *= DIRECTION === 'up' ? -1 : 1;
         offset += adjustment;
       }
       return pointTransformer(d).y + offset;
-    }, "y")
+    }, 'y'),
   };
-}, "getLineFunctionsWithOffset");
+}, 'getLineFunctionsWithOffset');
 if (void 0) {
   const { it, expect, describe } = void 0;
-  describe("calculateDeltaAndAngle", () => {
-    it("should calculate the angle and deltas between two points", () => {
+  describe('calculateDeltaAndAngle', () => {
+    it('should calculate the angle and deltas between two points', () => {
       expect(calculateDeltaAndAngle([0, 0], [0, 1])).toStrictEqual({
         angle: 1.5707963267948966,
         deltaX: 0,
-        deltaY: 1
+        deltaY: 1,
       });
       expect(calculateDeltaAndAngle([1, 0], [0, -1])).toStrictEqual({
         angle: 0.7853981633974483,
         deltaX: -1,
-        deltaY: -1
+        deltaY: -1,
       });
       expect(calculateDeltaAndAngle({ x: 1, y: 0 }, [0, -1])).toStrictEqual({
         angle: 0.7853981633974483,
         deltaX: -1,
-        deltaY: -1
+        deltaY: -1,
       });
-      expect(calculateDeltaAndAngle({ x: 1, y: 0 }, { x: 1, y: 0 })).toStrictEqual({
+      expect(
+        calculateDeltaAndAngle({ x: 1, y: 0 }, { x: 1, y: 0 }),
+      ).toStrictEqual({
         angle: NaN,
         deltaX: 0,
-        deltaY: 0
+        deltaY: 0,
       });
     });
-    it("should calculate the angle and deltas if one point in undefined", () => {
+    it('should calculate the angle and deltas if one point in undefined', () => {
       expect(calculateDeltaAndAngle(void 0, [0, 1])).toStrictEqual({
         angle: 0,
         deltaX: 0,
-        deltaY: 0
+        deltaY: 0,
       });
       expect(calculateDeltaAndAngle([0, 1], void 0)).toStrictEqual({
         angle: 0,
         deltaX: 0,
-        deltaY: 0
+        deltaY: 0,
       });
     });
   });
@@ -164,6 +214,6 @@ export {
   computeLabelTransform,
   markerOffsets,
   markerOffsets2,
-  getLineFunctionsWithOffset
+  getLineFunctionsWithOffset,
 };
 //# sourceMappingURL=chunk-2WVMAWKR.js.map

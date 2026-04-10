@@ -21,7 +21,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { API, showError } from '../../helpers';
-import { Button, Empty, Input, InputGroup, Popover, Skeleton, Tag, Typography } from '@douyinfe/semi-ui';
+import {
+  Button,
+  Empty,
+  Input,
+  InputGroup,
+  Popover,
+  Skeleton,
+  Tag,
+  Typography,
+} from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
 
 const { Title, Paragraph, Text } = Typography;
@@ -236,7 +245,11 @@ const GridCard = ({ post, t }) => {
           )}
         </div>
         <div className='p-4 flex flex-col gap-2'>
-          <Title heading={4} style={{ margin: 0 }} ellipsis={{ showTooltip: true }}>
+          <Title
+            heading={4}
+            style={{ margin: 0 }}
+            ellipsis={{ showTooltip: true }}
+          >
             {post.title}
           </Title>
           <div style={{ height: 54, overflow: 'hidden' }}>
@@ -307,7 +320,6 @@ const Blog = () => {
   const doSearch = () => {
     setSearchKeyword(keyword);
   };
-
 
   const featuredFiltered = posts?.[0];
   const restFiltered = useMemo(() => (posts || []).slice(1), [posts]);
@@ -470,4 +482,3 @@ const Blog = () => {
 };
 
 export default Blog;
-

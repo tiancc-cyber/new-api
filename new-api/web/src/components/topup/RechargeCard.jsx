@@ -294,7 +294,8 @@ const RechargeCard = ({
                       {payMethods && payMethods.length > 0 ? (
                         <Space wrap>
                           {payMethods.map((payMethod) => {
-                            const minTopupVal = Number(payMethod.min_topup) || 0;
+                            const minTopupVal =
+                              Number(payMethod.min_topup) || 0;
                             const isStripe = payMethod.type === 'stripe';
                             const disabled =
                               (!enableOnlineTopUp && !isStripe) ||
@@ -390,7 +391,9 @@ const RechargeCard = ({
                   <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2'>
                     {presetAmounts.map((preset, index) => {
                       const discount =
-                        preset.discount || topupInfo?.discount?.[preset.value] || 1.0;
+                        preset.discount ||
+                        topupInfo?.discount?.[preset.value] ||
+                        1.0;
                       // originalPrice/discountedPrice are in CNY (per getAmount() pricing semantics)
                       const originalPrice = preset.value * priceRatio;
                       const discountedPrice = originalPrice * discount;
@@ -398,7 +401,8 @@ const RechargeCard = ({
                       // Keep consistent with the amount displayed above: use server-calculated payable.
                       // amount is the current selected payable (for selectedPreset).
                       const actualPay =
-                        selectedPreset === preset.value && Number.isFinite(Number(amount))
+                        selectedPreset === preset.value &&
+                        Number.isFinite(Number(amount))
                           ? Number(amount)
                           : discountedPrice;
                       const save = originalPrice - discountedPrice;
@@ -440,7 +444,10 @@ const RechargeCard = ({
                               {hasDiscount && (
                                 <Tag style={{ marginLeft: 4 }} color='green'>
                                   {t('折').includes('off')
-                                    ? ((1 - parseFloat(discount)) * 100).toFixed(1)
+                                    ? (
+                                        (1 - parseFloat(discount)) *
+                                        100
+                                      ).toFixed(1)
                                     : (discount * 10).toFixed(1)}
                                   {t('折')}
                                 </Tag>

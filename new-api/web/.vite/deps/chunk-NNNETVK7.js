@@ -8,39 +8,39 @@ import {
   createDefaultCoreModule,
   createDefaultSharedCoreModule,
   inject,
-  lib_exports
-} from "./chunk-5SMYMPSU.js";
+  lib_exports,
+} from './chunk-5SMYMPSU.js';
 
 // node_modules/@mermaid-js/parser/dist/chunks/mermaid-parser.core/chunk-7E7YKBS2.mjs
 var _a;
-var GitGraphTokenBuilder = (_a = class extends AbstractMermaidTokenBuilder {
-  constructor() {
-    super(["gitGraph"]);
-  }
-}, __name(_a, "GitGraphTokenBuilder"), _a);
+var GitGraphTokenBuilder =
+  ((_a = class extends AbstractMermaidTokenBuilder {
+    constructor() {
+      super(['gitGraph']);
+    }
+  }),
+  __name(_a, 'GitGraphTokenBuilder'),
+  _a);
 var GitGraphModule = {
   parser: {
-    TokenBuilder: __name(() => new GitGraphTokenBuilder(), "TokenBuilder"),
-    ValueConverter: __name(() => new CommonValueConverter(), "ValueConverter")
-  }
+    TokenBuilder: __name(() => new GitGraphTokenBuilder(), 'TokenBuilder'),
+    ValueConverter: __name(() => new CommonValueConverter(), 'ValueConverter'),
+  },
 };
 function createGitGraphServices(context = EmptyFileSystem) {
   const shared = inject(
     createDefaultSharedCoreModule(context),
-    MermaidGeneratedSharedModule
+    MermaidGeneratedSharedModule,
   );
   const GitGraph = inject(
     createDefaultCoreModule({ shared }),
     GitGraphGrammarGeneratedModule,
-    GitGraphModule
+    GitGraphModule,
   );
   shared.ServiceRegistry.register(GitGraph);
   return { shared, GitGraph };
 }
-__name(createGitGraphServices, "createGitGraphServices");
+__name(createGitGraphServices, 'createGitGraphServices');
 
-export {
-  GitGraphModule,
-  createGitGraphServices
-};
+export { GitGraphModule, createGitGraphServices };
 //# sourceMappingURL=chunk-NNNETVK7.js.map

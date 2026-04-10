@@ -15,8 +15,8 @@ body.sidebar-collapsed {
 }
 
 body {
-  font-family:
-    Lato, 'Helvetica Neue', Arial, Helvetica, 'Microsoft YaHei', sans-serif;
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, 'Microsoft YaHei',
+    sans-serif;
   color: var(--semi-color-text-0);
   background-color: #ffffff;
 }
@@ -44,8 +44,8 @@ html.dark #root {
 }
 
 code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
 
 /* ==================== 布局相关样式 ==================== */
@@ -801,8 +801,11 @@ html:not(.dark) .blur-ball-teal {
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background:
-    radial-gradient(circle at -5% -10%, var(--pb1) 0%, transparent 60%),
+  background: radial-gradient(
+      circle at -5% -10%,
+      var(--pb1) 0%,
+      transparent 60%
+    ),
     radial-gradient(circle at 105% -10%, var(--pb2) 0%, transparent 55%),
     radial-gradient(circle at 5% 110%, var(--pb3) 0%, transparent 55%),
     radial-gradient(circle at 105% 110%, var(--pb4) 0%, transparent 50%);
@@ -1070,8 +1073,7 @@ html.dark .with-pastel-balls::before {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(
+  background: linear-gradient(
       120deg,
       rgba(255, 255, 255, 0.26),
       rgba(255, 255, 255, 0.04) 38%,
@@ -1224,8 +1226,7 @@ html.dark .with-pastel-balls::before {
 
 .unified-auth-page {
   min-height: calc(100vh - 56px);
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at top right,
       rgba(167, 139, 250, 0.2),
       transparent 24%
@@ -1410,16 +1411,16 @@ html.dark .with-pastel-balls::before {
   /* Keep auth inputs consistent across light/dark and avoid the “white flash” on first focus */
   background: var(--semi-color-fill-0) !important;
   border-color: var(--semi-color-border) !important;
- }
+}
 
- .unified-auth-form .semi-input-wrapper:hover,
- .unified-auth-form .semi-input-default:hover {
+.unified-auth-form .semi-input-wrapper:hover,
+.unified-auth-form .semi-input-default:hover {
   background: var(--semi-color-fill-1) !important;
   border-color: var(--semi-color-border) !important;
- }
+}
 
- .unified-auth-form .semi-input-wrapper-focus,
- .unified-auth-form .semi-input-default-focus {
+.unified-auth-form .semi-input-wrapper-focus,
+.unified-auth-form .semi-input-default-focus {
   background: var(--semi-color-fill-0) !important;
   border-color: var(--semi-color-border) !important;
 }
@@ -1468,13 +1469,23 @@ html.dark .with-pastel-balls::before {
 .auth-primary-button.semi-button,
 .auth-primary-button.semi-button-primary {
   border: 0 !important;
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 45%, #4c1d95 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #7c3aed 0%,
+    #6d28d9 45%,
+    #4c1d95 100%
+  ) !important;
   box-shadow: 0 14px 30px rgba(124, 58, 237, 0.3) !important;
 }
 
 .auth-primary-button.semi-button:hover,
 .auth-primary-button.semi-button-primary:hover {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #5b21b6 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #8b5cf6 0%,
+    #7c3aed 50%,
+    #5b21b6 100%
+  ) !important;
   box-shadow: 0 18px 40px rgba(124, 58, 237, 0.36) !important;
 }
 
@@ -1571,8 +1582,7 @@ html.dark .with-pastel-balls::before {
     #371366 100%
   );
   color: var(--home-text-primary);
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at top left,
       rgba(192, 132, 252, 0.22),
       transparent 26%
@@ -1597,8 +1607,7 @@ html.dark .with-pastel-balls::before {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.25s ease;
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at var(--home-glow-x, 50%) var(--home-glow-y, 10%),
       rgba(192, 132, 252, 0.16),
       transparent 16%
@@ -1631,8 +1640,7 @@ html.dark .home-landing {
     #190b34 42%,
     #2d1159 100%
   );
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at top left,
       rgba(139, 92, 246, 0.24),
       transparent 28%
@@ -1678,8 +1686,7 @@ html.dark .home-premium-header-home {
 }
 
 html.dark .home-premium-header-body::before {
-  background:
-    linear-gradient(
+  background: linear-gradient(
       120deg,
       rgba(255, 255, 255, 0.06),
       rgba(255, 255, 255, 0.02) 32%,
@@ -1757,8 +1764,7 @@ html.dark .home-header-dropdown {
 }
 
 html.dark .unified-auth-page {
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at top right,
       rgba(139, 92, 246, 0.22),
       transparent 24%
@@ -1843,8 +1849,7 @@ html.dark .auth-secondary-link:hover {
 }
 
 html.dark .home-mouse-glow {
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at var(--home-glow-x, 50%) var(--home-glow-y, 10%),
       rgba(192, 132, 252, 0.18),
       transparent 18%
@@ -1918,8 +1923,7 @@ html.dark .home-story-band::before {
 }
 
 .home-story-band-narrative::after {
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at 18% 26%,
       rgba(168, 85, 247, 0.14),
       transparent 28%
@@ -1965,8 +1969,7 @@ html.dark .home-story-band-soft::after {
 }
 
 html.dark .home-story-band-narrative::after {
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at 18% 26%,
       rgba(168, 85, 247, 0.16),
       transparent 30%
@@ -2031,8 +2034,10 @@ html.dark .home-hero-section::before {
 .home-grid-bg {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(124, 58, 237, 0.08) 1px, transparent 1px),
+  background-image: linear-gradient(
+      rgba(124, 58, 237, 0.08) 1px,
+      transparent 1px
+    ),
     linear-gradient(90deg, rgba(124, 58, 237, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 92%);
@@ -2040,8 +2045,10 @@ html.dark .home-hero-section::before {
 }
 
 html.dark .home-grid-bg {
-  background-image:
-    linear-gradient(rgba(196, 181, 253, 0.08) 1px, transparent 1px),
+  background-image: linear-gradient(
+      rgba(196, 181, 253, 0.08) 1px,
+      transparent 1px
+    ),
     linear-gradient(90deg, rgba(196, 181, 253, 0.08) 1px, transparent 1px);
 }
 
@@ -3183,8 +3190,7 @@ html.dark .home-feature-badge {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at 15% 15%,
       rgba(216, 180, 254, 0.28),
       transparent 30%
@@ -3300,8 +3306,7 @@ html.dark .home-dark-panel {
 }
 
 html.dark .home-dark-panel::before {
-  background:
-    radial-gradient(
+  background: radial-gradient(
       circle at 15% 15%,
       rgba(216, 180, 254, 0.18),
       transparent 30%

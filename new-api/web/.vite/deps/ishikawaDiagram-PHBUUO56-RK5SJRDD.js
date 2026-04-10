@@ -1,13 +1,7 @@
-import {
-  selectSvgElement
-} from "./chunk-LGR27ENT.js";
-import {
-  at
-} from "./chunk-5XJNJXN5.js";
-import {
-  parseFontSize
-} from "./chunk-IPOIRDR2.js";
-import "./chunk-O5N4F7PX.js";
+import { selectSvgElement } from './chunk-LGR27ENT.js';
+import { at } from './chunk-5XJNJXN5.js';
+import { parseFontSize } from './chunk-IPOIRDR2.js';
+import './chunk-O5N4F7PX.js';
 import {
   clear,
   common_default,
@@ -18,29 +12,91 @@ import {
   getDiagramTitle,
   setAccDescription,
   setAccTitle,
-  setDiagramTitle
-} from "./chunk-LQLXUK6X.js";
-import {
-  __name
-} from "./chunk-OQUVF2X3.js";
-import "./chunk-YFRUBO2K.js";
-import "./chunk-SW2NX7BB.js";
-import "./chunk-UE53HML6.js";
+  setDiagramTitle,
+} from './chunk-LQLXUK6X.js';
+import { __name } from './chunk-OQUVF2X3.js';
+import './chunk-YFRUBO2K.js';
+import './chunk-SW2NX7BB.js';
+import './chunk-UE53HML6.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/ishikawaDiagram-PHBUUO56.mjs
-var parser = function() {
-  var o = __name(function(k, v, o2, l) {
-    for (o2 = o2 || {}, l = k.length; l--; o2[k[l]] = v) ;
-    return o2;
-  }, "o"), $V0 = [1, 4], $V1 = [1, 14], $V2 = [1, 12], $V3 = [1, 13], $V4 = [6, 7, 8], $V5 = [1, 20], $V6 = [1, 18], $V7 = [1, 19], $V8 = [6, 7, 11], $V9 = [1, 6, 13, 14], $Va = [1, 23], $Vb = [1, 24], $Vc = [1, 6, 7, 11, 13, 14];
+var parser = (function () {
+  var o = __name(function (k, v, o2, l) {
+      for (o2 = o2 || {}, l = k.length; l--; o2[k[l]] = v);
+      return o2;
+    }, 'o'),
+    $V0 = [1, 4],
+    $V1 = [1, 14],
+    $V2 = [1, 12],
+    $V3 = [1, 13],
+    $V4 = [6, 7, 8],
+    $V5 = [1, 20],
+    $V6 = [1, 18],
+    $V7 = [1, 19],
+    $V8 = [6, 7, 11],
+    $V9 = [1, 6, 13, 14],
+    $Va = [1, 23],
+    $Vb = [1, 24],
+    $Vc = [1, 6, 7, 11, 13, 14];
   var parser2 = {
-    trace: __name(function trace() {
-    }, "trace"),
+    trace: __name(function trace() {}, 'trace'),
     yy: {},
-    symbols_: { "error": 2, "start": 3, "ishikawa": 4, "spaceLines": 5, "SPACELINE": 6, "NL": 7, "ISHIKAWA": 8, "document": 9, "stop": 10, "EOF": 11, "statement": 12, "SPACELIST": 13, "TEXT": 14, "$accept": 0, "$end": 1 },
-    terminals_: { 2: "error", 6: "SPACELINE", 7: "NL", 8: "ISHIKAWA", 11: "EOF", 13: "SPACELIST", 14: "TEXT" },
-    productions_: [0, [3, 1], [3, 2], [5, 1], [5, 2], [5, 2], [4, 2], [4, 3], [10, 1], [10, 1], [10, 1], [10, 2], [10, 2], [9, 3], [9, 2], [12, 2], [12, 1], [12, 1], [12, 1]],
-    performAction: __name(function anonymous(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
+    symbols_: {
+      error: 2,
+      start: 3,
+      ishikawa: 4,
+      spaceLines: 5,
+      SPACELINE: 6,
+      NL: 7,
+      ISHIKAWA: 8,
+      document: 9,
+      stop: 10,
+      EOF: 11,
+      statement: 12,
+      SPACELIST: 13,
+      TEXT: 14,
+      $accept: 0,
+      $end: 1,
+    },
+    terminals_: {
+      2: 'error',
+      6: 'SPACELINE',
+      7: 'NL',
+      8: 'ISHIKAWA',
+      11: 'EOF',
+      13: 'SPACELIST',
+      14: 'TEXT',
+    },
+    productions_: [
+      0,
+      [3, 1],
+      [3, 2],
+      [5, 1],
+      [5, 2],
+      [5, 2],
+      [4, 2],
+      [4, 3],
+      [10, 1],
+      [10, 1],
+      [10, 1],
+      [10, 2],
+      [10, 2],
+      [9, 3],
+      [9, 2],
+      [12, 2],
+      [12, 1],
+      [12, 1],
+      [12, 1],
+    ],
+    performAction: __name(function anonymous(
+      yytext,
+      yyleng,
+      yylineno,
+      yy,
+      yystate,
+      $$,
+      _$,
+    ) {
       var $0 = $$.length - 1;
       switch (yystate) {
         case 6:
@@ -54,8 +110,34 @@ var parser = function() {
           yy.addNode(0, $$[$0].trim());
           break;
       }
-    }, "anonymous"),
-    table: [{ 3: 1, 4: 2, 5: 3, 6: [1, 5], 8: $V0 }, { 1: [3] }, { 1: [2, 1] }, { 4: 6, 6: [1, 7], 7: [1, 8], 8: $V0 }, { 6: $V1, 7: [1, 10], 9: 9, 12: 11, 13: $V2, 14: $V3 }, o($V4, [2, 3]), { 1: [2, 2] }, o($V4, [2, 4]), o($V4, [2, 5]), { 1: [2, 6], 6: $V1, 12: 15, 13: $V2, 14: $V3 }, { 6: $V1, 9: 16, 12: 11, 13: $V2, 14: $V3 }, { 6: $V5, 7: $V6, 10: 17, 11: $V7 }, o($V8, [2, 18], { 14: [1, 21] }), o($V8, [2, 16]), o($V8, [2, 17]), { 6: $V5, 7: $V6, 10: 22, 11: $V7 }, { 1: [2, 7], 6: $V1, 12: 15, 13: $V2, 14: $V3 }, o($V9, [2, 14], { 7: $Va, 11: $Vb }), o($Vc, [2, 8]), o($Vc, [2, 9]), o($Vc, [2, 10]), o($V8, [2, 15]), o($V9, [2, 13], { 7: $Va, 11: $Vb }), o($Vc, [2, 11]), o($Vc, [2, 12])],
+    }, 'anonymous'),
+    table: [
+      { 3: 1, 4: 2, 5: 3, 6: [1, 5], 8: $V0 },
+      { 1: [3] },
+      { 1: [2, 1] },
+      { 4: 6, 6: [1, 7], 7: [1, 8], 8: $V0 },
+      { 6: $V1, 7: [1, 10], 9: 9, 12: 11, 13: $V2, 14: $V3 },
+      o($V4, [2, 3]),
+      { 1: [2, 2] },
+      o($V4, [2, 4]),
+      o($V4, [2, 5]),
+      { 1: [2, 6], 6: $V1, 12: 15, 13: $V2, 14: $V3 },
+      { 6: $V1, 9: 16, 12: 11, 13: $V2, 14: $V3 },
+      { 6: $V5, 7: $V6, 10: 17, 11: $V7 },
+      o($V8, [2, 18], { 14: [1, 21] }),
+      o($V8, [2, 16]),
+      o($V8, [2, 17]),
+      { 6: $V5, 7: $V6, 10: 22, 11: $V7 },
+      { 1: [2, 7], 6: $V1, 12: 15, 13: $V2, 14: $V3 },
+      o($V9, [2, 14], { 7: $Va, 11: $Vb }),
+      o($Vc, [2, 8]),
+      o($Vc, [2, 9]),
+      o($Vc, [2, 10]),
+      o($V8, [2, 15]),
+      o($V9, [2, 13], { 7: $Va, 11: $Vb }),
+      o($Vc, [2, 11]),
+      o($Vc, [2, 12]),
+    ],
     defaultActions: { 2: [2, 1], 6: [2, 2] },
     parseError: __name(function parseError(str, hash) {
       if (hash.recoverable) {
@@ -65,9 +147,20 @@ var parser = function() {
         error.hash = hash;
         throw error;
       }
-    }, "parseError"),
+    }, 'parseError'),
     parse: __name(function parse(input) {
-      var self = this, stack = [0], tstack = [], vstack = [null], lstack = [], table = this.table, yytext = "", yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
+      var self = this,
+        stack = [0],
+        tstack = [],
+        vstack = [null],
+        lstack = [],
+        table = this.table,
+        yytext = '',
+        yylineno = 0,
+        yyleng = 0,
+        recovering = 0,
+        TERROR = 2,
+        EOF = 1;
       var args = lstack.slice.call(arguments, 1);
       var lexer2 = Object.create(this.lexer);
       var sharedState = { yy: {} };
@@ -79,13 +172,13 @@ var parser = function() {
       lexer2.setInput(input, sharedState.yy);
       sharedState.yy.lexer = lexer2;
       sharedState.yy.parser = this;
-      if (typeof lexer2.yylloc == "undefined") {
+      if (typeof lexer2.yylloc == 'undefined') {
         lexer2.yylloc = {};
       }
       var yyloc = lexer2.yylloc;
       lstack.push(yyloc);
       var ranges = lexer2.options && lexer2.options.ranges;
-      if (typeof sharedState.yy.parseError === "function") {
+      if (typeof sharedState.yy.parseError === 'function') {
         this.parseError = sharedState.yy.parseError;
       } else {
         this.parseError = Object.getPrototypeOf(this).parseError;
@@ -95,11 +188,11 @@ var parser = function() {
         vstack.length = vstack.length - n;
         lstack.length = lstack.length - n;
       }
-      __name(popStack, "popStack");
+      __name(popStack, 'popStack');
       function lex() {
         var token;
         token = tstack.pop() || lexer2.lex() || EOF;
-        if (typeof token !== "number") {
+        if (typeof token !== 'number') {
           if (token instanceof Array) {
             tstack = token;
             token = tstack.pop();
@@ -108,20 +201,30 @@ var parser = function() {
         }
         return token;
       }
-      __name(lex, "lex");
-      var symbol, preErrorSymbol, state, action, a, r, yyval = {}, p, len, newState, expected;
+      __name(lex, 'lex');
+      var symbol,
+        preErrorSymbol,
+        state,
+        action,
+        a,
+        r,
+        yyval = {},
+        p,
+        len,
+        newState,
+        expected;
       while (true) {
         state = stack[stack.length - 1];
         if (this.defaultActions[state]) {
           action = this.defaultActions[state];
         } else {
-          if (symbol === null || typeof symbol == "undefined") {
+          if (symbol === null || typeof symbol == 'undefined') {
             symbol = lex();
           }
           action = table[state] && table[state][symbol];
         }
-        if (typeof action === "undefined" || !action.length || !action[0]) {
-          var errStr = "";
+        if (typeof action === 'undefined' || !action.length || !action[0]) {
+          var errStr = '';
           expected = [];
           for (p in table[state]) {
             if (this.terminals_[p] && p > TERROR) {
@@ -129,20 +232,40 @@ var parser = function() {
             }
           }
           if (lexer2.showPosition) {
-            errStr = "Parse error on line " + (yylineno + 1) + ":\n" + lexer2.showPosition() + "\nExpecting " + expected.join(", ") + ", got '" + (this.terminals_[symbol] || symbol) + "'";
+            errStr =
+              'Parse error on line ' +
+              (yylineno + 1) +
+              ':\n' +
+              lexer2.showPosition() +
+              '\nExpecting ' +
+              expected.join(', ') +
+              ", got '" +
+              (this.terminals_[symbol] || symbol) +
+              "'";
           } else {
-            errStr = "Parse error on line " + (yylineno + 1) + ": Unexpected " + (symbol == EOF ? "end of input" : "'" + (this.terminals_[symbol] || symbol) + "'");
+            errStr =
+              'Parse error on line ' +
+              (yylineno + 1) +
+              ': Unexpected ' +
+              (symbol == EOF
+                ? 'end of input'
+                : "'" + (this.terminals_[symbol] || symbol) + "'");
           }
           this.parseError(errStr, {
             text: lexer2.match,
             token: this.terminals_[symbol] || symbol,
             line: lexer2.yylineno,
             loc: yyloc,
-            expected
+            expected,
           });
         }
         if (action[0] instanceof Array && action.length > 1) {
-          throw new Error("Parse Error: multiple actions possible at state: " + state + ", token: " + symbol);
+          throw new Error(
+            'Parse Error: multiple actions possible at state: ' +
+              state +
+              ', token: ' +
+              symbol,
+          );
         }
         switch (action[0]) {
           case 1:
@@ -171,24 +294,27 @@ var parser = function() {
               first_line: lstack[lstack.length - (len || 1)].first_line,
               last_line: lstack[lstack.length - 1].last_line,
               first_column: lstack[lstack.length - (len || 1)].first_column,
-              last_column: lstack[lstack.length - 1].last_column
+              last_column: lstack[lstack.length - 1].last_column,
             };
             if (ranges) {
               yyval._$.range = [
                 lstack[lstack.length - (len || 1)].range[0],
-                lstack[lstack.length - 1].range[1]
+                lstack[lstack.length - 1].range[1],
               ];
             }
-            r = this.performAction.apply(yyval, [
-              yytext,
-              yyleng,
-              yylineno,
-              sharedState.yy,
-              action[1],
-              vstack,
-              lstack
-            ].concat(args));
-            if (typeof r !== "undefined") {
+            r = this.performAction.apply(
+              yyval,
+              [
+                yytext,
+                yyleng,
+                yylineno,
+                sharedState.yy,
+                action[1],
+                vstack,
+                lstack,
+              ].concat(args),
+            );
+            if (typeof r !== 'undefined') {
               return r;
             }
             if (len) {
@@ -207,9 +333,9 @@ var parser = function() {
         }
       }
       return true;
-    }, "parse")
+    }, 'parse'),
   };
-  var lexer = function() {
+  var lexer = (function () {
     var lexer2 = {
       EOF: 1,
       parseError: __name(function parseError(str, hash) {
@@ -218,29 +344,29 @@ var parser = function() {
         } else {
           throw new Error(str);
         }
-      }, "parseError"),
+      }, 'parseError'),
       // resets the lexer, sets new input
-      setInput: __name(function(input, yy) {
+      setInput: __name(function (input, yy) {
         this.yy = yy || this.yy || {};
         this._input = input;
         this._more = this._backtrack = this.done = false;
         this.yylineno = this.yyleng = 0;
-        this.yytext = this.matched = this.match = "";
-        this.conditionStack = ["INITIAL"];
+        this.yytext = this.matched = this.match = '';
+        this.conditionStack = ['INITIAL'];
         this.yylloc = {
           first_line: 1,
           first_column: 0,
           last_line: 1,
-          last_column: 0
+          last_column: 0,
         };
         if (this.options.ranges) {
           this.yylloc.range = [0, 0];
         }
         this.offset = 0;
         return this;
-      }, "setInput"),
+      }, 'setInput'),
       // consumes and returns one char from the input
-      input: __name(function() {
+      input: __name(function () {
         var ch = this._input[0];
         this.yytext += ch;
         this.yyleng++;
@@ -259,9 +385,9 @@ var parser = function() {
         }
         this._input = this._input.slice(1);
         return ch;
-      }, "input"),
+      }, 'input'),
       // unshifts one char (or a string) into the input
-      unput: __name(function(ch) {
+      unput: __name(function (ch) {
         var len = ch.length;
         var lines = ch.split(/(?:\r\n?|\n)/g);
         this._input = ch + this._input;
@@ -278,57 +404,77 @@ var parser = function() {
           first_line: this.yylloc.first_line,
           last_line: this.yylineno + 1,
           first_column: this.yylloc.first_column,
-          last_column: lines ? (lines.length === oldLines.length ? this.yylloc.first_column : 0) + oldLines[oldLines.length - lines.length].length - lines[0].length : this.yylloc.first_column - len
+          last_column: lines
+            ? (lines.length === oldLines.length
+                ? this.yylloc.first_column
+                : 0) +
+              oldLines[oldLines.length - lines.length].length -
+              lines[0].length
+            : this.yylloc.first_column - len,
         };
         if (this.options.ranges) {
           this.yylloc.range = [r[0], r[0] + this.yyleng - len];
         }
         this.yyleng = this.yytext.length;
         return this;
-      }, "unput"),
+      }, 'unput'),
       // When called from action, caches matched text and appends it on next action
-      more: __name(function() {
+      more: __name(function () {
         this._more = true;
         return this;
-      }, "more"),
+      }, 'more'),
       // When called from action, signals the lexer that this rule fails to match the input, so the next matching rule (regex) should be tested instead.
-      reject: __name(function() {
+      reject: __name(function () {
         if (this.options.backtrack_lexer) {
           this._backtrack = true;
         } else {
-          return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n" + this.showPosition(), {
-            text: "",
-            token: null,
-            line: this.yylineno
-          });
+          return this.parseError(
+            'Lexical error on line ' +
+              (this.yylineno + 1) +
+              '. You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n' +
+              this.showPosition(),
+            {
+              text: '',
+              token: null,
+              line: this.yylineno,
+            },
+          );
         }
         return this;
-      }, "reject"),
+      }, 'reject'),
       // retain first n characters of the match
-      less: __name(function(n) {
+      less: __name(function (n) {
         this.unput(this.match.slice(n));
-      }, "less"),
+      }, 'less'),
       // displays already matched input, i.e. for error messages
-      pastInput: __name(function() {
-        var past = this.matched.substr(0, this.matched.length - this.match.length);
-        return (past.length > 20 ? "..." : "") + past.substr(-20).replace(/\n/g, "");
-      }, "pastInput"),
+      pastInput: __name(function () {
+        var past = this.matched.substr(
+          0,
+          this.matched.length - this.match.length,
+        );
+        return (
+          (past.length > 20 ? '...' : '') + past.substr(-20).replace(/\n/g, '')
+        );
+      }, 'pastInput'),
       // displays upcoming input, i.e. for error messages
-      upcomingInput: __name(function() {
+      upcomingInput: __name(function () {
         var next = this.match;
         if (next.length < 20) {
           next += this._input.substr(0, 20 - next.length);
         }
-        return (next.substr(0, 20) + (next.length > 20 ? "..." : "")).replace(/\n/g, "");
-      }, "upcomingInput"),
+        return (next.substr(0, 20) + (next.length > 20 ? '...' : '')).replace(
+          /\n/g,
+          '',
+        );
+      }, 'upcomingInput'),
       // displays the character position where the lexing error occurred, i.e. for error messages
-      showPosition: __name(function() {
+      showPosition: __name(function () {
         var pre = this.pastInput();
-        var c = new Array(pre.length + 1).join("-");
-        return pre + this.upcomingInput() + "\n" + c + "^";
-      }, "showPosition"),
+        var c = new Array(pre.length + 1).join('-');
+        return pre + this.upcomingInput() + '\n' + c + '^';
+      }, 'showPosition'),
       // test the lexed token: return FALSE when not a match, otherwise return token
-      test_match: __name(function(match, indexed_rule) {
+      test_match: __name(function (match, indexed_rule) {
         var token, lines, backup;
         if (this.options.backtrack_lexer) {
           backup = {
@@ -337,7 +483,7 @@ var parser = function() {
               first_line: this.yylloc.first_line,
               last_line: this.last_line,
               first_column: this.yylloc.first_column,
-              last_column: this.yylloc.last_column
+              last_column: this.yylloc.last_column,
             },
             yytext: this.yytext,
             match: this.match,
@@ -349,7 +495,7 @@ var parser = function() {
             _input: this._input,
             yy: this.yy,
             conditionStack: this.conditionStack.slice(0),
-            done: this.done
+            done: this.done,
           };
           if (this.options.ranges) {
             backup.yylloc.range = this.yylloc.range.slice(0);
@@ -363,20 +509,29 @@ var parser = function() {
           first_line: this.yylloc.last_line,
           last_line: this.yylineno + 1,
           first_column: this.yylloc.last_column,
-          last_column: lines ? lines[lines.length - 1].length - lines[lines.length - 1].match(/\r?\n?/)[0].length : this.yylloc.last_column + match[0].length
+          last_column: lines
+            ? lines[lines.length - 1].length -
+              lines[lines.length - 1].match(/\r?\n?/)[0].length
+            : this.yylloc.last_column + match[0].length,
         };
         this.yytext += match[0];
         this.match += match[0];
         this.matches = match;
         this.yyleng = this.yytext.length;
         if (this.options.ranges) {
-          this.yylloc.range = [this.offset, this.offset += this.yyleng];
+          this.yylloc.range = [this.offset, (this.offset += this.yyleng)];
         }
         this._more = false;
         this._backtrack = false;
         this._input = this._input.slice(match[0].length);
         this.matched += match[0];
-        token = this.performAction.call(this, this.yy, this, indexed_rule, this.conditionStack[this.conditionStack.length - 1]);
+        token = this.performAction.call(
+          this,
+          this.yy,
+          this,
+          indexed_rule,
+          this.conditionStack[this.conditionStack.length - 1],
+        );
         if (this.done && this._input) {
           this.done = false;
         }
@@ -389,9 +544,9 @@ var parser = function() {
           return false;
         }
         return false;
-      }, "test_match"),
+      }, 'test_match'),
       // return next match in input
-      next: __name(function() {
+      next: __name(function () {
         if (this.done) {
           return this.EOF;
         }
@@ -400,8 +555,8 @@ var parser = function() {
         }
         var token, match, tempMatch, index;
         if (!this._more) {
-          this.yytext = "";
-          this.match = "";
+          this.yytext = '';
+          this.match = '';
         }
         var rules = this._currentRules();
         for (var i = 0; i < rules.length; i++) {
@@ -431,16 +586,22 @@ var parser = function() {
           }
           return false;
         }
-        if (this._input === "") {
+        if (this._input === '') {
           return this.EOF;
         } else {
-          return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), {
-            text: "",
-            token: null,
-            line: this.yylineno
-          });
+          return this.parseError(
+            'Lexical error on line ' +
+              (this.yylineno + 1) +
+              '. Unrecognized text.\n' +
+              this.showPosition(),
+            {
+              text: '',
+              token: null,
+              line: this.yylineno,
+            },
+          );
         }
-      }, "next"),
+      }, 'next'),
       // return next match that has a token
       lex: __name(function lex() {
         var r = this.next();
@@ -449,11 +610,11 @@ var parser = function() {
         } else {
           return this.lex();
         }
-      }, "lex"),
+      }, 'lex'),
       // activates a new lexer condition state (pushes the new lexer condition state onto the condition stack)
       begin: __name(function begin(condition) {
         this.conditionStack.push(condition);
-      }, "begin"),
+      }, 'begin'),
       // pop the previously active lexer condition state off the condition stack
       popState: __name(function popState() {
         var n = this.conditionStack.length - 1;
@@ -462,34 +623,44 @@ var parser = function() {
         } else {
           return this.conditionStack[0];
         }
-      }, "popState"),
+      }, 'popState'),
       // produce the lexer rule set which is active for the currently active lexer condition state
       _currentRules: __name(function _currentRules() {
-        if (this.conditionStack.length && this.conditionStack[this.conditionStack.length - 1]) {
-          return this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules;
+        if (
+          this.conditionStack.length &&
+          this.conditionStack[this.conditionStack.length - 1]
+        ) {
+          return this.conditions[
+            this.conditionStack[this.conditionStack.length - 1]
+          ].rules;
         } else {
-          return this.conditions["INITIAL"].rules;
+          return this.conditions['INITIAL'].rules;
         }
-      }, "_currentRules"),
+      }, '_currentRules'),
       // return the currently active lexer condition state; when an index argument is provided it produces the N-th previous condition state, if available
       topState: __name(function topState(n) {
         n = this.conditionStack.length - 1 - Math.abs(n || 0);
         if (n >= 0) {
           return this.conditionStack[n];
         } else {
-          return "INITIAL";
+          return 'INITIAL';
         }
-      }, "topState"),
+      }, 'topState'),
       // alias for begin(condition)
       pushState: __name(function pushState(condition) {
         this.begin(condition);
-      }, "pushState"),
+      }, 'pushState'),
       // return the number of states currently on the stack
       stateStackSize: __name(function stateStackSize() {
         return this.conditionStack.length;
-      }, "stateStackSize"),
-      options: { "case-insensitive": true },
-      performAction: __name(function anonymous(yy, yy_, $avoiding_name_collisions, YY_START) {
+      }, 'stateStackSize'),
+      options: { 'case-insensitive': true },
+      performAction: __name(function anonymous(
+        yy,
+        yy_,
+        $avoiding_name_collisions,
+        YY_START,
+      ) {
         var YYSTATE = YY_START;
         switch ($avoiding_name_collisions) {
           case 0:
@@ -517,86 +688,103 @@ var parser = function() {
             return 11;
             break;
         }
-      }, "anonymous"),
-      rules: [/^(?:\s*%%.*)/i, /^(?:ishikawa-beta\b)/i, /^(?:ishikawa\b)/i, /^(?:[\s]+[\n])/i, /^(?:[\n]+)/i, /^(?:[\s]+)/i, /^(?:[^\n]+)/i, /^(?:$)/i],
-      conditions: { "INITIAL": { "rules": [0, 1, 2, 3, 4, 5, 6, 7], "inclusive": true } }
+      }, 'anonymous'),
+      rules: [
+        /^(?:\s*%%.*)/i,
+        /^(?:ishikawa-beta\b)/i,
+        /^(?:ishikawa\b)/i,
+        /^(?:[\s]+[\n])/i,
+        /^(?:[\n]+)/i,
+        /^(?:[\s]+)/i,
+        /^(?:[^\n]+)/i,
+        /^(?:$)/i,
+      ],
+      conditions: {
+        INITIAL: { rules: [0, 1, 2, 3, 4, 5, 6, 7], inclusive: true },
+      },
     };
     return lexer2;
-  }();
+  })();
   parser2.lexer = lexer;
   function Parser() {
     this.yy = {};
   }
-  __name(Parser, "Parser");
+  __name(Parser, 'Parser');
   Parser.prototype = parser2;
   parser2.Parser = Parser;
   return new Parser();
-}();
+})();
 parser.parser = parser;
 var ishikawa_default = parser;
 var _a;
-var IshikawaDB = (_a = class {
-  constructor() {
-    this.stack = [];
-    this.clear = this.clear.bind(this);
-    this.addNode = this.addNode.bind(this);
-    this.getRoot = this.getRoot.bind(this);
-  }
-  clear() {
-    this.root = void 0;
-    this.stack = [];
-    this.baseLevel = void 0;
-    clear();
-  }
-  getRoot() {
-    return this.root;
-  }
-  addNode(rawLevel, text) {
-    const label = common_default.sanitizeText(text, getConfig2());
-    if (!this.root) {
-      this.baseLevel = rawLevel;
-      this.root = { text: label, children: [] };
-      this.stack = [{ level: 0, node: this.root }];
-      setDiagramTitle(label);
-      return;
+var IshikawaDB =
+  ((_a = class {
+    constructor() {
+      this.stack = [];
+      this.clear = this.clear.bind(this);
+      this.addNode = this.addNode.bind(this);
+      this.getRoot = this.getRoot.bind(this);
     }
-    let level = rawLevel - (this.baseLevel ?? 0);
-    if (level <= 0) {
-      level = 1;
+    clear() {
+      this.root = void 0;
+      this.stack = [];
+      this.baseLevel = void 0;
+      clear();
     }
-    while (this.stack.length > 1 && this.stack[this.stack.length - 1].level >= level) {
-      this.stack.pop();
+    getRoot() {
+      return this.root;
     }
-    const parent = this.stack[this.stack.length - 1].node;
-    const node = { text: label, children: [] };
-    parent.children.push(node);
-    this.stack.push({ level, node });
-  }
-  getAccTitle() {
-    return getAccTitle();
-  }
-  setAccTitle(title) {
-    setAccTitle(title);
-  }
-  getAccDescription() {
-    return getAccDescription();
-  }
-  setAccDescription(description) {
-    setAccDescription(description);
-  }
-  getDiagramTitle() {
-    return getDiagramTitle();
-  }
-  setDiagramTitle(title) {
-    setDiagramTitle(title);
-  }
-}, __name(_a, "IshikawaDB"), _a);
+    addNode(rawLevel, text) {
+      const label = common_default.sanitizeText(text, getConfig2());
+      if (!this.root) {
+        this.baseLevel = rawLevel;
+        this.root = { text: label, children: [] };
+        this.stack = [{ level: 0, node: this.root }];
+        setDiagramTitle(label);
+        return;
+      }
+      let level = rawLevel - (this.baseLevel ?? 0);
+      if (level <= 0) {
+        level = 1;
+      }
+      while (
+        this.stack.length > 1 &&
+        this.stack[this.stack.length - 1].level >= level
+      ) {
+        this.stack.pop();
+      }
+      const parent = this.stack[this.stack.length - 1].node;
+      const node = { text: label, children: [] };
+      parent.children.push(node);
+      this.stack.push({ level, node });
+    }
+    getAccTitle() {
+      return getAccTitle();
+    }
+    setAccTitle(title) {
+      setAccTitle(title);
+    }
+    getAccDescription() {
+      return getAccDescription();
+    }
+    setAccDescription(description) {
+      setAccDescription(description);
+    }
+    getDiagramTitle() {
+      return getDiagramTitle();
+    }
+    setDiagramTitle(title) {
+      setDiagramTitle(title);
+    }
+  }),
+  __name(_a, 'IshikawaDB'),
+  _a);
 var FONT_SIZE_DEFAULT = 14;
 var SPINE_BASE_LENGTH = 250;
 var BONE_STUB = 30;
 var BONE_BASE = 60;
 var BONE_PER_CHILD = 5;
-var ANGLE = 82 * Math.PI / 180;
+var ANGLE = (82 * Math.PI) / 180;
 var COS_A = Math.cos(ANGLE);
 var SIN_A = Math.sin(ANGLE);
 var applyPaddedViewBox = __name((svgEl, pad, maxW) => {
@@ -604,8 +792,8 @@ var applyPaddedViewBox = __name((svgEl, pad, maxW) => {
   const w = bbox.width + pad * 2;
   const h = bbox.height + pad * 2;
   configureSvgSize(svgEl, h, w, maxW);
-  svgEl.attr("viewBox", `${bbox.x - pad} ${bbox.y - pad} ${w} ${h}`);
-}, "applyPaddedViewBox");
+  svgEl.attr('viewBox', `${bbox.x - pad} ${bbox.y - pad} ${w} ${h}`);
+}, 'applyPaddedViewBox');
 var draw = __name((_text, id, _version, diagram2) => {
   var _a2, _b;
   const db = diagram2.db;
@@ -616,30 +804,58 @@ var draw = __name((_text, id, _version, diagram2) => {
   const drawConfig = getConfig2();
   const { look, handDrawnSeed, themeVariables } = drawConfig;
   const fontSize = parseFontSize(drawConfig.fontSize)[0] ?? FONT_SIZE_DEFAULT;
-  const isHandDrawn = look === "handDrawn";
+  const isHandDrawn = look === 'handDrawn';
   const causes = root.children ?? [];
-  const padding = ((_a2 = drawConfig.ishikawa) == null ? void 0 : _a2.diagramPadding) ?? 20;
-  const useMaxWidth = ((_b = drawConfig.ishikawa) == null ? void 0 : _b.useMaxWidth) ?? false;
+  const padding =
+    ((_a2 = drawConfig.ishikawa) == null ? void 0 : _a2.diagramPadding) ?? 20;
+  const useMaxWidth =
+    ((_b = drawConfig.ishikawa) == null ? void 0 : _b.useMaxWidth) ?? false;
   const svg = selectSvgElement(id);
-  const g = svg.append("g").attr("class", "ishikawa");
+  const g = svg.append('g').attr('class', 'ishikawa');
   const roughSvg = isHandDrawn ? at.svg(svg.node()) : void 0;
-  const roughContext = roughSvg ? {
-    roughSvg,
-    seed: handDrawnSeed ?? 0,
-    lineColor: (themeVariables == null ? void 0 : themeVariables.lineColor) ?? "#333",
-    fillColor: (themeVariables == null ? void 0 : themeVariables.mainBkg) ?? "#fff"
-  } : void 0;
+  const roughContext = roughSvg
+    ? {
+        roughSvg,
+        seed: handDrawnSeed ?? 0,
+        lineColor:
+          (themeVariables == null ? void 0 : themeVariables.lineColor) ??
+          '#333',
+        fillColor:
+          (themeVariables == null ? void 0 : themeVariables.mainBkg) ?? '#fff',
+      }
+    : void 0;
   const markerId = `ishikawa-arrow-${id}`;
   if (!isHandDrawn) {
-    g.append("defs").append("marker").attr("id", markerId).attr("viewBox", "0 0 10 10").attr("refX", 0).attr("refY", 5).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M 10 0 L 0 5 L 10 10 Z").attr("class", "ishikawa-arrow");
+    g.append('defs')
+      .append('marker')
+      .attr('id', markerId)
+      .attr('viewBox', '0 0 10 10')
+      .attr('refX', 0)
+      .attr('refY', 5)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M 10 0 L 0 5 L 10 10 Z')
+      .attr('class', 'ishikawa-arrow');
   }
   let spineX = 0;
   let spineY = SPINE_BASE_LENGTH;
-  const spineLine = isHandDrawn ? void 0 : drawLine(g, spineX, spineY, spineX, spineY, "ishikawa-spine");
+  const spineLine = isHandDrawn
+    ? void 0
+    : drawLine(g, spineX, spineY, spineX, spineY, 'ishikawa-spine');
   drawHead(g, spineX, spineY, root.text, fontSize, roughContext);
   if (!causes.length) {
     if (isHandDrawn) {
-      drawLine(g, spineX, spineY, spineX, spineY, "ishikawa-spine", roughContext);
+      drawLine(
+        g,
+        spineX,
+        spineY,
+        spineX,
+        spineY,
+        'ishikawa-spine',
+        roughContext,
+      );
     }
     applyPaddedViewBox(svg, padding, useMaxWidth);
     return;
@@ -663,33 +879,46 @@ var draw = __name((_text, id, _version, diagram2) => {
   lowerLen = Math.max(lowerLen, lowerStats.max * minSpacing);
   spineY = Math.max(upperLen, SPINE_BASE_LENGTH);
   if (spineLine) {
-    spineLine.attr("y1", spineY).attr("y2", spineY);
+    spineLine.attr('y1', spineY).attr('y2', spineY);
   }
-  g.select(".ishikawa-head-group").attr("transform", `translate(0,${spineY})`);
+  g.select('.ishikawa-head-group').attr('transform', `translate(0,${spineY})`);
   const pairCount = Math.ceil(causes.length / 2);
   for (let p = 0; p < pairCount; p++) {
-    const pg = g.append("g").attr("class", "ishikawa-pair");
+    const pg = g.append('g').attr('class', 'ishikawa-pair');
     for (const [cause, dir, len] of [
       [causes[p * 2], -1, upperLen],
-      [causes[p * 2 + 1], 1, lowerLen]
+      [causes[p * 2 + 1], 1, lowerLen],
     ]) {
       if (cause) {
         drawBranch(pg, cause, spineX, spineY, dir, len, fontSize, roughContext);
       }
     }
-    spineX = pg.selectAll("text").nodes().reduce((left, n) => Math.min(left, n.getBBox().x), Infinity);
+    spineX = pg
+      .selectAll('text')
+      .nodes()
+      .reduce((left, n) => Math.min(left, n.getBBox().x), Infinity);
   }
   if (isHandDrawn) {
-    drawLine(g, spineX, spineY, 0, spineY, "ishikawa-spine", roughContext);
+    drawLine(g, spineX, spineY, 0, spineY, 'ishikawa-spine', roughContext);
   } else {
-    spineLine.attr("x1", spineX);
+    spineLine.attr('x1', spineX);
     const markerUrl = `url(#${markerId})`;
-    g.selectAll("line.ishikawa-branch, line.ishikawa-sub-branch").attr("marker-start", markerUrl);
+    g.selectAll('line.ishikawa-branch, line.ishikawa-sub-branch').attr(
+      'marker-start',
+      markerUrl,
+    );
   }
   applyPaddedViewBox(svg, padding, useMaxWidth);
-}, "draw");
+}, 'draw');
 var sideStats = __name((nodes) => {
-  const countDescendants = __name((node) => node.children.reduce((sum, child) => sum + 1 + countDescendants(child), 0), "countDescendants");
+  const countDescendants = __name(
+    (node) =>
+      node.children.reduce(
+        (sum, child) => sum + 1 + countDescendants(child),
+        0,
+      ),
+    'countDescendants',
+  );
   return nodes.reduce(
     (stats, node) => {
       const descendants = countDescendants(node);
@@ -697,20 +926,23 @@ var sideStats = __name((nodes) => {
       stats.max = Math.max(stats.max, descendants);
       return stats;
     },
-    { total: 0, max: 0 }
+    { total: 0, max: 0 },
   );
-}, "sideStats");
+}, 'sideStats');
 var drawHead = __name((svg, x, y, label, fontSize, roughContext) => {
   const maxChars = Math.max(6, Math.floor(110 / (fontSize * 0.6)));
-  const headGroup = svg.append("g").attr("class", "ishikawa-head-group").attr("transform", `translate(${x},${y})`);
+  const headGroup = svg
+    .append('g')
+    .attr('class', 'ishikawa-head-group')
+    .attr('transform', `translate(${x},${y})`);
   const textEl = drawMultilineText(
     headGroup,
     wrapText(label, maxChars),
     0,
     0,
-    "ishikawa-head-label",
-    "start",
-    fontSize
+    'ishikawa-head-label',
+    'start',
+    fontSize,
   );
   const tb = textEl.node().getBBox();
   const w = Math.max(60, tb.width + 6);
@@ -721,18 +953,26 @@ var drawHead = __name((svg, x, y, label, fontSize, roughContext) => {
       roughness: 1.5,
       seed: roughContext.seed,
       fill: roughContext.fillColor,
-      fillStyle: "hachure",
+      fillStyle: 'hachure',
       fillWeight: 2.5,
       hachureGap: 5,
       stroke: roughContext.lineColor,
-      strokeWidth: 2
+      strokeWidth: 2,
     });
-    headGroup.insert(() => roughNode, ":first-child").attr("class", "ishikawa-head");
+    headGroup
+      .insert(() => roughNode, ':first-child')
+      .attr('class', 'ishikawa-head');
   } else {
-    headGroup.insert("path", ":first-child").attr("class", "ishikawa-head").attr("d", headPath);
+    headGroup
+      .insert('path', ':first-child')
+      .attr('class', 'ishikawa-head')
+      .attr('d', headPath);
   }
-  textEl.attr("transform", `translate(${(w - tb.width) / 2 - tb.x + 3},${-tb.y - tb.height / 2})`);
-}, "drawHead");
+  textEl.attr(
+    'transform',
+    `translate(${(w - tb.width) / 2 - tb.x + 3},${-tb.y - tb.height / 2})`,
+  );
+}, 'drawHead');
 var flattenTree = __name((children, direction) => {
   const entries = [];
   const yOrder = [];
@@ -745,7 +985,7 @@ var flattenTree = __name((children, direction) => {
         depth,
         text: wrapText(child.text, 15),
         parentIndex: pid,
-        childCount: gc.length
+        childCount: gc.length,
       });
       if (depth % 2 === 0) {
         yOrder.push(idx);
@@ -759,44 +999,55 @@ var flattenTree = __name((children, direction) => {
         yOrder.push(idx);
       }
     }
-  }, "walk");
+  }, 'walk');
   walk(children, -1, 2);
   return { entries, yOrder };
-}, "flattenTree");
-var drawCauseLabel = __name((svg, text, x, y, direction, fontSize, roughContext) => {
-  const lg = svg.append("g").attr("class", "ishikawa-label-group");
-  const lt = drawMultilineText(
-    lg,
-    text,
-    x,
-    y + 11 * direction,
-    "ishikawa-label cause",
-    "middle",
-    fontSize
-  );
-  const tb = lt.node().getBBox();
-  if (roughContext) {
-    const roughNode = roughContext.roughSvg.rectangle(
-      tb.x - 20,
-      tb.y - 2,
-      tb.width + 40,
-      tb.height + 4,
-      {
-        roughness: 1.5,
-        seed: roughContext.seed,
-        fill: roughContext.fillColor,
-        fillStyle: "hachure",
-        fillWeight: 2.5,
-        hachureGap: 5,
-        stroke: roughContext.lineColor,
-        strokeWidth: 2
-      }
+}, 'flattenTree');
+var drawCauseLabel = __name(
+  (svg, text, x, y, direction, fontSize, roughContext) => {
+    const lg = svg.append('g').attr('class', 'ishikawa-label-group');
+    const lt = drawMultilineText(
+      lg,
+      text,
+      x,
+      y + 11 * direction,
+      'ishikawa-label cause',
+      'middle',
+      fontSize,
     );
-    lg.insert(() => roughNode, ":first-child").attr("class", "ishikawa-label-box");
-  } else {
-    lg.insert("rect", ":first-child").attr("class", "ishikawa-label-box").attr("x", tb.x - 20).attr("y", tb.y - 2).attr("width", tb.width + 40).attr("height", tb.height + 4);
-  }
-}, "drawCauseLabel");
+    const tb = lt.node().getBBox();
+    if (roughContext) {
+      const roughNode = roughContext.roughSvg.rectangle(
+        tb.x - 20,
+        tb.y - 2,
+        tb.width + 40,
+        tb.height + 4,
+        {
+          roughness: 1.5,
+          seed: roughContext.seed,
+          fill: roughContext.fillColor,
+          fillStyle: 'hachure',
+          fillWeight: 2.5,
+          hachureGap: 5,
+          stroke: roughContext.lineColor,
+          strokeWidth: 2,
+        },
+      );
+      lg.insert(() => roughNode, ':first-child').attr(
+        'class',
+        'ishikawa-label-box',
+      );
+    } else {
+      lg.insert('rect', ':first-child')
+        .attr('class', 'ishikawa-label-box')
+        .attr('x', tb.x - 20)
+        .attr('y', tb.y - 2)
+        .attr('width', tb.width + 40)
+        .attr('height', tb.height + 4);
+    }
+  },
+  'drawCauseLabel',
+);
 var drawArrowMarker = __name((g, x, y, dx, dy, roughContext) => {
   const len = Math.sqrt(dx * dx + dy * dy);
   if (len === 0) {
@@ -814,86 +1065,117 @@ var drawArrowMarker = __name((g, x, y, dx, dy, roughContext) => {
     roughness: 1,
     seed: roughContext.seed,
     fill: roughContext.lineColor,
-    fillStyle: "solid",
+    fillStyle: 'solid',
     stroke: roughContext.lineColor,
-    strokeWidth: 1
+    strokeWidth: 1,
   });
   g.append(() => roughNode);
-}, "drawArrowMarker");
-var drawBranch = __name((svg, node, startX, startY, direction, length, fontSize, roughContext) => {
-  const children = node.children ?? [];
-  const lineLen = length * (children.length ? 1 : 0.2);
-  const dx = -COS_A * lineLen;
-  const dy = SIN_A * lineLen * direction;
-  const endX = startX + dx;
-  const endY = startY + dy;
-  drawLine(svg, startX, startY, endX, endY, "ishikawa-branch", roughContext);
-  if (roughContext) {
-    drawArrowMarker(svg, startX, startY, startX - endX, startY - endY, roughContext);
-  }
-  drawCauseLabel(svg, node.text, endX, endY, direction, fontSize, roughContext);
-  if (!children.length) {
-    return;
-  }
-  const { entries, yOrder } = flattenTree(children, direction);
-  const entryCount = entries.length;
-  const ys = new Array(entryCount);
-  for (const [slot, entryIdx] of yOrder.entries()) {
-    ys[entryIdx] = startY + dy * ((slot + 1) / (entryCount + 1));
-  }
-  const bones = /* @__PURE__ */ new Map();
-  bones.set(-1, {
-    x0: startX,
-    y0: startY,
-    x1: endX,
-    y1: endY,
-    childCount: children.length,
-    childrenDrawn: 0
-  });
-  const diagonalX = -COS_A;
-  const diagonalY = SIN_A * direction;
-  const oddLabel = direction < 0 ? "ishikawa-label up" : "ishikawa-label down";
-  for (const [i, e] of entries.entries()) {
-    const y = ys[i];
-    const par = bones.get(e.parentIndex);
-    const grp = svg.append("g").attr("class", "ishikawa-sub-group");
-    let bx0 = 0;
-    let by0 = 0;
-    let bx1 = 0;
-    if (e.depth % 2 === 0) {
-      const dyP = par.y1 - par.y0;
-      bx0 = lerp(par.x0, par.x1, dyP ? (y - par.y0) / dyP : 0.5);
-      by0 = y;
-      bx1 = bx0 - (e.childCount > 0 ? BONE_BASE + e.childCount * BONE_PER_CHILD : BONE_STUB);
-      drawLine(grp, bx0, y, bx1, y, "ishikawa-sub-branch", roughContext);
-      if (roughContext) {
-        drawArrowMarker(grp, bx0, y, 1, 0, roughContext);
-      }
-      drawMultilineText(grp, e.text, bx1, y, "ishikawa-label align", "end", fontSize);
-    } else {
-      const k = par.childrenDrawn++;
-      bx0 = lerp(par.x0, par.x1, (par.childCount - k) / (par.childCount + 1));
-      by0 = par.y0;
-      bx1 = bx0 + diagonalX * ((y - by0) / diagonalY);
-      drawLine(grp, bx0, by0, bx1, y, "ishikawa-sub-branch", roughContext);
-      if (roughContext) {
-        drawArrowMarker(grp, bx0, by0, bx0 - bx1, by0 - y, roughContext);
-      }
-      drawMultilineText(grp, e.text, bx1, y, oddLabel, "end", fontSize);
+}, 'drawArrowMarker');
+var drawBranch = __name(
+  (svg, node, startX, startY, direction, length, fontSize, roughContext) => {
+    const children = node.children ?? [];
+    const lineLen = length * (children.length ? 1 : 0.2);
+    const dx = -COS_A * lineLen;
+    const dy = SIN_A * lineLen * direction;
+    const endX = startX + dx;
+    const endY = startY + dy;
+    drawLine(svg, startX, startY, endX, endY, 'ishikawa-branch', roughContext);
+    if (roughContext) {
+      drawArrowMarker(
+        svg,
+        startX,
+        startY,
+        startX - endX,
+        startY - endY,
+        roughContext,
+      );
     }
-    if (e.childCount > 0) {
-      bones.set(i, {
-        x0: bx0,
-        y0: by0,
-        x1: bx1,
-        y1: y,
-        childCount: e.childCount,
-        childrenDrawn: 0
-      });
+    drawCauseLabel(
+      svg,
+      node.text,
+      endX,
+      endY,
+      direction,
+      fontSize,
+      roughContext,
+    );
+    if (!children.length) {
+      return;
     }
-  }
-}, "drawBranch");
-var splitLines = __name((text) => text.split(/<br\s*\/?>|\n/), "splitLines");
+    const { entries, yOrder } = flattenTree(children, direction);
+    const entryCount = entries.length;
+    const ys = new Array(entryCount);
+    for (const [slot, entryIdx] of yOrder.entries()) {
+      ys[entryIdx] = startY + dy * ((slot + 1) / (entryCount + 1));
+    }
+    const bones = /* @__PURE__ */ new Map();
+    bones.set(-1, {
+      x0: startX,
+      y0: startY,
+      x1: endX,
+      y1: endY,
+      childCount: children.length,
+      childrenDrawn: 0,
+    });
+    const diagonalX = -COS_A;
+    const diagonalY = SIN_A * direction;
+    const oddLabel =
+      direction < 0 ? 'ishikawa-label up' : 'ishikawa-label down';
+    for (const [i, e] of entries.entries()) {
+      const y = ys[i];
+      const par = bones.get(e.parentIndex);
+      const grp = svg.append('g').attr('class', 'ishikawa-sub-group');
+      let bx0 = 0;
+      let by0 = 0;
+      let bx1 = 0;
+      if (e.depth % 2 === 0) {
+        const dyP = par.y1 - par.y0;
+        bx0 = lerp(par.x0, par.x1, dyP ? (y - par.y0) / dyP : 0.5);
+        by0 = y;
+        bx1 =
+          bx0 -
+          (e.childCount > 0
+            ? BONE_BASE + e.childCount * BONE_PER_CHILD
+            : BONE_STUB);
+        drawLine(grp, bx0, y, bx1, y, 'ishikawa-sub-branch', roughContext);
+        if (roughContext) {
+          drawArrowMarker(grp, bx0, y, 1, 0, roughContext);
+        }
+        drawMultilineText(
+          grp,
+          e.text,
+          bx1,
+          y,
+          'ishikawa-label align',
+          'end',
+          fontSize,
+        );
+      } else {
+        const k = par.childrenDrawn++;
+        bx0 = lerp(par.x0, par.x1, (par.childCount - k) / (par.childCount + 1));
+        by0 = par.y0;
+        bx1 = bx0 + diagonalX * ((y - by0) / diagonalY);
+        drawLine(grp, bx0, by0, bx1, y, 'ishikawa-sub-branch', roughContext);
+        if (roughContext) {
+          drawArrowMarker(grp, bx0, by0, bx0 - bx1, by0 - y, roughContext);
+        }
+        drawMultilineText(grp, e.text, bx1, y, oddLabel, 'end', fontSize);
+      }
+      if (e.childCount > 0) {
+        bones.set(i, {
+          x0: bx0,
+          y0: by0,
+          x1: bx1,
+          y1: y,
+          childCount: e.childCount,
+          childrenDrawn: 0,
+        });
+      }
+    }
+  },
+  'drawBranch',
+);
+var splitLines = __name((text) => text.split(/<br\s*\/?>|\n/), 'splitLines');
 var wrapText = __name((text, maxChars) => {
   if (text.length <= maxChars) {
     return text;
@@ -902,38 +1184,53 @@ var wrapText = __name((text, maxChars) => {
   for (const word of text.split(/\s+/)) {
     const last = lines.length - 1;
     if (last >= 0 && lines[last].length + 1 + word.length <= maxChars) {
-      lines[last] += " " + word;
+      lines[last] += ' ' + word;
     } else {
       lines.push(word);
     }
   }
-  return lines.join("\n");
-}, "wrapText");
+  return lines.join('\n');
+}, 'wrapText');
 var drawMultilineText = __name((g, text, x, y, cls, anchor, fontSize) => {
   const lines = splitLines(text);
   const lh = fontSize * 1.05;
-  const el = g.append("text").attr("class", cls).attr("text-anchor", anchor).attr("x", x).attr("y", y - (lines.length - 1) * lh / 2);
+  const el = g
+    .append('text')
+    .attr('class', cls)
+    .attr('text-anchor', anchor)
+    .attr('x', x)
+    .attr('y', y - ((lines.length - 1) * lh) / 2);
   for (const [i, line] of lines.entries()) {
-    el.append("tspan").attr("x", x).attr("dy", i === 0 ? 0 : lh).text(line);
+    el.append('tspan')
+      .attr('x', x)
+      .attr('dy', i === 0 ? 0 : lh)
+      .text(line);
   }
   return el;
-}, "drawMultilineText");
-var lerp = __name((a, b, t) => a + (b - a) * t, "lerp");
+}, 'drawMultilineText');
+var lerp = __name((a, b, t) => a + (b - a) * t, 'lerp');
 var drawLine = __name((g, x1, y1, x2, y2, cls, roughContext) => {
   if (roughContext) {
     const roughNode = roughContext.roughSvg.line(x1, y1, x2, y2, {
       roughness: 1.5,
       seed: roughContext.seed,
       stroke: roughContext.lineColor,
-      strokeWidth: 2
+      strokeWidth: 2,
     });
-    g.append(() => roughNode).attr("class", cls);
+    g.append(() => roughNode).attr('class', cls);
     return void 0;
   }
-  return g.append("line").attr("class", cls).attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
-}, "drawLine");
+  return g
+    .append('line')
+    .attr('class', cls)
+    .attr('x1', x1)
+    .attr('y1', y1)
+    .attr('x2', x2)
+    .attr('y2', y2);
+}, 'drawLine');
 var renderer = { draw };
-var getStyles = __name((options) => `
+var getStyles = __name(
+  (options) => `
 .ishikawa .ishikawa-spine,
 .ishikawa .ishikawa-branch,
 .ishikawa .ishikawa-sub-branch {
@@ -996,7 +1293,9 @@ var getStyles = __name((options) => `
 .ishikawa .ishikawa-label.down {
   dominant-baseline: hanging;
 }
-`, "getStyles");
+`,
+  'getStyles',
+);
 var ishikawaStyles_default = getStyles;
 var diagram = {
   parser: ishikawa_default,
@@ -1004,9 +1303,7 @@ var diagram = {
     return new IshikawaDB();
   },
   renderer,
-  styles: ishikawaStyles_default
+  styles: ishikawaStyles_default,
 };
-export {
-  diagram
-};
+export { diagram };
 //# sourceMappingURL=ishikawaDiagram-PHBUUO56-RK5SJRDD.js.map

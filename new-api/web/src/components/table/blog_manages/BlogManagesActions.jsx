@@ -43,4 +43,3 @@ const BlogManagesActions = ({ openCreate, compactMode, setCompactMode, t }) => {
 };
 
 export default BlogManagesActions;
-

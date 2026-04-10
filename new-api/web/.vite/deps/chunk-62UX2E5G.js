@@ -1,9 +1,8 @@
-import {
-  __name
-} from "./chunk-OQUVF2X3.js";
+import { __name } from './chunk-OQUVF2X3.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/chunk-FMBD7UC4.mjs
-var getIconStyles = __name(() => `
+var getIconStyles = __name(
+  () => `
   /* Font Awesome icon styling - consolidated */
   .label-icon {
     display: inline-block;
@@ -17,9 +16,9 @@ var getIconStyles = __name(() => `
     stroke: revert;
     stroke-width: revert;
   }
-`, "getIconStyles");
+`,
+  'getIconStyles',
+);
 
-export {
-  getIconStyles
-};
+export { getIconStyles };
 //# sourceMappingURL=chunk-62UX2E5G.js.map

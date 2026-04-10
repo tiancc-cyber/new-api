@@ -5,32 +5,103 @@ import {
   getConfig2,
   is_dark_default,
   lighten_default,
-  setupGraphViewbox
-} from "./chunk-LQLXUK6X.js";
+  setupGraphViewbox,
+} from './chunk-LQLXUK6X.js';
 import {
   __export,
   __name,
   arc_default,
   log,
-  select_default
-} from "./chunk-OQUVF2X3.js";
-import "./chunk-SW2NX7BB.js";
-import "./chunk-UE53HML6.js";
+  select_default,
+} from './chunk-OQUVF2X3.js';
+import './chunk-SW2NX7BB.js';
+import './chunk-UE53HML6.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/timeline-definition-YZTLITO2.mjs
-var parser = function() {
-  var o = __name(function(k, v, o2, l) {
-    for (o2 = o2 || {}, l = k.length; l--; o2[k[l]] = v) ;
-    return o2;
-  }, "o"), $V0 = [6, 8, 10, 11, 12, 14, 16, 17, 20, 21], $V1 = [1, 9], $V2 = [1, 10], $V3 = [1, 11], $V4 = [1, 12], $V5 = [1, 13], $V6 = [1, 16], $V7 = [1, 17];
+var parser = (function () {
+  var o = __name(function (k, v, o2, l) {
+      for (o2 = o2 || {}, l = k.length; l--; o2[k[l]] = v);
+      return o2;
+    }, 'o'),
+    $V0 = [6, 8, 10, 11, 12, 14, 16, 17, 20, 21],
+    $V1 = [1, 9],
+    $V2 = [1, 10],
+    $V3 = [1, 11],
+    $V4 = [1, 12],
+    $V5 = [1, 13],
+    $V6 = [1, 16],
+    $V7 = [1, 17];
   var parser2 = {
-    trace: __name(function trace() {
-    }, "trace"),
+    trace: __name(function trace() {}, 'trace'),
     yy: {},
-    symbols_: { "error": 2, "start": 3, "timeline": 4, "document": 5, "EOF": 6, "line": 7, "SPACE": 8, "statement": 9, "NEWLINE": 10, "title": 11, "acc_title": 12, "acc_title_value": 13, "acc_descr": 14, "acc_descr_value": 15, "acc_descr_multiline_value": 16, "section": 17, "period_statement": 18, "event_statement": 19, "period": 20, "event": 21, "$accept": 0, "$end": 1 },
-    terminals_: { 2: "error", 4: "timeline", 6: "EOF", 8: "SPACE", 10: "NEWLINE", 11: "title", 12: "acc_title", 13: "acc_title_value", 14: "acc_descr", 15: "acc_descr_value", 16: "acc_descr_multiline_value", 17: "section", 20: "period", 21: "event" },
-    productions_: [0, [3, 3], [5, 0], [5, 2], [7, 2], [7, 1], [7, 1], [7, 1], [9, 1], [9, 2], [9, 2], [9, 1], [9, 1], [9, 1], [9, 1], [18, 1], [19, 1]],
-    performAction: __name(function anonymous(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
+    symbols_: {
+      error: 2,
+      start: 3,
+      timeline: 4,
+      document: 5,
+      EOF: 6,
+      line: 7,
+      SPACE: 8,
+      statement: 9,
+      NEWLINE: 10,
+      title: 11,
+      acc_title: 12,
+      acc_title_value: 13,
+      acc_descr: 14,
+      acc_descr_value: 15,
+      acc_descr_multiline_value: 16,
+      section: 17,
+      period_statement: 18,
+      event_statement: 19,
+      period: 20,
+      event: 21,
+      $accept: 0,
+      $end: 1,
+    },
+    terminals_: {
+      2: 'error',
+      4: 'timeline',
+      6: 'EOF',
+      8: 'SPACE',
+      10: 'NEWLINE',
+      11: 'title',
+      12: 'acc_title',
+      13: 'acc_title_value',
+      14: 'acc_descr',
+      15: 'acc_descr_value',
+      16: 'acc_descr_multiline_value',
+      17: 'section',
+      20: 'period',
+      21: 'event',
+    },
+    productions_: [
+      0,
+      [3, 3],
+      [5, 0],
+      [5, 2],
+      [7, 2],
+      [7, 1],
+      [7, 1],
+      [7, 1],
+      [9, 1],
+      [9, 2],
+      [9, 2],
+      [9, 1],
+      [9, 1],
+      [9, 1],
+      [9, 1],
+      [18, 1],
+      [19, 1],
+    ],
+    performAction: __name(function anonymous(
+      yytext,
+      yyleng,
+      yylineno,
+      yy,
+      yystate,
+      $$,
+      _$,
+    ) {
       var $0 = $$.length - 1;
       switch (yystate) {
         case 1:
@@ -69,7 +140,7 @@ var parser = function() {
           this.$ = $$[$0].substr(8);
           break;
         case 15:
-          yy.addTask($$[$0], 0, "");
+          yy.addTask($$[$0], 0, '');
           this.$ = $$[$0];
           break;
         case 16:
@@ -77,8 +148,56 @@ var parser = function() {
           this.$ = $$[$0];
           break;
       }
-    }, "anonymous"),
-    table: [{ 3: 1, 4: [1, 2] }, { 1: [3] }, o($V0, [2, 2], { 5: 3 }), { 6: [1, 4], 7: 5, 8: [1, 6], 9: 7, 10: [1, 8], 11: $V1, 12: $V2, 14: $V3, 16: $V4, 17: $V5, 18: 14, 19: 15, 20: $V6, 21: $V7 }, o($V0, [2, 7], { 1: [2, 1] }), o($V0, [2, 3]), { 9: 18, 11: $V1, 12: $V2, 14: $V3, 16: $V4, 17: $V5, 18: 14, 19: 15, 20: $V6, 21: $V7 }, o($V0, [2, 5]), o($V0, [2, 6]), o($V0, [2, 8]), { 13: [1, 19] }, { 15: [1, 20] }, o($V0, [2, 11]), o($V0, [2, 12]), o($V0, [2, 13]), o($V0, [2, 14]), o($V0, [2, 15]), o($V0, [2, 16]), o($V0, [2, 4]), o($V0, [2, 9]), o($V0, [2, 10])],
+    }, 'anonymous'),
+    table: [
+      { 3: 1, 4: [1, 2] },
+      { 1: [3] },
+      o($V0, [2, 2], { 5: 3 }),
+      {
+        6: [1, 4],
+        7: 5,
+        8: [1, 6],
+        9: 7,
+        10: [1, 8],
+        11: $V1,
+        12: $V2,
+        14: $V3,
+        16: $V4,
+        17: $V5,
+        18: 14,
+        19: 15,
+        20: $V6,
+        21: $V7,
+      },
+      o($V0, [2, 7], { 1: [2, 1] }),
+      o($V0, [2, 3]),
+      {
+        9: 18,
+        11: $V1,
+        12: $V2,
+        14: $V3,
+        16: $V4,
+        17: $V5,
+        18: 14,
+        19: 15,
+        20: $V6,
+        21: $V7,
+      },
+      o($V0, [2, 5]),
+      o($V0, [2, 6]),
+      o($V0, [2, 8]),
+      { 13: [1, 19] },
+      { 15: [1, 20] },
+      o($V0, [2, 11]),
+      o($V0, [2, 12]),
+      o($V0, [2, 13]),
+      o($V0, [2, 14]),
+      o($V0, [2, 15]),
+      o($V0, [2, 16]),
+      o($V0, [2, 4]),
+      o($V0, [2, 9]),
+      o($V0, [2, 10]),
+    ],
     defaultActions: {},
     parseError: __name(function parseError(str, hash) {
       if (hash.recoverable) {
@@ -88,9 +207,20 @@ var parser = function() {
         error.hash = hash;
         throw error;
       }
-    }, "parseError"),
+    }, 'parseError'),
     parse: __name(function parse(input) {
-      var self = this, stack = [0], tstack = [], vstack = [null], lstack = [], table = this.table, yytext = "", yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
+      var self = this,
+        stack = [0],
+        tstack = [],
+        vstack = [null],
+        lstack = [],
+        table = this.table,
+        yytext = '',
+        yylineno = 0,
+        yyleng = 0,
+        recovering = 0,
+        TERROR = 2,
+        EOF = 1;
       var args = lstack.slice.call(arguments, 1);
       var lexer2 = Object.create(this.lexer);
       var sharedState = { yy: {} };
@@ -102,13 +232,13 @@ var parser = function() {
       lexer2.setInput(input, sharedState.yy);
       sharedState.yy.lexer = lexer2;
       sharedState.yy.parser = this;
-      if (typeof lexer2.yylloc == "undefined") {
+      if (typeof lexer2.yylloc == 'undefined') {
         lexer2.yylloc = {};
       }
       var yyloc = lexer2.yylloc;
       lstack.push(yyloc);
       var ranges = lexer2.options && lexer2.options.ranges;
-      if (typeof sharedState.yy.parseError === "function") {
+      if (typeof sharedState.yy.parseError === 'function') {
         this.parseError = sharedState.yy.parseError;
       } else {
         this.parseError = Object.getPrototypeOf(this).parseError;
@@ -118,11 +248,11 @@ var parser = function() {
         vstack.length = vstack.length - n;
         lstack.length = lstack.length - n;
       }
-      __name(popStack, "popStack");
+      __name(popStack, 'popStack');
       function lex() {
         var token;
         token = tstack.pop() || lexer2.lex() || EOF;
-        if (typeof token !== "number") {
+        if (typeof token !== 'number') {
           if (token instanceof Array) {
             tstack = token;
             token = tstack.pop();
@@ -131,20 +261,30 @@ var parser = function() {
         }
         return token;
       }
-      __name(lex, "lex");
-      var symbol, preErrorSymbol, state, action, a, r, yyval = {}, p, len, newState, expected;
+      __name(lex, 'lex');
+      var symbol,
+        preErrorSymbol,
+        state,
+        action,
+        a,
+        r,
+        yyval = {},
+        p,
+        len,
+        newState,
+        expected;
       while (true) {
         state = stack[stack.length - 1];
         if (this.defaultActions[state]) {
           action = this.defaultActions[state];
         } else {
-          if (symbol === null || typeof symbol == "undefined") {
+          if (symbol === null || typeof symbol == 'undefined') {
             symbol = lex();
           }
           action = table[state] && table[state][symbol];
         }
-        if (typeof action === "undefined" || !action.length || !action[0]) {
-          var errStr = "";
+        if (typeof action === 'undefined' || !action.length || !action[0]) {
+          var errStr = '';
           expected = [];
           for (p in table[state]) {
             if (this.terminals_[p] && p > TERROR) {
@@ -152,20 +292,40 @@ var parser = function() {
             }
           }
           if (lexer2.showPosition) {
-            errStr = "Parse error on line " + (yylineno + 1) + ":\n" + lexer2.showPosition() + "\nExpecting " + expected.join(", ") + ", got '" + (this.terminals_[symbol] || symbol) + "'";
+            errStr =
+              'Parse error on line ' +
+              (yylineno + 1) +
+              ':\n' +
+              lexer2.showPosition() +
+              '\nExpecting ' +
+              expected.join(', ') +
+              ", got '" +
+              (this.terminals_[symbol] || symbol) +
+              "'";
           } else {
-            errStr = "Parse error on line " + (yylineno + 1) + ": Unexpected " + (symbol == EOF ? "end of input" : "'" + (this.terminals_[symbol] || symbol) + "'");
+            errStr =
+              'Parse error on line ' +
+              (yylineno + 1) +
+              ': Unexpected ' +
+              (symbol == EOF
+                ? 'end of input'
+                : "'" + (this.terminals_[symbol] || symbol) + "'");
           }
           this.parseError(errStr, {
             text: lexer2.match,
             token: this.terminals_[symbol] || symbol,
             line: lexer2.yylineno,
             loc: yyloc,
-            expected
+            expected,
           });
         }
         if (action[0] instanceof Array && action.length > 1) {
-          throw new Error("Parse Error: multiple actions possible at state: " + state + ", token: " + symbol);
+          throw new Error(
+            'Parse Error: multiple actions possible at state: ' +
+              state +
+              ', token: ' +
+              symbol,
+          );
         }
         switch (action[0]) {
           case 1:
@@ -194,24 +354,27 @@ var parser = function() {
               first_line: lstack[lstack.length - (len || 1)].first_line,
               last_line: lstack[lstack.length - 1].last_line,
               first_column: lstack[lstack.length - (len || 1)].first_column,
-              last_column: lstack[lstack.length - 1].last_column
+              last_column: lstack[lstack.length - 1].last_column,
             };
             if (ranges) {
               yyval._$.range = [
                 lstack[lstack.length - (len || 1)].range[0],
-                lstack[lstack.length - 1].range[1]
+                lstack[lstack.length - 1].range[1],
               ];
             }
-            r = this.performAction.apply(yyval, [
-              yytext,
-              yyleng,
-              yylineno,
-              sharedState.yy,
-              action[1],
-              vstack,
-              lstack
-            ].concat(args));
-            if (typeof r !== "undefined") {
+            r = this.performAction.apply(
+              yyval,
+              [
+                yytext,
+                yyleng,
+                yylineno,
+                sharedState.yy,
+                action[1],
+                vstack,
+                lstack,
+              ].concat(args),
+            );
+            if (typeof r !== 'undefined') {
               return r;
             }
             if (len) {
@@ -230,9 +393,9 @@ var parser = function() {
         }
       }
       return true;
-    }, "parse")
+    }, 'parse'),
   };
-  var lexer = function() {
+  var lexer = (function () {
     var lexer2 = {
       EOF: 1,
       parseError: __name(function parseError(str, hash) {
@@ -241,29 +404,29 @@ var parser = function() {
         } else {
           throw new Error(str);
         }
-      }, "parseError"),
+      }, 'parseError'),
       // resets the lexer, sets new input
-      setInput: __name(function(input, yy) {
+      setInput: __name(function (input, yy) {
         this.yy = yy || this.yy || {};
         this._input = input;
         this._more = this._backtrack = this.done = false;
         this.yylineno = this.yyleng = 0;
-        this.yytext = this.matched = this.match = "";
-        this.conditionStack = ["INITIAL"];
+        this.yytext = this.matched = this.match = '';
+        this.conditionStack = ['INITIAL'];
         this.yylloc = {
           first_line: 1,
           first_column: 0,
           last_line: 1,
-          last_column: 0
+          last_column: 0,
         };
         if (this.options.ranges) {
           this.yylloc.range = [0, 0];
         }
         this.offset = 0;
         return this;
-      }, "setInput"),
+      }, 'setInput'),
       // consumes and returns one char from the input
-      input: __name(function() {
+      input: __name(function () {
         var ch = this._input[0];
         this.yytext += ch;
         this.yyleng++;
@@ -282,9 +445,9 @@ var parser = function() {
         }
         this._input = this._input.slice(1);
         return ch;
-      }, "input"),
+      }, 'input'),
       // unshifts one char (or a string) into the input
-      unput: __name(function(ch) {
+      unput: __name(function (ch) {
         var len = ch.length;
         var lines = ch.split(/(?:\r\n?|\n)/g);
         this._input = ch + this._input;
@@ -301,57 +464,77 @@ var parser = function() {
           first_line: this.yylloc.first_line,
           last_line: this.yylineno + 1,
           first_column: this.yylloc.first_column,
-          last_column: lines ? (lines.length === oldLines.length ? this.yylloc.first_column : 0) + oldLines[oldLines.length - lines.length].length - lines[0].length : this.yylloc.first_column - len
+          last_column: lines
+            ? (lines.length === oldLines.length
+                ? this.yylloc.first_column
+                : 0) +
+              oldLines[oldLines.length - lines.length].length -
+              lines[0].length
+            : this.yylloc.first_column - len,
         };
         if (this.options.ranges) {
           this.yylloc.range = [r[0], r[0] + this.yyleng - len];
         }
         this.yyleng = this.yytext.length;
         return this;
-      }, "unput"),
+      }, 'unput'),
       // When called from action, caches matched text and appends it on next action
-      more: __name(function() {
+      more: __name(function () {
         this._more = true;
         return this;
-      }, "more"),
+      }, 'more'),
       // When called from action, signals the lexer that this rule fails to match the input, so the next matching rule (regex) should be tested instead.
-      reject: __name(function() {
+      reject: __name(function () {
         if (this.options.backtrack_lexer) {
           this._backtrack = true;
         } else {
-          return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n" + this.showPosition(), {
-            text: "",
-            token: null,
-            line: this.yylineno
-          });
+          return this.parseError(
+            'Lexical error on line ' +
+              (this.yylineno + 1) +
+              '. You can only invoke reject() in the lexer when the lexer is of the backtracking persuasion (options.backtrack_lexer = true).\n' +
+              this.showPosition(),
+            {
+              text: '',
+              token: null,
+              line: this.yylineno,
+            },
+          );
         }
         return this;
-      }, "reject"),
+      }, 'reject'),
       // retain first n characters of the match
-      less: __name(function(n) {
+      less: __name(function (n) {
         this.unput(this.match.slice(n));
-      }, "less"),
+      }, 'less'),
       // displays already matched input, i.e. for error messages
-      pastInput: __name(function() {
-        var past = this.matched.substr(0, this.matched.length - this.match.length);
-        return (past.length > 20 ? "..." : "") + past.substr(-20).replace(/\n/g, "");
-      }, "pastInput"),
+      pastInput: __name(function () {
+        var past = this.matched.substr(
+          0,
+          this.matched.length - this.match.length,
+        );
+        return (
+          (past.length > 20 ? '...' : '') + past.substr(-20).replace(/\n/g, '')
+        );
+      }, 'pastInput'),
       // displays upcoming input, i.e. for error messages
-      upcomingInput: __name(function() {
+      upcomingInput: __name(function () {
         var next = this.match;
         if (next.length < 20) {
           next += this._input.substr(0, 20 - next.length);
         }
-        return (next.substr(0, 20) + (next.length > 20 ? "..." : "")).replace(/\n/g, "");
-      }, "upcomingInput"),
+        return (next.substr(0, 20) + (next.length > 20 ? '...' : '')).replace(
+          /\n/g,
+          '',
+        );
+      }, 'upcomingInput'),
       // displays the character position where the lexing error occurred, i.e. for error messages
-      showPosition: __name(function() {
+      showPosition: __name(function () {
         var pre = this.pastInput();
-        var c = new Array(pre.length + 1).join("-");
-        return pre + this.upcomingInput() + "\n" + c + "^";
-      }, "showPosition"),
+        var c = new Array(pre.length + 1).join('-');
+        return pre + this.upcomingInput() + '\n' + c + '^';
+      }, 'showPosition'),
       // test the lexed token: return FALSE when not a match, otherwise return token
-      test_match: __name(function(match, indexed_rule) {
+      test_match: __name(function (match, indexed_rule) {
         var token, lines, backup;
         if (this.options.backtrack_lexer) {
           backup = {
@@ -360,7 +543,7 @@ var parser = function() {
               first_line: this.yylloc.first_line,
               last_line: this.last_line,
               first_column: this.yylloc.first_column,
-              last_column: this.yylloc.last_column
+              last_column: this.yylloc.last_column,
             },
             yytext: this.yytext,
             match: this.match,
@@ -372,7 +555,7 @@ var parser = function() {
             _input: this._input,
             yy: this.yy,
             conditionStack: this.conditionStack.slice(0),
-            done: this.done
+            done: this.done,
           };
           if (this.options.ranges) {
             backup.yylloc.range = this.yylloc.range.slice(0);
@@ -386,20 +569,29 @@ var parser = function() {
           first_line: this.yylloc.last_line,
           last_line: this.yylineno + 1,
           first_column: this.yylloc.last_column,
-          last_column: lines ? lines[lines.length - 1].length - lines[lines.length - 1].match(/\r?\n?/)[0].length : this.yylloc.last_column + match[0].length
+          last_column: lines
+            ? lines[lines.length - 1].length -
+              lines[lines.length - 1].match(/\r?\n?/)[0].length
+            : this.yylloc.last_column + match[0].length,
         };
         this.yytext += match[0];
         this.match += match[0];
         this.matches = match;
         this.yyleng = this.yytext.length;
         if (this.options.ranges) {
-          this.yylloc.range = [this.offset, this.offset += this.yyleng];
+          this.yylloc.range = [this.offset, (this.offset += this.yyleng)];
         }
         this._more = false;
         this._backtrack = false;
         this._input = this._input.slice(match[0].length);
         this.matched += match[0];
-        token = this.performAction.call(this, this.yy, this, indexed_rule, this.conditionStack[this.conditionStack.length - 1]);
+        token = this.performAction.call(
+          this,
+          this.yy,
+          this,
+          indexed_rule,
+          this.conditionStack[this.conditionStack.length - 1],
+        );
         if (this.done && this._input) {
           this.done = false;
         }
@@ -412,9 +604,9 @@ var parser = function() {
           return false;
         }
         return false;
-      }, "test_match"),
+      }, 'test_match'),
       // return next match in input
-      next: __name(function() {
+      next: __name(function () {
         if (this.done) {
           return this.EOF;
         }
@@ -423,8 +615,8 @@ var parser = function() {
         }
         var token, match, tempMatch, index;
         if (!this._more) {
-          this.yytext = "";
-          this.match = "";
+          this.yytext = '';
+          this.match = '';
         }
         var rules = this._currentRules();
         for (var i = 0; i < rules.length; i++) {
@@ -454,16 +646,22 @@ var parser = function() {
           }
           return false;
         }
-        if (this._input === "") {
+        if (this._input === '') {
           return this.EOF;
         } else {
-          return this.parseError("Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), {
-            text: "",
-            token: null,
-            line: this.yylineno
-          });
+          return this.parseError(
+            'Lexical error on line ' +
+              (this.yylineno + 1) +
+              '. Unrecognized text.\n' +
+              this.showPosition(),
+            {
+              text: '',
+              token: null,
+              line: this.yylineno,
+            },
+          );
         }
-      }, "next"),
+      }, 'next'),
       // return next match that has a token
       lex: __name(function lex() {
         var r = this.next();
@@ -472,11 +670,11 @@ var parser = function() {
         } else {
           return this.lex();
         }
-      }, "lex"),
+      }, 'lex'),
       // activates a new lexer condition state (pushes the new lexer condition state onto the condition stack)
       begin: __name(function begin(condition) {
         this.conditionStack.push(condition);
-      }, "begin"),
+      }, 'begin'),
       // pop the previously active lexer condition state off the condition stack
       popState: __name(function popState() {
         var n = this.conditionStack.length - 1;
@@ -485,34 +683,44 @@ var parser = function() {
         } else {
           return this.conditionStack[0];
         }
-      }, "popState"),
+      }, 'popState'),
       // produce the lexer rule set which is active for the currently active lexer condition state
       _currentRules: __name(function _currentRules() {
-        if (this.conditionStack.length && this.conditionStack[this.conditionStack.length - 1]) {
-          return this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules;
+        if (
+          this.conditionStack.length &&
+          this.conditionStack[this.conditionStack.length - 1]
+        ) {
+          return this.conditions[
+            this.conditionStack[this.conditionStack.length - 1]
+          ].rules;
         } else {
-          return this.conditions["INITIAL"].rules;
+          return this.conditions['INITIAL'].rules;
         }
-      }, "_currentRules"),
+      }, '_currentRules'),
       // return the currently active lexer condition state; when an index argument is provided it produces the N-th previous condition state, if available
       topState: __name(function topState(n) {
         n = this.conditionStack.length - 1 - Math.abs(n || 0);
         if (n >= 0) {
           return this.conditionStack[n];
         } else {
-          return "INITIAL";
+          return 'INITIAL';
         }
-      }, "topState"),
+      }, 'topState'),
       // alias for begin(condition)
       pushState: __name(function pushState(condition) {
         this.begin(condition);
-      }, "pushState"),
+      }, 'pushState'),
       // return the number of states currently on the stack
       stateStackSize: __name(function stateStackSize() {
         return this.conditionStack.length;
-      }, "stateStackSize"),
-      options: { "case-insensitive": true },
-      performAction: __name(function anonymous(yy, yy_, $avoiding_name_collisions, YY_START) {
+      }, 'stateStackSize'),
+      options: { 'case-insensitive': true },
+      performAction: __name(function anonymous(
+        yy,
+        yy_,
+        $avoiding_name_collisions,
+        YY_START,
+      ) {
         var YYSTATE = YY_START;
         switch ($avoiding_name_collisions) {
           case 0:
@@ -533,29 +741,29 @@ var parser = function() {
             return 11;
             break;
           case 7:
-            this.begin("acc_title");
+            this.begin('acc_title');
             return 12;
             break;
           case 8:
             this.popState();
-            return "acc_title_value";
+            return 'acc_title_value';
             break;
           case 9:
-            this.begin("acc_descr");
+            this.begin('acc_descr');
             return 14;
             break;
           case 10:
             this.popState();
-            return "acc_descr_value";
+            return 'acc_descr_value';
             break;
           case 11:
-            this.begin("acc_descr_multiline");
+            this.begin('acc_descr_multiline');
             break;
           case 12:
             this.popState();
             break;
           case 13:
-            return "acc_descr_multiline_value";
+            return 'acc_descr_multiline_value';
             break;
           case 14:
             return 17;
@@ -570,24 +778,52 @@ var parser = function() {
             return 6;
             break;
           case 18:
-            return "INVALID";
+            return 'INVALID';
             break;
         }
-      }, "anonymous"),
-      rules: [/^(?:%(?!\{)[^\n]*)/i, /^(?:[^\}]%%[^\n]*)/i, /^(?:[\n]+)/i, /^(?:\s+)/i, /^(?:#[^\n]*)/i, /^(?:timeline\b)/i, /^(?:title\s[^\n]+)/i, /^(?:accTitle\s*:\s*)/i, /^(?:(?!\n||)*[^\n]*)/i, /^(?:accDescr\s*:\s*)/i, /^(?:(?!\n||)*[^\n]*)/i, /^(?:accDescr\s*\{\s*)/i, /^(?:[\}])/i, /^(?:[^\}]*)/i, /^(?:section\s[^:\n]+)/i, /^(?::\s(?:[^:\n]|:(?!\s))+)/i, /^(?:[^#:\n]+)/i, /^(?:$)/i, /^(?:.)/i],
-      conditions: { "acc_descr_multiline": { "rules": [12, 13], "inclusive": false }, "acc_descr": { "rules": [10], "inclusive": false }, "acc_title": { "rules": [8], "inclusive": false }, "INITIAL": { "rules": [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 14, 15, 16, 17, 18], "inclusive": true } }
+      }, 'anonymous'),
+      rules: [
+        /^(?:%(?!\{)[^\n]*)/i,
+        /^(?:[^\}]%%[^\n]*)/i,
+        /^(?:[\n]+)/i,
+        /^(?:\s+)/i,
+        /^(?:#[^\n]*)/i,
+        /^(?:timeline\b)/i,
+        /^(?:title\s[^\n]+)/i,
+        /^(?:accTitle\s*:\s*)/i,
+        /^(?:(?!\n||)*[^\n]*)/i,
+        /^(?:accDescr\s*:\s*)/i,
+        /^(?:(?!\n||)*[^\n]*)/i,
+        /^(?:accDescr\s*\{\s*)/i,
+        /^(?:[\}])/i,
+        /^(?:[^\}]*)/i,
+        /^(?:section\s[^:\n]+)/i,
+        /^(?::\s(?:[^:\n]|:(?!\s))+)/i,
+        /^(?:[^#:\n]+)/i,
+        /^(?:$)/i,
+        /^(?:.)/i,
+      ],
+      conditions: {
+        acc_descr_multiline: { rules: [12, 13], inclusive: false },
+        acc_descr: { rules: [10], inclusive: false },
+        acc_title: { rules: [8], inclusive: false },
+        INITIAL: {
+          rules: [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 14, 15, 16, 17, 18],
+          inclusive: true,
+        },
+      },
     };
     return lexer2;
-  }();
+  })();
   parser2.lexer = lexer;
   function Parser() {
     this.yy = {};
   }
-  __name(Parser, "Parser");
+  __name(Parser, 'Parser');
   Parser.prototype = parser2;
   parser2.Parser = Parser;
   return new Parser();
-}();
+})();
 parser.parser = parser;
 var timeline_default = parser;
 var timelineDb_exports = {};
@@ -600,29 +836,29 @@ __export(timelineDb_exports, {
   default: () => timelineDb_default,
   getCommonDb: () => getCommonDb,
   getSections: () => getSections,
-  getTasks: () => getTasks
+  getTasks: () => getTasks,
 });
-var currentSection = "";
+var currentSection = '';
 var currentTaskId = 0;
 var sections = [];
 var tasks = [];
 var rawTasks = [];
-var getCommonDb = __name(() => commonDb_exports, "getCommonDb");
-var clear2 = __name(function() {
+var getCommonDb = __name(() => commonDb_exports, 'getCommonDb');
+var clear2 = __name(function () {
   sections.length = 0;
   tasks.length = 0;
-  currentSection = "";
+  currentSection = '';
   rawTasks.length = 0;
   clear();
-}, "clear");
-var addSection = __name(function(txt) {
+}, 'clear');
+var addSection = __name(function (txt) {
   currentSection = txt;
   sections.push(txt);
-}, "addSection");
-var getSections = __name(function() {
+}, 'addSection');
+var getSections = __name(function () {
   return sections;
-}, "getSections");
-var getTasks = __name(function() {
+}, 'getSections');
+var getTasks = __name(function () {
   let allItemsProcessed = compileTasks();
   const maxDepth = 100;
   let iterationCount = 0;
@@ -632,8 +868,8 @@ var getTasks = __name(function() {
   }
   tasks.push(...rawTasks);
   return tasks;
-}, "getTasks");
-var addTask = __name(function(period, length, event) {
+}, 'getTasks');
+var addTask = __name(function (period, length, event) {
   const rawTask = {
     id: currentTaskId++,
     section: currentSection,
@@ -641,35 +877,35 @@ var addTask = __name(function(period, length, event) {
     task: period,
     score: length ? length : 0,
     //if event is defined, then add it the events array
-    events: event ? [event] : []
+    events: event ? [event] : [],
   };
   rawTasks.push(rawTask);
-}, "addTask");
-var addEvent = __name(function(event) {
+}, 'addTask');
+var addEvent = __name(function (event) {
   const currentTask = rawTasks.find((task) => task.id === currentTaskId - 1);
   currentTask.events.push(event);
-}, "addEvent");
-var addTaskOrg = __name(function(descr) {
+}, 'addEvent');
+var addTaskOrg = __name(function (descr) {
   const newTask = {
     section: currentSection,
     type: currentSection,
     description: descr,
     task: descr,
-    classes: []
+    classes: [],
   };
   tasks.push(newTask);
-}, "addTaskOrg");
-var compileTasks = __name(function() {
-  const compileTask = __name(function(pos) {
+}, 'addTaskOrg');
+var compileTasks = __name(function () {
+  const compileTask = __name(function (pos) {
     return rawTasks[pos].processed;
-  }, "compileTask");
+  }, 'compileTask');
   let allProcessed = true;
   for (const [i, rawTask] of rawTasks.entries()) {
     compileTask(i);
     allProcessed = allProcessed && rawTask.processed;
   }
   return allProcessed;
-}, "compileTasks");
+}, 'compileTasks');
 var timelineDb_default = {
   clear: clear2,
   getCommonDb,
@@ -678,44 +914,97 @@ var timelineDb_default = {
   getTasks,
   addTask,
   addTaskOrg,
-  addEvent
+  addEvent,
 };
 var MAX_SECTIONS = 12;
-var drawRect = __name(function(elem, rectData) {
-  const rectElem = elem.append("rect");
-  rectElem.attr("x", rectData.x);
-  rectElem.attr("y", rectData.y);
-  rectElem.attr("fill", rectData.fill);
-  rectElem.attr("stroke", rectData.stroke);
-  rectElem.attr("width", rectData.width);
-  rectElem.attr("height", rectData.height);
-  rectElem.attr("rx", rectData.rx);
-  rectElem.attr("ry", rectData.ry);
+var drawRect = __name(function (elem, rectData) {
+  const rectElem = elem.append('rect');
+  rectElem.attr('x', rectData.x);
+  rectElem.attr('y', rectData.y);
+  rectElem.attr('fill', rectData.fill);
+  rectElem.attr('stroke', rectData.stroke);
+  rectElem.attr('width', rectData.width);
+  rectElem.attr('height', rectData.height);
+  rectElem.attr('rx', rectData.rx);
+  rectElem.attr('ry', rectData.ry);
   if (rectData.class !== void 0) {
-    rectElem.attr("class", rectData.class);
+    rectElem.attr('class', rectData.class);
   }
   return rectElem;
-}, "drawRect");
-var drawFace = __name(function(element, faceData) {
+}, 'drawRect');
+var drawFace = __name(function (element, faceData) {
   const radius = 15;
-  const circleElement = element.append("circle").attr("cx", faceData.cx).attr("cy", faceData.cy).attr("class", "face").attr("r", radius).attr("stroke-width", 2).attr("overflow", "visible");
-  const face = element.append("g");
-  face.append("circle").attr("cx", faceData.cx - radius / 3).attr("cy", faceData.cy - radius / 3).attr("r", 1.5).attr("stroke-width", 2).attr("fill", "#666").attr("stroke", "#666");
-  face.append("circle").attr("cx", faceData.cx + radius / 3).attr("cy", faceData.cy - radius / 3).attr("r", 1.5).attr("stroke-width", 2).attr("fill", "#666").attr("stroke", "#666");
+  const circleElement = element
+    .append('circle')
+    .attr('cx', faceData.cx)
+    .attr('cy', faceData.cy)
+    .attr('class', 'face')
+    .attr('r', radius)
+    .attr('stroke-width', 2)
+    .attr('overflow', 'visible');
+  const face = element.append('g');
+  face
+    .append('circle')
+    .attr('cx', faceData.cx - radius / 3)
+    .attr('cy', faceData.cy - radius / 3)
+    .attr('r', 1.5)
+    .attr('stroke-width', 2)
+    .attr('fill', '#666')
+    .attr('stroke', '#666');
+  face
+    .append('circle')
+    .attr('cx', faceData.cx + radius / 3)
+    .attr('cy', faceData.cy - radius / 3)
+    .attr('r', 1.5)
+    .attr('stroke-width', 2)
+    .attr('fill', '#666')
+    .attr('stroke', '#666');
   function smile(face2) {
-    const arc = arc_default().startAngle(Math.PI / 2).endAngle(3 * (Math.PI / 2)).innerRadius(radius / 2).outerRadius(radius / 2.2);
-    face2.append("path").attr("class", "mouth").attr("d", arc).attr("transform", "translate(" + faceData.cx + "," + (faceData.cy + 2) + ")");
+    const arc = arc_default()
+      .startAngle(Math.PI / 2)
+      .endAngle(3 * (Math.PI / 2))
+      .innerRadius(radius / 2)
+      .outerRadius(radius / 2.2);
+    face2
+      .append('path')
+      .attr('class', 'mouth')
+      .attr('d', arc)
+      .attr(
+        'transform',
+        'translate(' + faceData.cx + ',' + (faceData.cy + 2) + ')',
+      );
   }
-  __name(smile, "smile");
+  __name(smile, 'smile');
   function sad(face2) {
-    const arc = arc_default().startAngle(3 * Math.PI / 2).endAngle(5 * (Math.PI / 2)).innerRadius(radius / 2).outerRadius(radius / 2.2);
-    face2.append("path").attr("class", "mouth").attr("d", arc).attr("transform", "translate(" + faceData.cx + "," + (faceData.cy + 7) + ")");
+    const arc = arc_default()
+      .startAngle((3 * Math.PI) / 2)
+      .endAngle(5 * (Math.PI / 2))
+      .innerRadius(radius / 2)
+      .outerRadius(radius / 2.2);
+    face2
+      .append('path')
+      .attr('class', 'mouth')
+      .attr('d', arc)
+      .attr(
+        'transform',
+        'translate(' + faceData.cx + ',' + (faceData.cy + 7) + ')',
+      );
   }
-  __name(sad, "sad");
+  __name(sad, 'sad');
   function ambivalent(face2) {
-    face2.append("line").attr("class", "mouth").attr("stroke", 2).attr("x1", faceData.cx - 5).attr("y1", faceData.cy + 7).attr("x2", faceData.cx + 5).attr("y2", faceData.cy + 7).attr("class", "mouth").attr("stroke-width", "1px").attr("stroke", "#666");
+    face2
+      .append('line')
+      .attr('class', 'mouth')
+      .attr('stroke', 2)
+      .attr('x1', faceData.cx - 5)
+      .attr('y1', faceData.cy + 7)
+      .attr('x2', faceData.cx + 5)
+      .attr('y2', faceData.cy + 7)
+      .attr('class', 'mouth')
+      .attr('stroke-width', '1px')
+      .attr('stroke', '#666');
   }
-  __name(ambivalent, "ambivalent");
+  __name(ambivalent, 'ambivalent');
   if (faceData.score > 3) {
     smile(face);
   } else if (faceData.score < 3) {
@@ -724,59 +1013,79 @@ var drawFace = __name(function(element, faceData) {
     ambivalent(face);
   }
   return circleElement;
-}, "drawFace");
-var drawCircle = __name(function(element, circleData) {
-  const circleElement = element.append("circle");
-  circleElement.attr("cx", circleData.cx);
-  circleElement.attr("cy", circleData.cy);
-  circleElement.attr("class", "actor-" + circleData.pos);
-  circleElement.attr("fill", circleData.fill);
-  circleElement.attr("stroke", circleData.stroke);
-  circleElement.attr("r", circleData.r);
+}, 'drawFace');
+var drawCircle = __name(function (element, circleData) {
+  const circleElement = element.append('circle');
+  circleElement.attr('cx', circleData.cx);
+  circleElement.attr('cy', circleData.cy);
+  circleElement.attr('class', 'actor-' + circleData.pos);
+  circleElement.attr('fill', circleData.fill);
+  circleElement.attr('stroke', circleData.stroke);
+  circleElement.attr('r', circleData.r);
   if (circleElement.class !== void 0) {
-    circleElement.attr("class", circleElement.class);
+    circleElement.attr('class', circleElement.class);
   }
   if (circleData.title !== void 0) {
-    circleElement.append("title").text(circleData.title);
+    circleElement.append('title').text(circleData.title);
   }
   return circleElement;
-}, "drawCircle");
-var drawText = __name(function(elem, textData) {
-  const nText = textData.text.replace(/<br\s*\/?>/gi, " ");
-  const textElem = elem.append("text");
-  textElem.attr("x", textData.x);
-  textElem.attr("y", textData.y);
-  textElem.attr("class", "legend");
-  textElem.style("text-anchor", textData.anchor);
+}, 'drawCircle');
+var drawText = __name(function (elem, textData) {
+  const nText = textData.text.replace(/<br\s*\/?>/gi, ' ');
+  const textElem = elem.append('text');
+  textElem.attr('x', textData.x);
+  textElem.attr('y', textData.y);
+  textElem.attr('class', 'legend');
+  textElem.style('text-anchor', textData.anchor);
   if (textData.class !== void 0) {
-    textElem.attr("class", textData.class);
+    textElem.attr('class', textData.class);
   }
-  const span = textElem.append("tspan");
-  span.attr("x", textData.x + textData.textMargin * 2);
+  const span = textElem.append('tspan');
+  span.attr('x', textData.x + textData.textMargin * 2);
   span.text(nText);
   return textElem;
-}, "drawText");
-var drawLabel = __name(function(elem, txtObject) {
+}, 'drawText');
+var drawLabel = __name(function (elem, txtObject) {
   function genPoints(x, y, width, height, cut) {
-    return x + "," + y + " " + (x + width) + "," + y + " " + (x + width) + "," + (y + height - cut) + " " + (x + width - cut * 1.2) + "," + (y + height) + " " + x + "," + (y + height);
+    return (
+      x +
+      ',' +
+      y +
+      ' ' +
+      (x + width) +
+      ',' +
+      y +
+      ' ' +
+      (x + width) +
+      ',' +
+      (y + height - cut) +
+      ' ' +
+      (x + width - cut * 1.2) +
+      ',' +
+      (y + height) +
+      ' ' +
+      x +
+      ',' +
+      (y + height)
+    );
   }
-  __name(genPoints, "genPoints");
-  const polygon = elem.append("polygon");
-  polygon.attr("points", genPoints(txtObject.x, txtObject.y, 50, 20, 7));
-  polygon.attr("class", "labelBox");
+  __name(genPoints, 'genPoints');
+  const polygon = elem.append('polygon');
+  polygon.attr('points', genPoints(txtObject.x, txtObject.y, 50, 20, 7));
+  polygon.attr('class', 'labelBox');
   txtObject.y = txtObject.y + txtObject.labelMargin;
   txtObject.x = txtObject.x + 0.5 * txtObject.labelMargin;
   drawText(elem, txtObject);
-}, "drawLabel");
-var drawSection = __name(function(elem, section, conf) {
-  const g = elem.append("g");
+}, 'drawLabel');
+var drawSection = __name(function (elem, section, conf) {
+  const g = elem.append('g');
   const rect = getNoteRect();
   rect.x = section.x;
   rect.y = section.y;
   rect.fill = section.fill;
   rect.width = conf.width;
   rect.height = conf.height;
-  rect.class = "journey-section section-type-" + section.num;
+  rect.class = 'journey-section section-type-' + section.num;
   rect.rx = 3;
   rect.ry = 3;
   drawRect(g, rect);
@@ -787,22 +1096,31 @@ var drawSection = __name(function(elem, section, conf) {
     rect.y,
     rect.width,
     rect.height,
-    { class: "journey-section section-type-" + section.num },
+    { class: 'journey-section section-type-' + section.num },
     conf,
-    section.colour
+    section.colour,
   );
-}, "drawSection");
+}, 'drawSection');
 var taskCount = -1;
-var drawTask = __name(function(elem, task, conf) {
+var drawTask = __name(function (elem, task, conf) {
   const center = task.x + conf.width / 2;
-  const g = elem.append("g");
+  const g = elem.append('g');
   taskCount++;
   const maxHeight = 300 + 5 * 30;
-  g.append("line").attr("id", "task" + taskCount).attr("x1", center).attr("y1", task.y).attr("x2", center).attr("y2", maxHeight).attr("class", "task-line").attr("stroke-width", "1px").attr("stroke-dasharray", "4 2").attr("stroke", "#666");
+  g.append('line')
+    .attr('id', 'task' + taskCount)
+    .attr('x1', center)
+    .attr('y1', task.y)
+    .attr('x2', center)
+    .attr('y2', maxHeight)
+    .attr('class', 'task-line')
+    .attr('stroke-width', '1px')
+    .attr('stroke-dasharray', '4 2')
+    .attr('stroke', '#666');
   drawFace(g, {
     cx: center,
     cy: 300 + (5 - task.score) * 30,
-    score: task.score
+    score: task.score,
   });
   const rect = getNoteRect();
   rect.x = task.x;
@@ -810,7 +1128,7 @@ var drawTask = __name(function(elem, task, conf) {
   rect.fill = task.fill;
   rect.width = conf.width;
   rect.height = conf.height;
-  rect.class = "task task-type-" + task.num;
+  rect.class = 'task task-type-' + task.num;
   rect.rx = 3;
   rect.ry = 3;
   drawRect(g, rect);
@@ -821,73 +1139,109 @@ var drawTask = __name(function(elem, task, conf) {
     rect.y,
     rect.width,
     rect.height,
-    { class: "task" },
+    { class: 'task' },
     conf,
-    task.colour
+    task.colour,
   );
-}, "drawTask");
-var drawBackgroundRect = __name(function(elem, bounds) {
+}, 'drawTask');
+var drawBackgroundRect = __name(function (elem, bounds) {
   const rectElem = drawRect(elem, {
     x: bounds.startx,
     y: bounds.starty,
     width: bounds.stopx - bounds.startx,
     height: bounds.stopy - bounds.starty,
     fill: bounds.fill,
-    class: "rect"
+    class: 'rect',
   });
   rectElem.lower();
-}, "drawBackgroundRect");
-var getTextObj = __name(function() {
+}, 'drawBackgroundRect');
+var getTextObj = __name(function () {
   return {
     x: 0,
     y: 0,
     fill: void 0,
-    "text-anchor": "start",
+    'text-anchor': 'start',
     width: 100,
     height: 100,
     textMargin: 0,
     rx: 0,
-    ry: 0
+    ry: 0,
   };
-}, "getTextObj");
-var getNoteRect = __name(function() {
+}, 'getTextObj');
+var getNoteRect = __name(function () {
   return {
     x: 0,
     y: 0,
     width: 100,
-    anchor: "start",
+    anchor: 'start',
     height: 100,
     rx: 0,
-    ry: 0
+    ry: 0,
   };
-}, "getNoteRect");
-var _drawTextCandidateFunc = function() {
+}, 'getNoteRect');
+var _drawTextCandidateFunc = (function () {
   function byText(content, g, x, y, width, height, textAttrs, colour) {
-    const text = g.append("text").attr("x", x + width / 2).attr("y", y + height / 2 + 5).style("font-color", colour).style("text-anchor", "middle").text(content);
+    const text = g
+      .append('text')
+      .attr('x', x + width / 2)
+      .attr('y', y + height / 2 + 5)
+      .style('font-color', colour)
+      .style('text-anchor', 'middle')
+      .text(content);
     _setTextAttrs(text, textAttrs);
   }
-  __name(byText, "byText");
+  __name(byText, 'byText');
   function byTspan(content, g, x, y, width, height, textAttrs, conf, colour) {
     const { taskFontSize, taskFontFamily } = conf;
     const lines = content.split(/<br\s*\/?>/gi);
     for (let i = 0; i < lines.length; i++) {
-      const dy = i * taskFontSize - taskFontSize * (lines.length - 1) / 2;
-      const text = g.append("text").attr("x", x + width / 2).attr("y", y).attr("fill", colour).style("text-anchor", "middle").style("font-size", taskFontSize).style("font-family", taskFontFamily);
-      text.append("tspan").attr("x", x + width / 2).attr("dy", dy).text(lines[i]);
-      text.attr("y", y + height / 2).attr("dominant-baseline", "central").attr("alignment-baseline", "central");
+      const dy = i * taskFontSize - (taskFontSize * (lines.length - 1)) / 2;
+      const text = g
+        .append('text')
+        .attr('x', x + width / 2)
+        .attr('y', y)
+        .attr('fill', colour)
+        .style('text-anchor', 'middle')
+        .style('font-size', taskFontSize)
+        .style('font-family', taskFontFamily);
+      text
+        .append('tspan')
+        .attr('x', x + width / 2)
+        .attr('dy', dy)
+        .text(lines[i]);
+      text
+        .attr('y', y + height / 2)
+        .attr('dominant-baseline', 'central')
+        .attr('alignment-baseline', 'central');
       _setTextAttrs(text, textAttrs);
     }
   }
-  __name(byTspan, "byTspan");
+  __name(byTspan, 'byTspan');
   function byFo(content, g, x, y, width, height, textAttrs, conf) {
-    const body = g.append("switch");
-    const f = body.append("foreignObject").attr("x", x).attr("y", y).attr("width", width).attr("height", height).attr("position", "fixed");
-    const text = f.append("xhtml:div").style("display", "table").style("height", "100%").style("width", "100%");
-    text.append("div").attr("class", "label").style("display", "table-cell").style("text-align", "center").style("vertical-align", "middle").text(content);
+    const body = g.append('switch');
+    const f = body
+      .append('foreignObject')
+      .attr('x', x)
+      .attr('y', y)
+      .attr('width', width)
+      .attr('height', height)
+      .attr('position', 'fixed');
+    const text = f
+      .append('xhtml:div')
+      .style('display', 'table')
+      .style('height', '100%')
+      .style('width', '100%');
+    text
+      .append('div')
+      .attr('class', 'label')
+      .style('display', 'table-cell')
+      .style('text-align', 'center')
+      .style('vertical-align', 'middle')
+      .text(content);
     byTspan(content, body, x, y, width, height, textAttrs, conf);
     _setTextAttrs(text, textAttrs);
   }
-  __name(byFo, "byFo");
+  __name(byFo, 'byFo');
   function _setTextAttrs(toText, fromTextAttrsDict) {
     for (const key in fromTextAttrsDict) {
       if (key in fromTextAttrsDict) {
@@ -895,73 +1249,140 @@ var _drawTextCandidateFunc = function() {
       }
     }
   }
-  __name(_setTextAttrs, "_setTextAttrs");
-  return function(conf) {
-    return conf.textPlacement === "fo" ? byFo : conf.textPlacement === "old" ? byText : byTspan;
+  __name(_setTextAttrs, '_setTextAttrs');
+  return function (conf) {
+    return conf.textPlacement === 'fo'
+      ? byFo
+      : conf.textPlacement === 'old'
+        ? byText
+        : byTspan;
   };
-}();
-var initGraphics = __name(function(graphics) {
-  graphics.append("defs").append("marker").attr("id", "arrowhead").attr("refX", 5).attr("refY", 2).attr("markerWidth", 6).attr("markerHeight", 4).attr("orient", "auto").append("path").attr("d", "M 0,0 V 4 L6,2 Z");
-}, "initGraphics");
+})();
+var initGraphics = __name(function (graphics) {
+  graphics
+    .append('defs')
+    .append('marker')
+    .attr('id', 'arrowhead')
+    .attr('refX', 5)
+    .attr('refY', 2)
+    .attr('markerWidth', 6)
+    .attr('markerHeight', 4)
+    .attr('orient', 'auto')
+    .append('path')
+    .attr('d', 'M 0,0 V 4 L6,2 Z');
+}, 'initGraphics');
 function wrap(text, width) {
-  text.each(function() {
-    var text2 = select_default(this), words = text2.text().split(/(\s+|<br>)/).reverse(), word, line = [], lineHeight = 1.1, y = text2.attr("y"), dy = parseFloat(text2.attr("dy")), tspan = text2.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+  text.each(function () {
+    var text2 = select_default(this),
+      words = text2
+        .text()
+        .split(/(\s+|<br>)/)
+        .reverse(),
+      word,
+      line = [],
+      lineHeight = 1.1,
+      y = text2.attr('y'),
+      dy = parseFloat(text2.attr('dy')),
+      tspan = text2
+        .text(null)
+        .append('tspan')
+        .attr('x', 0)
+        .attr('y', y)
+        .attr('dy', dy + 'em');
     for (let j = 0; j < words.length; j++) {
       word = words[words.length - 1 - j];
       line.push(word);
-      tspan.text(line.join(" ").trim());
-      if (tspan.node().getComputedTextLength() > width || word === "<br>") {
+      tspan.text(line.join(' ').trim());
+      if (tspan.node().getComputedTextLength() > width || word === '<br>') {
         line.pop();
-        tspan.text(line.join(" ").trim());
-        if (word === "<br>") {
-          line = [""];
+        tspan.text(line.join(' ').trim());
+        if (word === '<br>') {
+          line = [''];
         } else {
           line = [word];
         }
-        tspan = text2.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineHeight + "em").text(word);
+        tspan = text2
+          .append('tspan')
+          .attr('x', 0)
+          .attr('y', y)
+          .attr('dy', lineHeight + 'em')
+          .text(word);
       }
     }
   });
 }
-__name(wrap, "wrap");
-var drawNode = __name(function(elem, node, fullSection, conf) {
+__name(wrap, 'wrap');
+var drawNode = __name(function (elem, node, fullSection, conf) {
   var _a;
-  const section = fullSection % MAX_SECTIONS - 1;
-  const nodeElem = elem.append("g");
+  const section = (fullSection % MAX_SECTIONS) - 1;
+  const nodeElem = elem.append('g');
   node.section = section;
   nodeElem.attr(
-    "class",
-    (node.class ? node.class + " " : "") + "timeline-node " + ("section-" + section)
+    'class',
+    (node.class ? node.class + ' ' : '') +
+      'timeline-node ' +
+      ('section-' + section),
   );
-  const bkgElem = nodeElem.append("g");
-  const textElem = nodeElem.append("g");
-  const txt = textElem.append("text").text(node.descr).attr("dy", "1em").attr("alignment-baseline", "middle").attr("dominant-baseline", "middle").attr("text-anchor", "middle").call(wrap, node.width);
+  const bkgElem = nodeElem.append('g');
+  const textElem = nodeElem.append('g');
+  const txt = textElem
+    .append('text')
+    .text(node.descr)
+    .attr('dy', '1em')
+    .attr('alignment-baseline', 'middle')
+    .attr('dominant-baseline', 'middle')
+    .attr('text-anchor', 'middle')
+    .call(wrap, node.width);
   const bbox = txt.node().getBBox();
-  const fontSize = ((_a = conf.fontSize) == null ? void 0 : _a.replace) ? conf.fontSize.replace("px", "") : conf.fontSize;
+  const fontSize = ((_a = conf.fontSize) == null ? void 0 : _a.replace)
+    ? conf.fontSize.replace('px', '')
+    : conf.fontSize;
   node.height = bbox.height + fontSize * 1.1 * 0.5 + node.padding;
   node.height = Math.max(node.height, node.maxHeight);
   node.width = node.width + 2 * node.padding;
-  textElem.attr("transform", "translate(" + node.width / 2 + ", " + node.padding / 2 + ")");
+  textElem.attr(
+    'transform',
+    'translate(' + node.width / 2 + ', ' + node.padding / 2 + ')',
+  );
   defaultBkg(bkgElem, node, section, conf);
   return node;
-}, "drawNode");
-var getVirtualNodeHeight = __name(function(elem, node, conf) {
+}, 'drawNode');
+var getVirtualNodeHeight = __name(function (elem, node, conf) {
   var _a;
-  const textElem = elem.append("g");
-  const txt = textElem.append("text").text(node.descr).attr("dy", "1em").attr("alignment-baseline", "middle").attr("dominant-baseline", "middle").attr("text-anchor", "middle").call(wrap, node.width);
+  const textElem = elem.append('g');
+  const txt = textElem
+    .append('text')
+    .text(node.descr)
+    .attr('dy', '1em')
+    .attr('alignment-baseline', 'middle')
+    .attr('dominant-baseline', 'middle')
+    .attr('text-anchor', 'middle')
+    .call(wrap, node.width);
   const bbox = txt.node().getBBox();
-  const fontSize = ((_a = conf.fontSize) == null ? void 0 : _a.replace) ? conf.fontSize.replace("px", "") : conf.fontSize;
+  const fontSize = ((_a = conf.fontSize) == null ? void 0 : _a.replace)
+    ? conf.fontSize.replace('px', '')
+    : conf.fontSize;
   textElem.remove();
   return bbox.height + fontSize * 1.1 * 0.5 + node.padding;
-}, "getVirtualNodeHeight");
-var defaultBkg = __name(function(elem, node, section) {
+}, 'getVirtualNodeHeight');
+var defaultBkg = __name(function (elem, node, section) {
   const rd = 5;
-  elem.append("path").attr("id", "node-" + node.id).attr("class", "node-bkg node-" + node.type).attr(
-    "d",
-    `M0 ${node.height - rd} v${-node.height + 2 * rd} q0,-5 5,-5 h${node.width - 2 * rd} q5,0 5,5 v${node.height - rd} H0 Z`
-  );
-  elem.append("line").attr("class", "node-line-" + section).attr("x1", 0).attr("y1", node.height).attr("x2", node.width).attr("y2", node.height);
-}, "defaultBkg");
+  elem
+    .append('path')
+    .attr('id', 'node-' + node.id)
+    .attr('class', 'node-bkg node-' + node.type)
+    .attr(
+      'd',
+      `M0 ${node.height - rd} v${-node.height + 2 * rd} q0,-5 5,-5 h${node.width - 2 * rd} q5,0 5,5 v${node.height - rd} H0 Z`,
+    );
+  elem
+    .append('line')
+    .attr('class', 'node-line-' + section)
+    .attr('x1', 0)
+    .attr('y1', node.height)
+    .attr('x2', node.width)
+    .attr('y2', node.height);
+}, 'defaultBkg');
 var svgDraw_default = {
   drawRect,
   drawCircle,
@@ -974,27 +1395,31 @@ var svgDraw_default = {
   getNoteRect,
   initGraphics,
   drawNode,
-  getVirtualNodeHeight
+  getVirtualNodeHeight,
 };
-var draw = __name(function(text, id, version, diagObj) {
+var draw = __name(function (text, id, version, diagObj) {
   var _a, _b, _c;
   const conf = getConfig2();
-  const LEFT_MARGIN = ((_a = conf.timeline) == null ? void 0 : _a.leftMargin) ?? 50;
-  log.debug("timeline", diagObj.db);
+  const LEFT_MARGIN =
+    ((_a = conf.timeline) == null ? void 0 : _a.leftMargin) ?? 50;
+  log.debug('timeline', diagObj.db);
   const securityLevel = conf.securityLevel;
   let sandboxElement;
-  if (securityLevel === "sandbox") {
-    sandboxElement = select_default("#i" + id);
+  if (securityLevel === 'sandbox') {
+    sandboxElement = select_default('#i' + id);
   }
-  const root = securityLevel === "sandbox" ? select_default(sandboxElement.nodes()[0].contentDocument.body) : select_default("body");
-  const svg = root.select("#" + id);
-  svg.append("g");
+  const root =
+    securityLevel === 'sandbox'
+      ? select_default(sandboxElement.nodes()[0].contentDocument.body)
+      : select_default('body');
+  const svg = root.select('#' + id);
+  svg.append('g');
   const tasks2 = diagObj.db.getTasks();
   const title = diagObj.db.getCommonDb().getDiagramTitle();
-  log.debug("task", tasks2);
+  log.debug('task', tasks2);
   svgDraw_default.initGraphics(svg);
   const sections2 = diagObj.db.getSections();
-  log.debug("sections", sections2);
+  log.debug('sections', sections2);
   let maxSectionHeight = 0;
   let maxTaskHeight = 0;
   let depthY = 0;
@@ -1004,22 +1429,26 @@ var draw = __name(function(text, id, version, diagObj) {
   sectionBeginY = 50;
   let sectionNumber = 0;
   let hasSections = true;
-  sections2.forEach(function(section) {
+  sections2.forEach(function (section) {
     const sectionNode = {
       number: sectionNumber,
       descr: section,
       section: sectionNumber,
       width: 150,
       padding: 20,
-      maxHeight: maxSectionHeight
+      maxHeight: maxSectionHeight,
     };
-    const sectionHeight = svgDraw_default.getVirtualNodeHeight(svg, sectionNode, conf);
-    log.debug("sectionHeight before draw", sectionHeight);
+    const sectionHeight = svgDraw_default.getVirtualNodeHeight(
+      svg,
+      sectionNode,
+      conf,
+    );
+    log.debug('sectionHeight before draw', sectionHeight);
     maxSectionHeight = Math.max(maxSectionHeight, sectionHeight + 20);
   });
   let maxEventCount = 0;
   let maxEventLineLength = 0;
-  log.debug("tasks.length", tasks2.length);
+  log.debug('tasks.length', tasks2.length);
   for (const [i, task] of tasks2.entries()) {
     const taskNode = {
       number: i,
@@ -1027,10 +1456,14 @@ var draw = __name(function(text, id, version, diagObj) {
       section: task.section,
       width: 150,
       padding: 20,
-      maxHeight: maxTaskHeight
+      maxHeight: maxTaskHeight,
     };
-    const taskHeight = svgDraw_default.getVirtualNodeHeight(svg, taskNode, conf);
-    log.debug("taskHeight before draw", taskHeight);
+    const taskHeight = svgDraw_default.getVirtualNodeHeight(
+      svg,
+      taskNode,
+      conf,
+    );
+    log.debug('taskHeight before draw', taskHeight);
     maxTaskHeight = Math.max(maxTaskHeight, taskHeight + 20);
     maxEventCount = Math.max(maxEventCount, task.events.length);
     let maxEventLineLengthTemp = 0;
@@ -1041,17 +1474,21 @@ var draw = __name(function(text, id, version, diagObj) {
         number: task.section,
         width: 150,
         padding: 20,
-        maxHeight: 50
+        maxHeight: 50,
       };
-      maxEventLineLengthTemp += svgDraw_default.getVirtualNodeHeight(svg, eventNode, conf);
+      maxEventLineLengthTemp += svgDraw_default.getVirtualNodeHeight(
+        svg,
+        eventNode,
+        conf,
+      );
     }
     if (task.events.length > 0) {
       maxEventLineLengthTemp += (task.events.length - 1) * 10;
     }
     maxEventLineLength = Math.max(maxEventLineLength, maxEventLineLengthTemp);
   }
-  log.debug("maxSectionHeight before draw", maxSectionHeight);
-  log.debug("maxTaskHeight before draw", maxTaskHeight);
+  log.debug('maxSectionHeight before draw', maxSectionHeight);
+  log.debug('maxTaskHeight before draw', maxTaskHeight);
   if (sections2 && sections2.length > 0) {
     sections2.forEach((section) => {
       const tasksForSection = tasks2.filter((task) => task.section === section);
@@ -1061,13 +1498,21 @@ var draw = __name(function(text, id, version, diagObj) {
         section: sectionNumber,
         width: 200 * Math.max(tasksForSection.length, 1) - 50,
         padding: 20,
-        maxHeight: maxSectionHeight
+        maxHeight: maxSectionHeight,
       };
-      log.debug("sectionNode", sectionNode);
-      const sectionNodeWrapper = svg.append("g");
-      const node = svgDraw_default.drawNode(sectionNodeWrapper, sectionNode, sectionNumber, conf);
-      log.debug("sectionNode output", node);
-      sectionNodeWrapper.attr("transform", `translate(${masterX}, ${sectionBeginY})`);
+      log.debug('sectionNode', sectionNode);
+      const sectionNodeWrapper = svg.append('g');
+      const node = svgDraw_default.drawNode(
+        sectionNodeWrapper,
+        sectionNode,
+        sectionNumber,
+        conf,
+      );
+      log.debug('sectionNode output', node);
+      sectionNodeWrapper.attr(
+        'transform',
+        `translate(${masterX}, ${sectionBeginY})`,
+      );
       masterY += maxSectionHeight + 50;
       if (tasksForSection.length > 0) {
         drawTasks(
@@ -1081,7 +1526,7 @@ var draw = __name(function(text, id, version, diagObj) {
           maxEventCount,
           maxEventLineLength,
           maxSectionHeight,
-          false
+          false,
         );
       }
       masterX += 200 * Math.max(tasksForSection.length, 1);
@@ -1101,25 +1546,53 @@ var draw = __name(function(text, id, version, diagObj) {
       maxEventCount,
       maxEventLineLength,
       maxSectionHeight,
-      true
+      true,
     );
   }
   const box = svg.node().getBBox();
-  log.debug("bounds", box);
+  log.debug('bounds', box);
   if (title) {
-    svg.append("text").text(title).attr("x", box.width / 2 - LEFT_MARGIN).attr("font-size", "4ex").attr("font-weight", "bold").attr("y", 20);
+    svg
+      .append('text')
+      .text(title)
+      .attr('x', box.width / 2 - LEFT_MARGIN)
+      .attr('font-size', '4ex')
+      .attr('font-weight', 'bold')
+      .attr('y', 20);
   }
-  depthY = hasSections ? maxSectionHeight + maxTaskHeight + 150 : maxTaskHeight + 100;
-  const lineWrapper = svg.append("g").attr("class", "lineWrapper");
-  lineWrapper.append("line").attr("x1", LEFT_MARGIN).attr("y1", depthY).attr("x2", box.width + 3 * LEFT_MARGIN).attr("y2", depthY).attr("stroke-width", 4).attr("stroke", "black").attr("marker-end", "url(#arrowhead)");
+  depthY = hasSections
+    ? maxSectionHeight + maxTaskHeight + 150
+    : maxTaskHeight + 100;
+  const lineWrapper = svg.append('g').attr('class', 'lineWrapper');
+  lineWrapper
+    .append('line')
+    .attr('x1', LEFT_MARGIN)
+    .attr('y1', depthY)
+    .attr('x2', box.width + 3 * LEFT_MARGIN)
+    .attr('y2', depthY)
+    .attr('stroke-width', 4)
+    .attr('stroke', 'black')
+    .attr('marker-end', 'url(#arrowhead)');
   setupGraphViewbox(
     void 0,
     svg,
     ((_b = conf.timeline) == null ? void 0 : _b.padding) ?? 50,
-    ((_c = conf.timeline) == null ? void 0 : _c.useMaxWidth) ?? false
+    ((_c = conf.timeline) == null ? void 0 : _c.useMaxWidth) ?? false,
   );
-}, "draw");
-var drawTasks = __name(function(diagram2, tasks2, sectionColor, masterX, masterY, maxTaskHeight, conf, maxEventCount, maxEventLineLength, maxSectionHeight, isWithoutSections) {
+}, 'draw');
+var drawTasks = __name(function (
+  diagram2,
+  tasks2,
+  sectionColor,
+  masterX,
+  masterY,
+  maxTaskHeight,
+  conf,
+  maxEventCount,
+  maxEventLineLength,
+  maxSectionHeight,
+  isWithoutSections,
+) {
   var _a;
   for (const task of tasks2) {
     const taskNode = {
@@ -1128,31 +1601,57 @@ var drawTasks = __name(function(diagram2, tasks2, sectionColor, masterX, masterY
       number: sectionColor,
       width: 150,
       padding: 20,
-      maxHeight: maxTaskHeight
+      maxHeight: maxTaskHeight,
     };
-    log.debug("taskNode", taskNode);
-    const taskWrapper = diagram2.append("g").attr("class", "taskWrapper");
-    const node = svgDraw_default.drawNode(taskWrapper, taskNode, sectionColor, conf);
+    log.debug('taskNode', taskNode);
+    const taskWrapper = diagram2.append('g').attr('class', 'taskWrapper');
+    const node = svgDraw_default.drawNode(
+      taskWrapper,
+      taskNode,
+      sectionColor,
+      conf,
+    );
     const taskHeight = node.height;
-    log.debug("taskHeight after draw", taskHeight);
-    taskWrapper.attr("transform", `translate(${masterX}, ${masterY})`);
+    log.debug('taskHeight after draw', taskHeight);
+    taskWrapper.attr('transform', `translate(${masterX}, ${masterY})`);
     maxTaskHeight = Math.max(maxTaskHeight, taskHeight);
     if (task.events) {
-      const lineWrapper = diagram2.append("g").attr("class", "lineWrapper");
+      const lineWrapper = diagram2.append('g').attr('class', 'lineWrapper');
       let lineLength = maxTaskHeight;
       masterY += 100;
-      lineLength = lineLength + drawEvents(diagram2, task.events, sectionColor, masterX, masterY, conf);
+      lineLength =
+        lineLength +
+        drawEvents(diagram2, task.events, sectionColor, masterX, masterY, conf);
       masterY -= 100;
-      lineWrapper.append("line").attr("x1", masterX + 190 / 2).attr("y1", masterY + maxTaskHeight).attr("x2", masterX + 190 / 2).attr("y2", masterY + maxTaskHeight + 100 + maxEventLineLength + 100).attr("stroke-width", 2).attr("stroke", "black").attr("marker-end", "url(#arrowhead)").attr("stroke-dasharray", "5,5");
+      lineWrapper
+        .append('line')
+        .attr('x1', masterX + 190 / 2)
+        .attr('y1', masterY + maxTaskHeight)
+        .attr('x2', masterX + 190 / 2)
+        .attr('y2', masterY + maxTaskHeight + 100 + maxEventLineLength + 100)
+        .attr('stroke-width', 2)
+        .attr('stroke', 'black')
+        .attr('marker-end', 'url(#arrowhead)')
+        .attr('stroke-dasharray', '5,5');
     }
     masterX = masterX + 200;
-    if (isWithoutSections && !((_a = conf.timeline) == null ? void 0 : _a.disableMulticolor)) {
+    if (
+      isWithoutSections &&
+      !((_a = conf.timeline) == null ? void 0 : _a.disableMulticolor)
+    ) {
       sectionColor++;
     }
   }
   masterY = masterY - 10;
-}, "drawTasks");
-var drawEvents = __name(function(diagram2, events, sectionColor, masterX, masterY, conf) {
+}, 'drawTasks');
+var drawEvents = __name(function (
+  diagram2,
+  events,
+  sectionColor,
+  masterX,
+  masterY,
+  conf,
+) {
   let maxEventHeight = 0;
   const eventBeginY = masterY;
   masterY = masterY + 100;
@@ -1163,60 +1662,65 @@ var drawEvents = __name(function(diagram2, events, sectionColor, masterX, master
       number: sectionColor,
       width: 150,
       padding: 20,
-      maxHeight: 50
+      maxHeight: 50,
     };
-    log.debug("eventNode", eventNode);
-    const eventWrapper = diagram2.append("g").attr("class", "eventWrapper");
-    const node = svgDraw_default.drawNode(eventWrapper, eventNode, sectionColor, conf);
+    log.debug('eventNode', eventNode);
+    const eventWrapper = diagram2.append('g').attr('class', 'eventWrapper');
+    const node = svgDraw_default.drawNode(
+      eventWrapper,
+      eventNode,
+      sectionColor,
+      conf,
+    );
     const eventHeight = node.height;
     maxEventHeight = maxEventHeight + eventHeight;
-    eventWrapper.attr("transform", `translate(${masterX}, ${masterY})`);
+    eventWrapper.attr('transform', `translate(${masterX}, ${masterY})`);
     masterY = masterY + 10 + eventHeight;
   }
   masterY = eventBeginY;
   return maxEventHeight;
-}, "drawEvents");
+}, 'drawEvents');
 var timelineRenderer_default = {
-  setConf: __name(() => {
-  }, "setConf"),
-  draw
+  setConf: __name(() => {}, 'setConf'),
+  draw,
 };
 var genSections = __name((options) => {
-  let sections2 = "";
+  let sections2 = '';
   for (let i = 0; i < options.THEME_COLOR_LIMIT; i++) {
-    options["lineColor" + i] = options["lineColor" + i] || options["cScaleInv" + i];
-    if (is_dark_default(options["lineColor" + i])) {
-      options["lineColor" + i] = lighten_default(options["lineColor" + i], 20);
+    options['lineColor' + i] =
+      options['lineColor' + i] || options['cScaleInv' + i];
+    if (is_dark_default(options['lineColor' + i])) {
+      options['lineColor' + i] = lighten_default(options['lineColor' + i], 20);
     } else {
-      options["lineColor" + i] = darken_default(options["lineColor" + i], 20);
+      options['lineColor' + i] = darken_default(options['lineColor' + i], 20);
     }
   }
   for (let i = 0; i < options.THEME_COLOR_LIMIT; i++) {
-    const sw = "" + (17 - 3 * i);
+    const sw = '' + (17 - 3 * i);
     sections2 += `
     .section-${i - 1} rect, .section-${i - 1} path, .section-${i - 1} circle, .section-${i - 1} path  {
-      fill: ${options["cScale" + i]};
+      fill: ${options['cScale' + i]};
     }
     .section-${i - 1} text {
-     fill: ${options["cScaleLabel" + i]};
+     fill: ${options['cScaleLabel' + i]};
     }
     .node-icon-${i - 1} {
       font-size: 40px;
-      color: ${options["cScaleLabel" + i]};
+      color: ${options['cScaleLabel' + i]};
     }
     .section-edge-${i - 1}{
-      stroke: ${options["cScale" + i]};
+      stroke: ${options['cScale' + i]};
     }
     .edge-depth-${i - 1}{
       stroke-width: ${sw};
     }
     .section-${i - 1} line {
-      stroke: ${options["cScaleInv" + i]} ;
+      stroke: ${options['cScaleInv' + i]} ;
       stroke-width: 3;
     }
 
     .lineWrapper line{
-      stroke: ${options["cScaleLabel" + i]} ;
+      stroke: ${options['cScaleLabel' + i]} ;
     }
 
     .disabled, .disabled circle, .disabled text {
@@ -1228,8 +1732,9 @@ var genSections = __name((options) => {
     `;
   }
   return sections2;
-}, "genSections");
-var getStyles = __name((options) => `
+}, 'genSections');
+var getStyles = __name(
+  (options) => `
   .edge {
     stroke-width: 3;
   }
@@ -1252,15 +1757,15 @@ var getStyles = __name((options) => `
   .eventWrapper  {
    filter: brightness(120%);
   }
-`, "getStyles");
+`,
+  'getStyles',
+);
 var styles_default = getStyles;
 var diagram = {
   db: timelineDb_exports,
   renderer: timelineRenderer_default,
   parser: timeline_default,
-  styles: styles_default
+  styles: styles_default,
 };
-export {
-  diagram
-};
+export { diagram };
 //# sourceMappingURL=timeline-definition-YZTLITO2-HX7C3KO4.js.map

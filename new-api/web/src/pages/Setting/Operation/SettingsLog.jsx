@@ -225,7 +225,9 @@ export default function SettingsLog(props) {
                 <Form.Input
                   field={'TokenRequestAuditStatusCodeWhitelist'}
                   label={t('令牌请求审计入库状态码（逗号分隔）')}
-                  placeholder={t('留空表示全部入库，例如：200 或 400,401,429,500')}
+                  placeholder={t(
+                    '留空表示全部入库，例如：200 或 400,401,429,500',
+                  )}
                   onChange={(value) => {
                     setInputs({
                       ...inputs,

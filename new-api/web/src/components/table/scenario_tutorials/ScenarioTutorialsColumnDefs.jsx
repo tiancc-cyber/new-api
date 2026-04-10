@@ -38,7 +38,13 @@ function renderStatus(status, t) {
   return <Tag color='grey'>{t('草稿')}</Tag>;
 }
 
-const ScenarioTutorialOperate = ({ record, openEdit, setRowStatus, removeRow, t }) => {
+const ScenarioTutorialOperate = ({
+  record,
+  openEdit,
+  setRowStatus,
+  removeRow,
+  t,
+}) => {
   const isPublished = record?.status === 1;
 
   const toggleStatus = () => {
@@ -70,7 +76,12 @@ const ScenarioTutorialOperate = ({ record, openEdit, setRowStatus, removeRow, t 
 
   return (
     <Space spacing={8}>
-      <Button theme='light' type='tertiary' size='small' onClick={() => openEdit(record)}>
+      <Button
+        theme='light'
+        type='tertiary'
+        size='small'
+        onClick={() => openEdit(record)}
+      >
         {t('编辑')}
       </Button>
       <Button
@@ -88,7 +99,12 @@ const ScenarioTutorialOperate = ({ record, openEdit, setRowStatus, removeRow, t 
   );
 };
 
-export const getScenarioTutorialsColumns = ({ t, openEdit, setRowStatus, removeRow }) => {
+export const getScenarioTutorialsColumns = ({
+  t,
+  openEdit,
+  setRowStatus,
+  removeRow,
+}) => {
   return [
     { title: t('ID'), dataIndex: 'id', width: 80 },
     {
@@ -101,7 +117,9 @@ export const getScenarioTutorialsColumns = ({ t, openEdit, setRowStatus, removeR
       title: t('Slug'),
       dataIndex: 'slug',
       width: 190,
-      render: (text) => <Text ellipsis={{ showTooltip: true }}>{text || '-'}</Text>,
+      render: (text) => (
+        <Text ellipsis={{ showTooltip: true }}>{text || '-'}</Text>
+      ),
     },
     {
       title: t('标题'),
@@ -113,7 +131,9 @@ export const getScenarioTutorialsColumns = ({ t, openEdit, setRowStatus, removeR
       title: t('标签'),
       dataIndex: 'tags',
       width: 200,
-      render: (text) => <Text ellipsis={{ showTooltip: true }}>{text || '-'}</Text>,
+      render: (text) => (
+        <Text ellipsis={{ showTooltip: true }}>{text || '-'}</Text>
+      ),
     },
     {
       title: t('类型'),
@@ -156,4 +176,3 @@ export const getScenarioTutorialsColumns = ({ t, openEdit, setRowStatus, removeR
     },
   ];
 };
-

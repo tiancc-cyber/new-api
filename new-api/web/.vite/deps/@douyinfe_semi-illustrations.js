@@ -14,10 +14,10 @@ import {
   IllustrationNotFoundDark_default,
   IllustrationNotFound_default,
   IllustrationSuccessDark_default,
-  IllustrationSuccess_default
-} from "./chunk-LI6IWGVD.js";
-import "./chunk-HAKT4WWI.js";
-import "./chunk-UE53HML6.js";
+  IllustrationSuccess_default,
+} from './chunk-LI6IWGVD.js';
+import './chunk-HAKT4WWI.js';
+import './chunk-UE53HML6.js';
 export {
   IllustrationConstruction_default as IllustrationConstruction,
   IllustrationConstructionDark_default as IllustrationConstructionDark,
@@ -34,6 +34,6 @@ export {
   IllustrationNotFound_default as IllustrationNotFound,
   IllustrationNotFoundDark_default as IllustrationNotFoundDark,
   IllustrationSuccess_default as IllustrationSuccess,
-  IllustrationSuccessDark_default as IllustrationSuccessDark
+  IllustrationSuccessDark_default as IllustrationSuccessDark,
 };
 //# sourceMappingURL=@douyinfe_semi-illustrations.js.map

@@ -1,9 +1,5 @@
-import {
-  getConfig2
-} from "./chunk-LQLXUK6X.js";
-import {
-  __name
-} from "./chunk-OQUVF2X3.js";
+import { getConfig2 } from './chunk-LQLXUK6X.js';
+import { __name } from './chunk-OQUVF2X3.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/chunk-PQ6SQG4A.mjs
 var solidStateFill = __name((color) => {
@@ -16,28 +12,47 @@ var solidStateFill = __name((color) => {
     fillWeight: 2,
     roughness: 0.7,
     stroke: color,
-    seed: handDrawnSeed
+    seed: handDrawnSeed,
   };
-}, "solidStateFill");
+}, 'solidStateFill');
 var compileStyles = __name((node) => {
   const stylesMap = styles2Map([
-    ...node.cssCompiledStyles || [],
-    ...node.cssStyles || [],
-    ...node.labelStyle || []
+    ...(node.cssCompiledStyles || []),
+    ...(node.cssStyles || []),
+    ...(node.labelStyle || []),
   ]);
   return { stylesMap, stylesArray: [...stylesMap] };
-}, "compileStyles");
+}, 'compileStyles');
 var styles2Map = __name((styles) => {
   const styleMap = /* @__PURE__ */ new Map();
   styles.forEach((style) => {
-    const [key, value] = style.split(":");
+    const [key, value] = style.split(':');
     styleMap.set(key.trim(), value == null ? void 0 : value.trim());
   });
   return styleMap;
-}, "styles2Map");
+}, 'styles2Map');
 var isLabelStyle = __name((key) => {
-  return key === "color" || key === "font-size" || key === "font-family" || key === "font-weight" || key === "font-style" || key === "text-decoration" || key === "text-align" || key === "text-transform" || key === "line-height" || key === "letter-spacing" || key === "word-spacing" || key === "text-shadow" || key === "text-overflow" || key === "white-space" || key === "word-wrap" || key === "word-break" || key === "overflow-wrap" || key === "hyphens";
-}, "isLabelStyle");
+  return (
+    key === 'color' ||
+    key === 'font-size' ||
+    key === 'font-family' ||
+    key === 'font-weight' ||
+    key === 'font-style' ||
+    key === 'text-decoration' ||
+    key === 'text-align' ||
+    key === 'text-transform' ||
+    key === 'line-height' ||
+    key === 'letter-spacing' ||
+    key === 'word-spacing' ||
+    key === 'text-shadow' ||
+    key === 'text-overflow' ||
+    key === 'white-space' ||
+    key === 'word-wrap' ||
+    key === 'word-break' ||
+    key === 'overflow-wrap' ||
+    key === 'hyphens'
+  );
+}, 'isLabelStyle');
 var styles2String = __name((node) => {
   const { stylesArray } = compileStyles(node);
   const labelStyles = [];
@@ -47,25 +62,25 @@ var styles2String = __name((node) => {
   stylesArray.forEach((style) => {
     const key = style[0];
     if (isLabelStyle(key)) {
-      labelStyles.push(style.join(":") + " !important");
+      labelStyles.push(style.join(':') + ' !important');
     } else {
-      nodeStyles.push(style.join(":") + " !important");
-      if (key.includes("stroke")) {
-        borderStyles.push(style.join(":") + " !important");
+      nodeStyles.push(style.join(':') + ' !important');
+      if (key.includes('stroke')) {
+        borderStyles.push(style.join(':') + ' !important');
       }
-      if (key === "fill") {
-        backgroundStyles.push(style.join(":") + " !important");
+      if (key === 'fill') {
+        backgroundStyles.push(style.join(':') + ' !important');
       }
     }
   });
   return {
-    labelStyles: labelStyles.join(";"),
-    nodeStyles: nodeStyles.join(";"),
+    labelStyles: labelStyles.join(';'),
+    nodeStyles: nodeStyles.join(';'),
     stylesArray,
     borderStyles,
-    backgroundStyles
+    backgroundStyles,
   };
-}, "styles2String");
+}, 'styles2String');
 var userNodeOverrides = __name((node, options) => {
   var _a;
   const { themeVariables, handDrawnSeed } = getConfig2();
@@ -74,21 +89,24 @@ var userNodeOverrides = __name((node, options) => {
   const result = Object.assign(
     {
       roughness: 0.7,
-      fill: stylesMap.get("fill") || mainBkg,
-      fillStyle: "hachure",
+      fill: stylesMap.get('fill') || mainBkg,
+      fillStyle: 'hachure',
       // solid fill
       fillWeight: 4,
       hachureGap: 5.2,
-      stroke: stylesMap.get("stroke") || nodeBorder,
+      stroke: stylesMap.get('stroke') || nodeBorder,
       seed: handDrawnSeed,
-      strokeWidth: ((_a = stylesMap.get("stroke-width")) == null ? void 0 : _a.replace("px", "")) || 1.3,
+      strokeWidth:
+        ((_a = stylesMap.get('stroke-width')) == null
+          ? void 0
+          : _a.replace('px', '')) || 1.3,
       fillLineDash: [0, 0],
-      strokeLineDash: getStrokeDashArray(stylesMap.get("stroke-dasharray"))
+      strokeLineDash: getStrokeDashArray(stylesMap.get('stroke-dasharray')),
     },
-    options
+    options,
   );
   return result;
-}, "userNodeOverrides");
+}, 'userNodeOverrides');
 var getStrokeDashArray = __name((strokeDasharrayStyle) => {
   if (!strokeDasharrayStyle) {
     return [0, 0];
@@ -101,13 +119,13 @@ var getStrokeDashArray = __name((strokeDasharrayStyle) => {
   const first = isNaN(dashArray[0]) ? 0 : dashArray[0];
   const second = isNaN(dashArray[1]) ? 0 : dashArray[1];
   return [first, second];
-}, "getStrokeDashArray");
+}, 'getStrokeDashArray');
 
 export {
   solidStateFill,
   compileStyles,
   isLabelStyle,
   styles2String,
-  userNodeOverrides
+  userNodeOverrides,
 };
 //# sourceMappingURL=chunk-RK4ST7HX.js.map

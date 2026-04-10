@@ -519,11 +519,11 @@ import {
   IconXiguaLogo_default,
   IconYoutube_default,
   convertIcon,
-  es_default
-} from "./chunk-RXS6IDDQ.js";
-import "./chunk-6KWGA2CK.js";
-import "./chunk-HAKT4WWI.js";
-import "./chunk-UE53HML6.js";
+  es_default,
+} from './chunk-RXS6IDDQ.js';
+import './chunk-6KWGA2CK.js';
+import './chunk-HAKT4WWI.js';
+import './chunk-UE53HML6.js';
 export {
   IconAIBellLevel1_default as IconAIBellLevel1,
   IconAIBellLevel2_default as IconAIBellLevel2,
@@ -1045,6 +1045,6 @@ export {
   IconXiguaLogo_default as IconXiguaLogo,
   IconYoutube_default as IconYoutube,
   convertIcon,
-  es_default as default
+  es_default as default,
 };
 //# sourceMappingURL=@douyinfe_semi-icons.js.map

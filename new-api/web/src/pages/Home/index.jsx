@@ -17,7 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button } from '@douyinfe/semi-ui';
 import { API, showError, copy, showSuccess } from '../../helpers';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
@@ -232,7 +238,9 @@ const Home = () => {
   const heroProofs = [
     {
       title: t('统一模型接入'),
-      desc: t('一个 Base URL 连接 OpenAI、Claude、Gemini、Azure、AWS Bedrock 等上游能力。'),
+      desc: t(
+        '一个 Base URL 连接 OpenAI、Claude、Gemini、Azure、AWS Bedrock 等上游能力。',
+      ),
     },
     {
       title: t('稳定路由调度'),
@@ -367,7 +375,9 @@ const Home = () => {
       path: '/v1/chat/completions',
       hint: t('最常用的 OpenAI 兼容聊天入口，适合多数对话式应用。'),
       codeTitle: t('标准聊天补全示例'),
-      codeDescription: t('展示统一网关下的聊天补全调用方式，适合大多数对话式应用接入。'),
+      codeDescription: t(
+        '展示统一网关下的聊天补全调用方式，适合大多数对话式应用接入。',
+      ),
       codeTags: [t('OpenAI 兼容'), t('统一网关'), t('快速联调')],
     },
     {
@@ -376,7 +386,9 @@ const Home = () => {
       path: '/v1/responses',
       hint: t('统一文本与多模态结果返回结构，适合新接入场景。'),
       codeTitle: t('标准 Responses 示例'),
-      codeDescription: t('展示 Responses 接口调用方式，适合需要统一输出结构的新接入方案。'),
+      codeDescription: t(
+        '展示 Responses 接口调用方式，适合需要统一输出结构的新接入方案。',
+      ),
       codeTags: [t('统一结果结构'), t('新接口'), t('多模态友好')],
     },
     {
@@ -385,7 +397,9 @@ const Home = () => {
       path: '/v1/embeddings',
       hint: t('用于知识库检索、RAG、召回与相似度计算等场景。'),
       codeTitle: t('标准 Embeddings 示例'),
-      codeDescription: t('展示文本向量生成方式，适合检索增强、召回和相似度计算场景。'),
+      codeDescription: t(
+        '展示文本向量生成方式，适合检索增强、召回和相似度计算场景。',
+      ),
       codeTags: [t('RAG'), t('检索增强'), t('向量计算')],
     },
     {
@@ -394,7 +408,9 @@ const Home = () => {
       path: '/v1/images/generations',
       hint: t('统一图像生成能力入口，便于快速切换不同图像模型。'),
       codeTitle: t('标准图像生成示例'),
-      codeDescription: t('展示统一图像生成接口调用方式，便于快速切换不同图像模型。'),
+      codeDescription: t(
+        '展示统一图像生成接口调用方式，便于快速切换不同图像模型。',
+      ),
       codeTags: [t('图像生成'), t('统一入口'), t('模型切换方便')],
     },
   ];
@@ -754,7 +770,8 @@ func main() {
       return;
     }
 
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportWidth =
+      window.innerWidth || document.documentElement.clientWidth;
     const viewportHeight =
       window.innerHeight || document.documentElement.clientHeight;
     const x = (event.clientX / viewportWidth) * 100;
@@ -926,7 +943,8 @@ func main() {
   }, []);
 
   const activeFeature = featureCards[activeFeatureIndex];
-  const activeEndpoint = endpointOptions[activeEndpointIndex] || endpointOptions[0];
+  const activeEndpoint =
+    endpointOptions[activeEndpointIndex] || endpointOptions[0];
   const activeCodeLanguage =
     codeExampleOptions[activeCodeExampleIndex] || codeExampleOptions[0];
   const activeCodeExample = {
@@ -965,8 +983,14 @@ func main() {
           <div className='home-mouse-glow' />
           <section className='home-hero-section'>
             <div className='home-grid-bg' />
-            <div ref={heroPrimaryOrbRef} className='home-orb home-orb-primary' />
-            <div ref={heroSecondaryOrbRef} className='home-orb home-orb-secondary' />
+            <div
+              ref={heroPrimaryOrbRef}
+              className='home-orb home-orb-primary'
+            />
+            <div
+              ref={heroSecondaryOrbRef}
+              className='home-orb home-orb-secondary'
+            />
             <div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-16 md:pt-24 pb-12 md:pb-20'>
               <div className='home-hero-minimal mx-auto max-w-5xl'>
                 <Reveal
@@ -1063,7 +1087,9 @@ func main() {
                   <Reveal className='home-hero-proof-grid mt-10' delay={100}>
                     {heroProofs.map((item) => (
                       <div key={item.title} className='home-hero-proof-card'>
-                        <div className='home-hero-proof-title'>{item.title}</div>
+                        <div className='home-hero-proof-title'>
+                          {item.title}
+                        </div>
                         <p className='home-hero-proof-desc'>{item.desc}</p>
                       </div>
                     ))}
@@ -1132,7 +1158,9 @@ func main() {
                 {t('统一接入与调用链路一屏呈现')}
               </h2>
               <p className='mt-4 text-base md:text-lg leading-8 home-muted-text'>
-                {t('聚焦标准接入地址、聊天补全示例与关键接入信号，便于快速评估网关集成方式。')}
+                {t(
+                  '聚焦标准接入地址、聊天补全示例与关键接入信号，便于快速评估网关集成方式。',
+                )}
               </p>
             </Reveal>
 
@@ -1418,7 +1446,9 @@ func main() {
                   {t('更像一个产品化 AI 平台，而不是单纯的中转接口')}
                 </h2>
                 <p className='home-panel-body mt-5 leading-8'>
-                  {t('除了标准 API 接入外，还能在同一个控制台完成用户、令牌、订阅、日志与渠道管理。')}
+                  {t(
+                    '除了标准 API 接入外，还能在同一个控制台完成用户、令牌、订阅、日志与渠道管理。',
+                  )}
                 </p>
                 <div className='mt-8 grid gap-4'>
                   {[

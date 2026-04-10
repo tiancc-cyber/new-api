@@ -156,7 +156,9 @@ function App() {
             <AdminRoute>
               <Suspense fallback={<Loading></Loading>} key={location.pathname}>
                 {React.createElement(
-                  lazy(() => import('./pages/ScenarioTutorialManage/index.jsx'))
+                  lazy(
+                    () => import('./pages/ScenarioTutorialManage/index.jsx'),
+                  ),
                 )}
               </Suspense>
             </AdminRoute>
@@ -176,7 +178,7 @@ function App() {
             <AdminRoute>
               <Suspense fallback={<Loading></Loading>} key={location.pathname}>
                 {React.createElement(
-                  lazy(() => import('./pages/MonitorManage/index.jsx'))
+                  lazy(() => import('./pages/MonitorManage/index.jsx')),
                 )}
               </Suspense>
             </AdminRoute>

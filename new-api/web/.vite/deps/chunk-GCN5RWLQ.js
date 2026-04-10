@@ -1,68 +1,67 @@
-import {
-  parseFontSize
-} from "./chunk-IPOIRDR2.js";
-import {
-  defaultConfig_default,
-  getConfig2
-} from "./chunk-LQLXUK6X.js";
-import {
-  __name
-} from "./chunk-OQUVF2X3.js";
+import { parseFontSize } from './chunk-IPOIRDR2.js';
+import { defaultConfig_default, getConfig2 } from './chunk-LQLXUK6X.js';
+import { __name } from './chunk-OQUVF2X3.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/chunk-YBOYWFTD.mjs
-var getSubGraphTitleMargins = __name(({
-  flowchart
-}) => {
+var getSubGraphTitleMargins = __name(({ flowchart }) => {
   var _a, _b;
-  const subGraphTitleTopMargin = ((_a = flowchart == null ? void 0 : flowchart.subGraphTitleMargin) == null ? void 0 : _a.top) ?? 0;
-  const subGraphTitleBottomMargin = ((_b = flowchart == null ? void 0 : flowchart.subGraphTitleMargin) == null ? void 0 : _b.bottom) ?? 0;
-  const subGraphTitleTotalMargin = subGraphTitleTopMargin + subGraphTitleBottomMargin;
+  const subGraphTitleTopMargin =
+    ((_a = flowchart == null ? void 0 : flowchart.subGraphTitleMargin) == null
+      ? void 0
+      : _a.top) ?? 0;
+  const subGraphTitleBottomMargin =
+    ((_b = flowchart == null ? void 0 : flowchart.subGraphTitleMargin) == null
+      ? void 0
+      : _b.bottom) ?? 0;
+  const subGraphTitleTotalMargin =
+    subGraphTitleTopMargin + subGraphTitleBottomMargin;
   return {
     subGraphTitleTopMargin,
     subGraphTitleBottomMargin,
-    subGraphTitleTotalMargin
+    subGraphTitleTotalMargin,
   };
-}, "getSubGraphTitleMargins");
+}, 'getSubGraphTitleMargins');
 async function configureLabelImages(container, labelText) {
-  const images = container.getElementsByTagName("img");
+  const images = container.getElementsByTagName('img');
   if (!images || images.length === 0) {
     return;
   }
-  const noImgText = labelText.replace(/<img[^>]*>/g, "").trim() === "";
+  const noImgText = labelText.replace(/<img[^>]*>/g, '').trim() === '';
   await Promise.all(
     [...images].map(
-      (img) => new Promise((res) => {
-        function setupImage() {
-          img.style.display = "flex";
-          img.style.flexDirection = "column";
-          if (noImgText) {
-            const bodyFontSize = getConfig2().fontSize ? getConfig2().fontSize : window.getComputedStyle(document.body).fontSize;
-            const enlargingFactor = 5;
-            const [parsedBodyFontSize = defaultConfig_default.fontSize] = parseFontSize(bodyFontSize);
-            const width = parsedBodyFontSize * enlargingFactor + "px";
-            img.style.minWidth = width;
-            img.style.maxWidth = width;
-          } else {
-            img.style.width = "100%";
+      (img) =>
+        new Promise((res) => {
+          function setupImage() {
+            img.style.display = 'flex';
+            img.style.flexDirection = 'column';
+            if (noImgText) {
+              const bodyFontSize = getConfig2().fontSize
+                ? getConfig2().fontSize
+                : window.getComputedStyle(document.body).fontSize;
+              const enlargingFactor = 5;
+              const [parsedBodyFontSize = defaultConfig_default.fontSize] =
+                parseFontSize(bodyFontSize);
+              const width = parsedBodyFontSize * enlargingFactor + 'px';
+              img.style.minWidth = width;
+              img.style.maxWidth = width;
+            } else {
+              img.style.width = '100%';
+            }
+            res(img);
           }
-          res(img);
-        }
-        __name(setupImage, "setupImage");
-        setTimeout(() => {
-          if (img.complete) {
-            setupImage();
-          }
-        });
-        img.addEventListener("error", setupImage);
-        img.addEventListener("load", setupImage);
-      })
-    )
+          __name(setupImage, 'setupImage');
+          setTimeout(() => {
+            if (img.complete) {
+              setupImage();
+            }
+          });
+          img.addEventListener('error', setupImage);
+          img.addEventListener('load', setupImage);
+        }),
+    ),
   );
 }
-__name(configureLabelImages, "configureLabelImages");
+__name(configureLabelImages, 'configureLabelImages');
 
-export {
-  getSubGraphTitleMargins,
-  configureLabelImages
-};
+export { getSubGraphTitleMargins, configureLabelImages };
 //# sourceMappingURL=chunk-GCN5RWLQ.js.map

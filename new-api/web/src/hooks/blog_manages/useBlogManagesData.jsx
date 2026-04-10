@@ -112,7 +112,10 @@ export const useBlogManagesData = () => {
     try {
       let res;
       if (editingBlog?.id) {
-        res = await API.put(`/api/blog_manage/admin/blogs/${editingBlog.id}`, payload);
+        res = await API.put(
+          `/api/blog_manage/admin/blogs/${editingBlog.id}`,
+          payload,
+        );
       } else {
         res = await API.post('/api/blog_manage/admin/blogs', payload);
       }
@@ -133,9 +136,12 @@ export const useBlogManagesData = () => {
   const setBlogStatus = async (record, status) => {
     setLoading(true);
     try {
-      const res = await API.patch(`/api/blog_manage/admin/blogs/${record.id}/status`, {
-        status,
-      });
+      const res = await API.patch(
+        `/api/blog_manage/admin/blogs/${record.id}/status`,
+        {
+          status,
+        },
+      );
       if (res.data?.success) {
         showSuccess(status === 1 ? t('已发布') : t('已设为草稿'));
         await loadBlogs();
@@ -202,4 +208,3 @@ export const useBlogManagesData = () => {
     refresh,
   };
 };
-

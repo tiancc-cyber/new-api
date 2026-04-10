@@ -29,4 +29,3 @@ const BlogManage = () => {
 };
 
 export default BlogManage;
-

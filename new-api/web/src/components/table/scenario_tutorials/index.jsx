@@ -91,4 +91,3 @@ const ScenarioTutorialManagesPage = () => {
 };
 
 export default ScenarioTutorialManagesPage;
-

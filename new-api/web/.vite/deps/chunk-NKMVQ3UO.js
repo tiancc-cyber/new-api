@@ -1,9 +1,7 @@
-import {
-  convert
-} from "./chunk-ZKVPYPB3.js";
+import { convert } from './chunk-ZKVPYPB3.js';
 
 // node_modules/unist-util-find-after/lib/index.js
-var findAfter = (
+var findAfter =
   // Note: overloads like this are needed to support optional generics.
   /**
    * @type {(
@@ -17,19 +15,19 @@ var findAfter = (
    * @param {Test} [test]
    * @returns {UnistNode | undefined}
    */
-  function(parent, index, test) {
+  function (parent, index, test) {
     const is = convert(test);
     if (!parent || !parent.type || !parent.children) {
-      throw new Error("Expected parent node");
+      throw new Error('Expected parent node');
     }
-    if (typeof index === "number") {
+    if (typeof index === 'number') {
       if (index < 0 || index === Number.POSITIVE_INFINITY) {
-        throw new Error("Expected positive finite number as index");
+        throw new Error('Expected positive finite number as index');
       }
     } else {
       index = parent.children.indexOf(index);
       if (index < 0) {
-        throw new Error("Expected child node or index");
+        throw new Error('Expected child node or index');
       }
     }
     while (++index < parent.children.length) {
@@ -38,11 +36,10 @@ var findAfter = (
       }
     }
     return void 0;
-  }
-);
+  };
 
 // node_modules/hast-util-is-element/lib/index.js
-var isElement = (
+var isElement =
   // Note: overloads in JSDoc can’t yet use different `@template`s.
   /**
    * @type {(
@@ -62,21 +59,35 @@ var isElement = (
    * @returns {boolean}
    */
   // eslint-disable-next-line max-params
-  function(element2, test, index, parent, context) {
+  function (element2, test, index, parent, context) {
     const check = convertElement(test);
-    if (index !== null && index !== void 0 && (typeof index !== "number" || index < 0 || index === Number.POSITIVE_INFINITY)) {
-      throw new Error("Expected positive finite `index`");
+    if (
+      index !== null &&
+      index !== void 0 &&
+      (typeof index !== 'number' ||
+        index < 0 ||
+        index === Number.POSITIVE_INFINITY)
+    ) {
+      throw new Error('Expected positive finite `index`');
     }
-    if (parent !== null && parent !== void 0 && (!parent.type || !parent.children)) {
-      throw new Error("Expected valid `parent`");
+    if (
+      parent !== null &&
+      parent !== void 0 &&
+      (!parent.type || !parent.children)
+    ) {
+      throw new Error('Expected valid `parent`');
     }
-    if ((index === null || index === void 0) !== (parent === null || parent === void 0)) {
-      throw new Error("Expected both `index` and `parent`");
+    if (
+      (index === null || index === void 0) !==
+      (parent === null || parent === void 0)
+    ) {
+      throw new Error('Expected both `index` and `parent`');
     }
-    return looksLikeAnElement(element2) ? check.call(context, element2, index, parent) : false;
-  }
-);
-var convertElement = (
+    return looksLikeAnElement(element2)
+      ? check.call(context, element2, index, parent)
+      : false;
+  };
+var convertElement =
   // Note: overloads in JSDoc can’t yet use different `@template`s.
   /**
    * @type {(
@@ -90,22 +101,21 @@ var convertElement = (
    * @param {Test | null | undefined} [test]
    * @returns {Check}
    */
-  function(test) {
+  function (test) {
     if (test === null || test === void 0) {
       return element;
     }
-    if (typeof test === "string") {
+    if (typeof test === 'string') {
       return tagNameFactory(test);
     }
-    if (typeof test === "object") {
+    if (typeof test === 'object') {
       return anyFactory(test);
     }
-    if (typeof test === "function") {
+    if (typeof test === 'function') {
       return castFactory(test);
     }
-    throw new Error("Expected function, string, or array as `test`");
-  }
-);
+    throw new Error('Expected function, string, or array as `test`');
+  };
 function anyFactory(tests) {
   const checks = [];
   let index = -1;
@@ -131,148 +141,159 @@ function castFactory(testFunction) {
   return check;
   function check(value, index, parent) {
     return Boolean(
-      looksLikeAnElement(value) && testFunction.call(
-        this,
-        value,
-        typeof index === "number" ? index : void 0,
-        parent || void 0
-      )
+      looksLikeAnElement(value) &&
+        testFunction.call(
+          this,
+          value,
+          typeof index === 'number' ? index : void 0,
+          parent || void 0,
+        ),
     );
   }
 }
 function element(element2) {
   return Boolean(
-    element2 && typeof element2 === "object" && "type" in element2 && element2.type === "element" && "tagName" in element2 && typeof element2.tagName === "string"
+    element2 &&
+      typeof element2 === 'object' &&
+      'type' in element2 &&
+      element2.type === 'element' &&
+      'tagName' in element2 &&
+      typeof element2.tagName === 'string',
   );
 }
 function looksLikeAnElement(value) {
-  return value !== null && typeof value === "object" && "type" in value && "tagName" in value;
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'type' in value &&
+    'tagName' in value
+  );
 }
 
 // node_modules/hast-util-to-text/lib/index.js
 var searchLineFeeds = /\n/g;
 var searchTabOrSpaces = /[\t ]+/g;
-var br = convertElement("br");
+var br = convertElement('br');
 var cell = convertElement(isCell);
-var p = convertElement("p");
-var row = convertElement("tr");
+var p = convertElement('p');
+var row = convertElement('tr');
 var notRendered = convertElement([
   // List from: <https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements>
-  "datalist",
-  "head",
-  "noembed",
-  "noframes",
-  "noscript",
+  'datalist',
+  'head',
+  'noembed',
+  'noframes',
+  'noscript',
   // Act as if we support scripting.
-  "rp",
-  "script",
-  "style",
-  "template",
-  "title",
+  'rp',
+  'script',
+  'style',
+  'template',
+  'title',
   // Hidden attribute.
   hidden,
   // From: <https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3>
-  closedDialog
+  closedDialog,
 ]);
 var blockOrCaption = convertElement([
-  "address",
+  'address',
   // Flow content
-  "article",
+  'article',
   // Sections and headings
-  "aside",
+  'aside',
   // Sections and headings
-  "blockquote",
+  'blockquote',
   // Flow content
-  "body",
+  'body',
   // Page
-  "caption",
+  'caption',
   // `table-caption`
-  "center",
+  'center',
   // Flow content (legacy)
-  "dd",
+  'dd',
   // Lists
-  "dialog",
+  'dialog',
   // Flow content
-  "dir",
+  'dir',
   // Lists (legacy)
-  "dl",
+  'dl',
   // Lists
-  "dt",
+  'dt',
   // Lists
-  "div",
+  'div',
   // Flow content
-  "figure",
+  'figure',
   // Flow content
-  "figcaption",
+  'figcaption',
   // Flow content
-  "footer",
+  'footer',
   // Flow content
-  "form,",
+  'form,',
   // Flow content
-  "h1",
+  'h1',
   // Sections and headings
-  "h2",
+  'h2',
   // Sections and headings
-  "h3",
+  'h3',
   // Sections and headings
-  "h4",
+  'h4',
   // Sections and headings
-  "h5",
+  'h5',
   // Sections and headings
-  "h6",
+  'h6',
   // Sections and headings
-  "header",
+  'header',
   // Flow content
-  "hgroup",
+  'hgroup',
   // Sections and headings
-  "hr",
+  'hr',
   // Flow content
-  "html",
+  'html',
   // Page
-  "legend",
+  'legend',
   // Flow content
-  "li",
+  'li',
   // Lists (as `display: list-item`)
-  "listing",
+  'listing',
   // Flow content (legacy)
-  "main",
+  'main',
   // Flow content
-  "menu",
+  'menu',
   // Lists
-  "nav",
+  'nav',
   // Sections and headings
-  "ol",
+  'ol',
   // Lists
-  "p",
+  'p',
   // Flow content
-  "plaintext",
+  'plaintext',
   // Flow content (legacy)
-  "pre",
+  'pre',
   // Flow content
-  "section",
+  'section',
   // Sections and headings
-  "ul",
+  'ul',
   // Lists
-  "xmp"
+  'xmp',
   // Flow content (legacy)
 ]);
 function toText(tree, options) {
   const options_ = options || {};
-  const children = "children" in tree ? tree.children : [];
+  const children = 'children' in tree ? tree.children : [];
   const block = blockOrCaption(tree);
   const whitespace = inferWhitespace(tree, {
-    whitespace: options_.whitespace || "normal",
+    whitespace: options_.whitespace || 'normal',
     breakBefore: false,
-    breakAfter: false
+    breakAfter: false,
   });
   const results = [];
-  if (tree.type === "text" || tree.type === "comment") {
+  if (tree.type === 'text' || tree.type === 'comment') {
     results.push(
       ...collectText(tree, {
         whitespace,
         breakBefore: true,
-        breakAfter: true
-      })
+        breakAfter: true,
+      }),
     );
   }
   let index = -1;
@@ -285,9 +306,10 @@ function toText(tree, options) {
         {
           whitespace,
           breakBefore: index ? void 0 : block,
-          breakAfter: index < children.length - 1 ? br(children[index + 1]) : block
-        }
-      )
+          breakAfter:
+            index < children.length - 1 ? br(children[index + 1]) : block,
+        },
+      ),
     );
   }
   const result = [];
@@ -295,24 +317,26 @@ function toText(tree, options) {
   index = -1;
   while (++index < results.length) {
     const value = results[index];
-    if (typeof value === "number") {
+    if (typeof value === 'number') {
       if (count !== void 0 && value > count) count = value;
     } else if (value) {
       if (count !== void 0 && count > -1) {
-        result.push("\n".repeat(count) || " ");
+        result.push('\n'.repeat(count) || ' ');
       }
       count = -1;
       result.push(value);
     }
   }
-  return result.join("");
+  return result.join('');
 }
 function renderedTextCollection(node, parent, info) {
-  if (node.type === "element") {
+  if (node.type === 'element') {
     return collectElement(node, parent, info);
   }
-  if (node.type === "text") {
-    return info.whitespace === "normal" ? collectText(node, info) : collectPreText(node);
+  if (node.type === 'text') {
+    return info.whitespace === 'normal'
+      ? collectText(node, info)
+      : collectPreText(node);
   }
   return [];
 }
@@ -327,10 +351,12 @@ function collectElement(node, parent, info) {
   let prefix;
   let suffix;
   if (br(node)) {
-    suffix = "\n";
-  } else if (row(node) && // @ts-expect-error: something up with types of parents.
-  findAfter(parent, node, row)) {
-    suffix = "\n";
+    suffix = '\n';
+  } else if (
+    row(node) && // @ts-expect-error: something up with types of parents.
+    findAfter(parent, node, row)
+  ) {
+    suffix = '\n';
   } else if (p(node)) {
     prefix = 2;
     suffix = 2;
@@ -343,13 +369,16 @@ function collectElement(node, parent, info) {
       renderedTextCollection(children[index], node, {
         whitespace,
         breakBefore: index ? void 0 : prefix,
-        breakAfter: index < children.length - 1 ? br(children[index + 1]) : suffix
-      })
+        breakAfter:
+          index < children.length - 1 ? br(children[index + 1]) : suffix,
+      }),
     );
   }
-  if (cell(node) && // @ts-expect-error: something up with types of parents.
-  findAfter(parent, node, cell)) {
-    items.push("	");
+  if (
+    cell(node) && // @ts-expect-error: something up with types of parents.
+    findAfter(parent, node, cell)
+  ) {
+    items.push('	');
   }
   if (prefix) items.unshift(prefix);
   if (suffix) items.push(suffix);
@@ -363,7 +392,7 @@ function collectText(node, info) {
   while (start <= value.length) {
     searchLineFeeds.lastIndex = start;
     const match = searchLineFeeds.exec(value);
-    const end = match && "index" in match ? match.index : value.length;
+    const end = match && 'index' in match ? match.index : value.length;
     lines.push(
       // Any sequence of collapsible spaces and tabs immediately preceding or
       // following a segment break is removed.
@@ -371,21 +400,26 @@ function collectText(node, info) {
         // […] ignoring bidi formatting characters (characters with the
         // Bidi_Control property [UAX9]: ALM, LTR, RTL, LRE-RLO, LRI-PDI) as if
         // they were not there.
-        value.slice(start, end).replace(/[\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, ""),
+        value
+          .slice(start, end)
+          .replace(/[\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, ''),
         start === 0 ? info.breakBefore : true,
-        end === value.length ? info.breakAfter : true
-      )
+        end === value.length ? info.breakAfter : true,
+      ),
     );
     start = end + 1;
   }
   let index = -1;
   let join;
   while (++index < lines.length) {
-    if (lines[index].charCodeAt(lines[index].length - 1) === 8203 || index < lines.length - 1 && lines[index + 1].charCodeAt(0) === 8203) {
+    if (
+      lines[index].charCodeAt(lines[index].length - 1) === 8203 ||
+      (index < lines.length - 1 && lines[index + 1].charCodeAt(0) === 8203)
+    ) {
       result.push(lines[index]);
       join = void 0;
     } else if (lines[index]) {
-      if (typeof join === "number") result.push(join);
+      if (typeof join === 'number') result.push(join);
       result.push(lines[index]);
       join = 0;
     } else if (index === 0 || index === lines.length - 1) {
@@ -406,7 +440,7 @@ function trimAndCollapseSpacesAndTabs(value, breakBefore, breakAfter) {
     const match = searchTabOrSpaces.exec(value);
     end = match ? match.index : value.length;
     if (!start && !end && match && !breakBefore) {
-      result.push("");
+      result.push('');
     }
     if (start !== end) {
       result.push(value.slice(start, end));
@@ -414,31 +448,31 @@ function trimAndCollapseSpacesAndTabs(value, breakBefore, breakAfter) {
     start = match ? end + match[0].length : end;
   }
   if (start !== end && !breakAfter) {
-    result.push("");
+    result.push('');
   }
-  return result.join(" ");
+  return result.join(' ');
 }
 function inferWhitespace(node, info) {
-  if (node.type === "element") {
+  if (node.type === 'element') {
     const properties = node.properties || {};
     switch (node.tagName) {
-      case "listing":
-      case "plaintext":
-      case "xmp": {
-        return "pre";
+      case 'listing':
+      case 'plaintext':
+      case 'xmp': {
+        return 'pre';
       }
-      case "nobr": {
-        return "nowrap";
+      case 'nobr': {
+        return 'nowrap';
       }
-      case "pre": {
-        return properties.wrap ? "pre-wrap" : "pre";
+      case 'pre': {
+        return properties.wrap ? 'pre-wrap' : 'pre';
       }
-      case "td":
-      case "th": {
-        return properties.noWrap ? "nowrap" : info.whitespace;
+      case 'td':
+      case 'th': {
+        return properties.noWrap ? 'nowrap' : info.whitespace;
       }
-      case "textarea": {
-        return "pre-wrap";
+      case 'textarea': {
+        return 'pre-wrap';
       }
       default:
     }
@@ -449,14 +483,11 @@ function hidden(node) {
   return Boolean((node.properties || {}).hidden);
 }
 function isCell(node) {
-  return node.tagName === "td" || node.tagName === "th";
+  return node.tagName === 'td' || node.tagName === 'th';
 }
 function closedDialog(node) {
-  return node.tagName === "dialog" && !(node.properties || {}).open;
+  return node.tagName === 'dialog' && !(node.properties || {}).open;
 }
 
-export {
-  isElement,
-  toText
-};
+export { isElement, toText };
 //# sourceMappingURL=chunk-NKMVQ3UO.js.map

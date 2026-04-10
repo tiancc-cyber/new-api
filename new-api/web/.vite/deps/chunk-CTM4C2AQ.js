@@ -1,35 +1,33 @@
-import {
-  configureSvgSize
-} from "./chunk-LQLXUK6X.js";
-import {
-  __name,
-  log
-} from "./chunk-OQUVF2X3.js";
+import { configureSvgSize } from './chunk-LQLXUK6X.js';
+import { __name, log } from './chunk-OQUVF2X3.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/chunk-KX2RTZJC.mjs
 var setupViewPortForSVG = __name((svg, padding, cssDiagram, useMaxWidth) => {
-  svg.attr("class", cssDiagram);
+  svg.attr('class', cssDiagram);
   const { width, height, x, y } = calculateDimensionsWithPadding(svg, padding);
   configureSvgSize(svg, height, width, useMaxWidth);
   const viewBox = createViewBox(x, y, width, height, padding);
-  svg.attr("viewBox", viewBox);
+  svg.attr('viewBox', viewBox);
   log.debug(`viewBox configured: ${viewBox} with padding: ${padding}`);
-}, "setupViewPortForSVG");
+}, 'setupViewPortForSVG');
 var calculateDimensionsWithPadding = __name((svg, padding) => {
   var _a;
-  const bounds = ((_a = svg.node()) == null ? void 0 : _a.getBBox()) || { width: 0, height: 0, x: 0, y: 0 };
+  const bounds = ((_a = svg.node()) == null ? void 0 : _a.getBBox()) || {
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0,
+  };
   return {
     width: bounds.width + padding * 2,
     height: bounds.height + padding * 2,
     x: bounds.x,
-    y: bounds.y
+    y: bounds.y,
   };
-}, "calculateDimensionsWithPadding");
+}, 'calculateDimensionsWithPadding');
 var createViewBox = __name((x, y, width, height, padding) => {
   return `${x - padding} ${y - padding} ${width} ${height}`;
-}, "createViewBox");
+}, 'createViewBox');
 
-export {
-  setupViewPortForSVG
-};
+export { setupViewPortForSVG };
 //# sourceMappingURL=chunk-CTM4C2AQ.js.map

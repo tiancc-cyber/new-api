@@ -99,7 +99,10 @@ const ScenarioTutorial = () => {
             >
               {t('场景教程')}
             </Title>
-            <Paragraph type='secondary' style={{ margin: 0, color: tokens.heroSub }}>
+            <Paragraph
+              type='secondary'
+              style={{ margin: 0, color: tokens.heroSub }}
+            >
               {t('这里汇总了常用场景的使用教程与最佳实践。')}
             </Paragraph>
           </div>
@@ -116,7 +119,10 @@ const ScenarioTutorial = () => {
       >
         {loading ? (
           <div style={{ padding: 14 }}>
-            <Skeleton placeholder={<Skeleton.Paragraph rows={10} />} loading={true} />
+            <Skeleton
+              placeholder={<Skeleton.Paragraph rows={10} />}
+              loading={true}
+            />
           </div>
         ) : listItems.length === 0 ? (
           <div style={{ padding: 20 }}>
@@ -131,7 +137,11 @@ const ScenarioTutorial = () => {
             }}
           >
             {listItems.map((it) => (
-              <ScenarioTutorialCard key={it.id || it.md5 || it.slug} it={it} tokens={tokens} />
+              <ScenarioTutorialCard
+                key={it.id || it.md5 || it.slug}
+                it={it}
+                tokens={tokens}
+              />
             ))}
           </div>
         )}
@@ -169,7 +179,8 @@ function ScenarioTutorialCard({ it, tokens }) {
           background: tokens.cardBg,
           border: hover ? tokens.cardHoverBorder : tokens.cardBorder,
           boxShadow: hover ? tokens.cardHoverShadow : 'none',
-          transition: 'box-shadow 160ms ease, border-color 160ms ease, transform 160ms ease',
+          transition:
+            'box-shadow 160ms ease, border-color 160ms ease, transform 160ms ease',
           transform: hover ? 'translateY(-1px)' : 'translateY(0px)',
           cursor: 'pointer',
           height: '100%',
@@ -180,7 +191,14 @@ function ScenarioTutorialCard({ it, tokens }) {
       >
         <div className='flex flex-col gap-2'>
           <div className='flex items-start gap-2 justify-between'>
-            <Text strong style={{ fontSize: 14, color: tokens.cardTitle, lineHeight: 1.25 }}>
+            <Text
+              strong
+              style={{
+                fontSize: 14,
+                color: tokens.cardTitle,
+                lineHeight: 1.25,
+              }}
+            >
               {it?.title || t('未命名教程')}
             </Text>
             <Text
@@ -237,4 +255,3 @@ function ScenarioTutorialCard({ it, tokens }) {
 }
 
 export default ScenarioTutorial;
-

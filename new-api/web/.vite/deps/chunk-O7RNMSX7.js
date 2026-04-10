@@ -5,8 +5,8 @@ function longestStreak(value, substring) {
   let expected = index;
   let count = 0;
   let max = 0;
-  if (typeof substring !== "string") {
-    throw new TypeError("Expected substring");
+  if (typeof substring !== 'string') {
+    throw new TypeError('Expected substring');
   }
   while (index !== -1) {
     if (index === expected) {
@@ -22,7 +22,5 @@ function longestStreak(value, substring) {
   return max;
 }
 
-export {
-  longestStreak
-};
+export { longestStreak };
 //# sourceMappingURL=chunk-O7RNMSX7.js.map

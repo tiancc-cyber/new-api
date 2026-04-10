@@ -79,7 +79,8 @@ export async function sanitizeHtmlToSafePayload(html) {
       ...(defaultSchema.attributes || {}),
       '*': Array.from(
         new Set([
-          ...((defaultSchema.attributes && defaultSchema.attributes['*']) || []),
+          ...((defaultSchema.attributes && defaultSchema.attributes['*']) ||
+            []),
           'className',
           'class',
           'style',
@@ -134,7 +135,9 @@ export async function sanitizeHtmlToSafePayload(html) {
 
 export function rehydrateNewApiScripts(rootEl) {
   if (!rootEl) return;
-  const scripts = rootEl.querySelectorAll(`script[type="${NEWAPI_INLINE_SCRIPT_TYPE}"]`);
+  const scripts = rootEl.querySelectorAll(
+    `script[type="${NEWAPI_INLINE_SCRIPT_TYPE}"]`,
+  );
   scripts.forEach((oldScript) => {
     const code = oldScript.textContent || '';
     if (!code.trim()) return;
@@ -146,4 +149,3 @@ export function rehydrateNewApiScripts(rootEl) {
     oldScript.parentNode?.replaceChild(s, oldScript);
   });
 }
-

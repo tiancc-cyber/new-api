@@ -27,10 +27,16 @@ import {
 import { getScenarioTutorialsColumns } from './ScenarioTutorialsColumnDefs';
 
 const ScenarioTutorialsTable = (data) => {
-  const { rows, loading, compactMode, openEdit, setRowStatus, removeRow, t } = data;
+  const { rows, loading, compactMode, openEdit, setRowStatus, removeRow, t } =
+    data;
 
   const columns = useMemo(() => {
-    return getScenarioTutorialsColumns({ t, openEdit, setRowStatus, removeRow });
+    return getScenarioTutorialsColumns({
+      t,
+      openEdit,
+      setRowStatus,
+      removeRow,
+    });
   }, [t, openEdit, setRowStatus, removeRow]);
 
   const tableColumns = useMemo(() => {
@@ -71,4 +77,3 @@ const ScenarioTutorialsTable = (data) => {
 };
 
 export default ScenarioTutorialsTable;
-

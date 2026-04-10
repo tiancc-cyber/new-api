@@ -153,7 +153,7 @@ const UnifiedAuthForm = () => {
   const consentGrantedRef = useRef(false);
 
   const logo = getLogo();
-  const systemName = "词元视界中转API";
+  const systemName = '词元视界中转API';
   const affCode = searchParams.get('aff');
   const desiredMode = searchParams.get('mode') || '';
   const desiredMethod = searchParams.get('method') || '';
@@ -183,13 +183,13 @@ const UnifiedAuthForm = () => {
   );
   const hasOAuthLoginOptions = Boolean(
     status.github_oauth ||
-    status.discord_oauth ||
-    status.oidc_enabled ||
-    status.wechat_login ||
-    status.linuxdo_oauth ||
-    status.telegram_oauth ||
-    status.passkey_login ||
-    hasCustomOAuthProviders,
+      status.discord_oauth ||
+      status.oidc_enabled ||
+      status.wechat_login ||
+      status.linuxdo_oauth ||
+      status.telegram_oauth ||
+      status.passkey_login ||
+      hasCustomOAuthProviders,
   );
 
   const availableMethods = useMemo(() => {
@@ -475,9 +475,7 @@ const UnifiedAuthForm = () => {
     const redirectPath = buildRedirectPath(data);
     if (redirectPath) {
       if (isRegisterPage) {
-        setAuthRedirectModalMessage(
-          message || t('账号已存在，是否前往登录？'),
-        );
+        setAuthRedirectModalMessage(message || t('账号已存在，是否前往登录？'));
         setAuthRedirectModalPath(redirectPath);
         setShowAuthRedirectModal(true);
         return;

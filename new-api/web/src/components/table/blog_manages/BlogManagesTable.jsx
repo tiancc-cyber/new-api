@@ -27,7 +27,15 @@ import {
 import { getBlogManagesColumns } from './BlogManagesColumnDefs';
 
 const BlogManagesTable = (data) => {
-  const { blogs, loading, compactMode, openEdit, setBlogStatus, removeBlog, t } = data;
+  const {
+    blogs,
+    loading,
+    compactMode,
+    openEdit,
+    setBlogStatus,
+    removeBlog,
+    t,
+  } = data;
 
   const columns = useMemo(() => {
     return getBlogManagesColumns({
@@ -76,4 +84,3 @@ const BlogManagesTable = (data) => {
 };
 
 export default BlogManagesTable;
-

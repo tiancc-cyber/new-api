@@ -70,7 +70,12 @@ const BlogOperate = ({ record, openEdit, setBlogStatus, removeBlog, t }) => {
 
   return (
     <Space spacing={8}>
-      <Button theme='light' type='tertiary' size='small' onClick={() => openEdit(record)}>
+      <Button
+        theme='light'
+        type='tertiary'
+        size='small'
+        onClick={() => openEdit(record)}
+      >
         {t('编辑')}
       </Button>
       <Button
@@ -88,7 +93,12 @@ const BlogOperate = ({ record, openEdit, setBlogStatus, removeBlog, t }) => {
   );
 };
 
-export const getBlogManagesColumns = ({ t, openEdit, setBlogStatus, removeBlog }) => {
+export const getBlogManagesColumns = ({
+  t,
+  openEdit,
+  setBlogStatus,
+  removeBlog,
+}) => {
   return [
     {
       title: t('ID'),
@@ -105,7 +115,9 @@ export const getBlogManagesColumns = ({ t, openEdit, setBlogStatus, removeBlog }
       title: t('标签'),
       dataIndex: 'tags',
       width: 200,
-      render: (text) => <Text ellipsis={{ showTooltip: true }}>{text || '-'}</Text>,
+      render: (text) => (
+        <Text ellipsis={{ showTooltip: true }}>{text || '-'}</Text>
+      ),
     },
     {
       title: t('类型'),
@@ -148,4 +160,3 @@ export const getBlogManagesColumns = ({ t, openEdit, setBlogStatus, removeBlog }
     },
   ];
 };
-

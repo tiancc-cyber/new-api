@@ -1,12 +1,10 @@
-import {
-  __export
-} from "./chunk-UE53HML6.js";
+import { __export } from './chunk-UE53HML6.js';
 
 // node_modules/comma-separated-tokens/index.js
 function parse(value) {
   const tokens = [];
-  const input = String(value || "");
-  let index = input.indexOf(",");
+  const input = String(value || '');
+  let index = input.indexOf(',');
   let start = 0;
   let end = false;
   while (!end) {
@@ -19,37 +17,41 @@ function parse(value) {
       tokens.push(token);
     }
     start = index + 1;
-    index = input.indexOf(",", start);
+    index = input.indexOf(',', start);
   }
   return tokens;
 }
 function stringify(values, options) {
   const settings = options || {};
-  const input = values[values.length - 1] === "" ? [...values, ""] : values;
-  return input.join(
-    (settings.padRight ? " " : "") + "," + (settings.padLeft === false ? "" : " ")
-  ).trim();
+  const input = values[values.length - 1] === '' ? [...values, ''] : values;
+  return input
+    .join(
+      (settings.padRight ? ' ' : '') +
+        ',' +
+        (settings.padLeft === false ? '' : ' '),
+    )
+    .trim();
 }
 
 // node_modules/property-information/lib/hast-to-react.js
 var hastToReact = {
-  classId: "classID",
-  dataType: "datatype",
-  itemId: "itemID",
-  strokeDashArray: "strokeDasharray",
-  strokeDashOffset: "strokeDashoffset",
-  strokeLineCap: "strokeLinecap",
-  strokeLineJoin: "strokeLinejoin",
-  strokeMiterLimit: "strokeMiterlimit",
-  typeOf: "typeof",
-  xLinkActuate: "xlinkActuate",
-  xLinkArcRole: "xlinkArcrole",
-  xLinkHref: "xlinkHref",
-  xLinkRole: "xlinkRole",
-  xLinkShow: "xlinkShow",
-  xLinkTitle: "xlinkTitle",
-  xLinkType: "xlinkType",
-  xmlnsXLink: "xmlnsXlink"
+  classId: 'classID',
+  dataType: 'datatype',
+  itemId: 'itemID',
+  strokeDashArray: 'strokeDasharray',
+  strokeDashOffset: 'strokeDashoffset',
+  strokeLineCap: 'strokeLinecap',
+  strokeLineJoin: 'strokeLinejoin',
+  strokeMiterLimit: 'strokeMiterlimit',
+  typeOf: 'typeof',
+  xLinkActuate: 'xlinkActuate',
+  xLinkArcRole: 'xlinkArcrole',
+  xLinkHref: 'xlinkHref',
+  xLinkRole: 'xlinkRole',
+  xLinkShow: 'xlinkShow',
+  xLinkTitle: 'xlinkTitle',
+  xLinkType: 'xlinkType',
+  xmlnsXLink: 'xmlnsXlink',
 };
 
 // node_modules/property-information/lib/util/info.js
@@ -67,7 +69,7 @@ var Info = class {
     this.property = property;
   }
 };
-Info.prototype.attribute = "";
+Info.prototype.attribute = '';
 Info.prototype.booleanish = false;
 Info.prototype.boolean = false;
 Info.prototype.commaOrSpaceSeparated = false;
@@ -76,7 +78,7 @@ Info.prototype.defined = false;
 Info.prototype.mustUseProperty = false;
 Info.prototype.number = false;
 Info.prototype.overloadedBoolean = false;
-Info.prototype.property = "";
+Info.prototype.property = '';
 Info.prototype.spaceSeparated = false;
 Info.prototype.space = void 0;
 
@@ -89,7 +91,7 @@ __export(types_exports, {
   commaSeparated: () => commaSeparated,
   number: () => number,
   overloadedBoolean: () => overloadedBoolean,
-  spaceSeparated: () => spaceSeparated
+  spaceSeparated: () => spaceSeparated,
 });
 var powers = 0;
 var boolean = increment();
@@ -104,10 +106,9 @@ function increment() {
 }
 
 // node_modules/property-information/lib/util/defined-info.js
-var checks = (
+var checks =
   /** @type {ReadonlyArray<keyof typeof types>} */
-  Object.keys(types_exports)
-);
+  Object.keys(types_exports);
 var DefinedInfo = class extends Info {
   /**
    * @constructor
@@ -125,11 +126,15 @@ var DefinedInfo = class extends Info {
   constructor(property, attribute, mask, space) {
     let index = -1;
     super(property, attribute);
-    mark(this, "space", space);
-    if (typeof mask === "number") {
+    mark(this, 'space', space);
+    if (typeof mask === 'number') {
       while (++index < checks.length) {
         const check = checks[index];
-        mark(this, checks[index], (mask & types_exports[check]) === types_exports[check]);
+        mark(
+          this,
+          checks[index],
+          (mask & types_exports[check]) === types_exports[check],
+        );
       }
     }
   }
@@ -157,18 +162,18 @@ function find(schema, value) {
   if (normal in schema.normal) {
     return schema.property[schema.normal[normal]];
   }
-  if (normal.length > 4 && normal.slice(0, 4) === "data" && valid.test(value)) {
-    if (value.charAt(4) === "-") {
+  if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid.test(value)) {
+    if (value.charAt(4) === '-') {
       const rest = value.slice(5).replace(dash, camelcase);
-      property = "data" + rest.charAt(0).toUpperCase() + rest.slice(1);
+      property = 'data' + rest.charAt(0).toUpperCase() + rest.slice(1);
     } else {
       const rest = value.slice(4);
       if (!dash.test(rest)) {
         let dashes = rest.replace(cap, kebab);
-        if (dashes.charAt(0) !== "-") {
-          dashes = "-" + dashes;
+        if (dashes.charAt(0) !== '-') {
+          dashes = '-' + dashes;
         }
-        value = "data" + dashes;
+        value = 'data' + dashes;
       }
     }
     Type = DefinedInfo;
@@ -176,7 +181,7 @@ function find(schema, value) {
   return new Type(property, value);
 }
 function kebab($0) {
-  return "-" + $0.toLowerCase();
+  return '-' + $0.toLowerCase();
 }
 function camelcase($0) {
   return $0.charAt(1).toUpperCase();
@@ -226,9 +231,12 @@ function create(definition) {
       property,
       definition.transform(definition.attributes || {}, property),
       value,
-      definition.space
+      definition.space,
     );
-    if (definition.mustUseProperty && definition.mustUseProperty.includes(property)) {
+    if (
+      definition.mustUseProperty &&
+      definition.mustUseProperty.includes(property)
+    ) {
       info.mustUseProperty = true;
     }
     properties[property] = info;
@@ -289,11 +297,13 @@ var aria = create({
     ariaValueMin: number,
     ariaValueNow: number,
     ariaValueText: null,
-    role: null
+    role: null,
   },
   transform(_, property) {
-    return property === "role" ? property : "aria-" + property.slice(4).toLowerCase();
-  }
+    return property === 'role'
+      ? property
+      : 'aria-' + property.slice(4).toLowerCase();
+  },
 });
 
 // node_modules/property-information/lib/util/case-sensitive-transform.js
@@ -309,12 +319,12 @@ function caseInsensitiveTransform(attributes, property) {
 // node_modules/property-information/lib/html.js
 var html = create({
   attributes: {
-    acceptcharset: "accept-charset",
-    classname: "class",
-    htmlfor: "for",
-    httpequiv: "http-equiv"
+    acceptcharset: 'accept-charset',
+    classname: 'class',
+    htmlfor: 'for',
+    httpequiv: 'http-equiv',
   },
-  mustUseProperty: ["checked", "multiple", "muted", "selected"],
+  mustUseProperty: ['checked', 'multiple', 'muted', 'selected'],
   properties: {
     // Standard Properties.
     abbr: null,
@@ -664,188 +674,188 @@ var html = create({
     property: null,
     results: number,
     security: null,
-    unselectable: null
+    unselectable: null,
   },
-  space: "html",
-  transform: caseInsensitiveTransform
+  space: 'html',
+  transform: caseInsensitiveTransform,
 });
 
 // node_modules/property-information/lib/svg.js
 var svg = create({
   attributes: {
-    accentHeight: "accent-height",
-    alignmentBaseline: "alignment-baseline",
-    arabicForm: "arabic-form",
-    baselineShift: "baseline-shift",
-    capHeight: "cap-height",
-    className: "class",
-    clipPath: "clip-path",
-    clipRule: "clip-rule",
-    colorInterpolation: "color-interpolation",
-    colorInterpolationFilters: "color-interpolation-filters",
-    colorProfile: "color-profile",
-    colorRendering: "color-rendering",
-    crossOrigin: "crossorigin",
-    dataType: "datatype",
-    dominantBaseline: "dominant-baseline",
-    enableBackground: "enable-background",
-    fillOpacity: "fill-opacity",
-    fillRule: "fill-rule",
-    floodColor: "flood-color",
-    floodOpacity: "flood-opacity",
-    fontFamily: "font-family",
-    fontSize: "font-size",
-    fontSizeAdjust: "font-size-adjust",
-    fontStretch: "font-stretch",
-    fontStyle: "font-style",
-    fontVariant: "font-variant",
-    fontWeight: "font-weight",
-    glyphName: "glyph-name",
-    glyphOrientationHorizontal: "glyph-orientation-horizontal",
-    glyphOrientationVertical: "glyph-orientation-vertical",
-    hrefLang: "hreflang",
-    horizAdvX: "horiz-adv-x",
-    horizOriginX: "horiz-origin-x",
-    horizOriginY: "horiz-origin-y",
-    imageRendering: "image-rendering",
-    letterSpacing: "letter-spacing",
-    lightingColor: "lighting-color",
-    markerEnd: "marker-end",
-    markerMid: "marker-mid",
-    markerStart: "marker-start",
-    navDown: "nav-down",
-    navDownLeft: "nav-down-left",
-    navDownRight: "nav-down-right",
-    navLeft: "nav-left",
-    navNext: "nav-next",
-    navPrev: "nav-prev",
-    navRight: "nav-right",
-    navUp: "nav-up",
-    navUpLeft: "nav-up-left",
-    navUpRight: "nav-up-right",
-    onAbort: "onabort",
-    onActivate: "onactivate",
-    onAfterPrint: "onafterprint",
-    onBeforePrint: "onbeforeprint",
-    onBegin: "onbegin",
-    onCancel: "oncancel",
-    onCanPlay: "oncanplay",
-    onCanPlayThrough: "oncanplaythrough",
-    onChange: "onchange",
-    onClick: "onclick",
-    onClose: "onclose",
-    onCopy: "oncopy",
-    onCueChange: "oncuechange",
-    onCut: "oncut",
-    onDblClick: "ondblclick",
-    onDrag: "ondrag",
-    onDragEnd: "ondragend",
-    onDragEnter: "ondragenter",
-    onDragExit: "ondragexit",
-    onDragLeave: "ondragleave",
-    onDragOver: "ondragover",
-    onDragStart: "ondragstart",
-    onDrop: "ondrop",
-    onDurationChange: "ondurationchange",
-    onEmptied: "onemptied",
-    onEnd: "onend",
-    onEnded: "onended",
-    onError: "onerror",
-    onFocus: "onfocus",
-    onFocusIn: "onfocusin",
-    onFocusOut: "onfocusout",
-    onHashChange: "onhashchange",
-    onInput: "oninput",
-    onInvalid: "oninvalid",
-    onKeyDown: "onkeydown",
-    onKeyPress: "onkeypress",
-    onKeyUp: "onkeyup",
-    onLoad: "onload",
-    onLoadedData: "onloadeddata",
-    onLoadedMetadata: "onloadedmetadata",
-    onLoadStart: "onloadstart",
-    onMessage: "onmessage",
-    onMouseDown: "onmousedown",
-    onMouseEnter: "onmouseenter",
-    onMouseLeave: "onmouseleave",
-    onMouseMove: "onmousemove",
-    onMouseOut: "onmouseout",
-    onMouseOver: "onmouseover",
-    onMouseUp: "onmouseup",
-    onMouseWheel: "onmousewheel",
-    onOffline: "onoffline",
-    onOnline: "ononline",
-    onPageHide: "onpagehide",
-    onPageShow: "onpageshow",
-    onPaste: "onpaste",
-    onPause: "onpause",
-    onPlay: "onplay",
-    onPlaying: "onplaying",
-    onPopState: "onpopstate",
-    onProgress: "onprogress",
-    onRateChange: "onratechange",
-    onRepeat: "onrepeat",
-    onReset: "onreset",
-    onResize: "onresize",
-    onScroll: "onscroll",
-    onSeeked: "onseeked",
-    onSeeking: "onseeking",
-    onSelect: "onselect",
-    onShow: "onshow",
-    onStalled: "onstalled",
-    onStorage: "onstorage",
-    onSubmit: "onsubmit",
-    onSuspend: "onsuspend",
-    onTimeUpdate: "ontimeupdate",
-    onToggle: "ontoggle",
-    onUnload: "onunload",
-    onVolumeChange: "onvolumechange",
-    onWaiting: "onwaiting",
-    onZoom: "onzoom",
-    overlinePosition: "overline-position",
-    overlineThickness: "overline-thickness",
-    paintOrder: "paint-order",
-    panose1: "panose-1",
-    pointerEvents: "pointer-events",
-    referrerPolicy: "referrerpolicy",
-    renderingIntent: "rendering-intent",
-    shapeRendering: "shape-rendering",
-    stopColor: "stop-color",
-    stopOpacity: "stop-opacity",
-    strikethroughPosition: "strikethrough-position",
-    strikethroughThickness: "strikethrough-thickness",
-    strokeDashArray: "stroke-dasharray",
-    strokeDashOffset: "stroke-dashoffset",
-    strokeLineCap: "stroke-linecap",
-    strokeLineJoin: "stroke-linejoin",
-    strokeMiterLimit: "stroke-miterlimit",
-    strokeOpacity: "stroke-opacity",
-    strokeWidth: "stroke-width",
-    tabIndex: "tabindex",
-    textAnchor: "text-anchor",
-    textDecoration: "text-decoration",
-    textRendering: "text-rendering",
-    transformOrigin: "transform-origin",
-    typeOf: "typeof",
-    underlinePosition: "underline-position",
-    underlineThickness: "underline-thickness",
-    unicodeBidi: "unicode-bidi",
-    unicodeRange: "unicode-range",
-    unitsPerEm: "units-per-em",
-    vAlphabetic: "v-alphabetic",
-    vHanging: "v-hanging",
-    vIdeographic: "v-ideographic",
-    vMathematical: "v-mathematical",
-    vectorEffect: "vector-effect",
-    vertAdvY: "vert-adv-y",
-    vertOriginX: "vert-origin-x",
-    vertOriginY: "vert-origin-y",
-    wordSpacing: "word-spacing",
-    writingMode: "writing-mode",
-    xHeight: "x-height",
+    accentHeight: 'accent-height',
+    alignmentBaseline: 'alignment-baseline',
+    arabicForm: 'arabic-form',
+    baselineShift: 'baseline-shift',
+    capHeight: 'cap-height',
+    className: 'class',
+    clipPath: 'clip-path',
+    clipRule: 'clip-rule',
+    colorInterpolation: 'color-interpolation',
+    colorInterpolationFilters: 'color-interpolation-filters',
+    colorProfile: 'color-profile',
+    colorRendering: 'color-rendering',
+    crossOrigin: 'crossorigin',
+    dataType: 'datatype',
+    dominantBaseline: 'dominant-baseline',
+    enableBackground: 'enable-background',
+    fillOpacity: 'fill-opacity',
+    fillRule: 'fill-rule',
+    floodColor: 'flood-color',
+    floodOpacity: 'flood-opacity',
+    fontFamily: 'font-family',
+    fontSize: 'font-size',
+    fontSizeAdjust: 'font-size-adjust',
+    fontStretch: 'font-stretch',
+    fontStyle: 'font-style',
+    fontVariant: 'font-variant',
+    fontWeight: 'font-weight',
+    glyphName: 'glyph-name',
+    glyphOrientationHorizontal: 'glyph-orientation-horizontal',
+    glyphOrientationVertical: 'glyph-orientation-vertical',
+    hrefLang: 'hreflang',
+    horizAdvX: 'horiz-adv-x',
+    horizOriginX: 'horiz-origin-x',
+    horizOriginY: 'horiz-origin-y',
+    imageRendering: 'image-rendering',
+    letterSpacing: 'letter-spacing',
+    lightingColor: 'lighting-color',
+    markerEnd: 'marker-end',
+    markerMid: 'marker-mid',
+    markerStart: 'marker-start',
+    navDown: 'nav-down',
+    navDownLeft: 'nav-down-left',
+    navDownRight: 'nav-down-right',
+    navLeft: 'nav-left',
+    navNext: 'nav-next',
+    navPrev: 'nav-prev',
+    navRight: 'nav-right',
+    navUp: 'nav-up',
+    navUpLeft: 'nav-up-left',
+    navUpRight: 'nav-up-right',
+    onAbort: 'onabort',
+    onActivate: 'onactivate',
+    onAfterPrint: 'onafterprint',
+    onBeforePrint: 'onbeforeprint',
+    onBegin: 'onbegin',
+    onCancel: 'oncancel',
+    onCanPlay: 'oncanplay',
+    onCanPlayThrough: 'oncanplaythrough',
+    onChange: 'onchange',
+    onClick: 'onclick',
+    onClose: 'onclose',
+    onCopy: 'oncopy',
+    onCueChange: 'oncuechange',
+    onCut: 'oncut',
+    onDblClick: 'ondblclick',
+    onDrag: 'ondrag',
+    onDragEnd: 'ondragend',
+    onDragEnter: 'ondragenter',
+    onDragExit: 'ondragexit',
+    onDragLeave: 'ondragleave',
+    onDragOver: 'ondragover',
+    onDragStart: 'ondragstart',
+    onDrop: 'ondrop',
+    onDurationChange: 'ondurationchange',
+    onEmptied: 'onemptied',
+    onEnd: 'onend',
+    onEnded: 'onended',
+    onError: 'onerror',
+    onFocus: 'onfocus',
+    onFocusIn: 'onfocusin',
+    onFocusOut: 'onfocusout',
+    onHashChange: 'onhashchange',
+    onInput: 'oninput',
+    onInvalid: 'oninvalid',
+    onKeyDown: 'onkeydown',
+    onKeyPress: 'onkeypress',
+    onKeyUp: 'onkeyup',
+    onLoad: 'onload',
+    onLoadedData: 'onloadeddata',
+    onLoadedMetadata: 'onloadedmetadata',
+    onLoadStart: 'onloadstart',
+    onMessage: 'onmessage',
+    onMouseDown: 'onmousedown',
+    onMouseEnter: 'onmouseenter',
+    onMouseLeave: 'onmouseleave',
+    onMouseMove: 'onmousemove',
+    onMouseOut: 'onmouseout',
+    onMouseOver: 'onmouseover',
+    onMouseUp: 'onmouseup',
+    onMouseWheel: 'onmousewheel',
+    onOffline: 'onoffline',
+    onOnline: 'ononline',
+    onPageHide: 'onpagehide',
+    onPageShow: 'onpageshow',
+    onPaste: 'onpaste',
+    onPause: 'onpause',
+    onPlay: 'onplay',
+    onPlaying: 'onplaying',
+    onPopState: 'onpopstate',
+    onProgress: 'onprogress',
+    onRateChange: 'onratechange',
+    onRepeat: 'onrepeat',
+    onReset: 'onreset',
+    onResize: 'onresize',
+    onScroll: 'onscroll',
+    onSeeked: 'onseeked',
+    onSeeking: 'onseeking',
+    onSelect: 'onselect',
+    onShow: 'onshow',
+    onStalled: 'onstalled',
+    onStorage: 'onstorage',
+    onSubmit: 'onsubmit',
+    onSuspend: 'onsuspend',
+    onTimeUpdate: 'ontimeupdate',
+    onToggle: 'ontoggle',
+    onUnload: 'onunload',
+    onVolumeChange: 'onvolumechange',
+    onWaiting: 'onwaiting',
+    onZoom: 'onzoom',
+    overlinePosition: 'overline-position',
+    overlineThickness: 'overline-thickness',
+    paintOrder: 'paint-order',
+    panose1: 'panose-1',
+    pointerEvents: 'pointer-events',
+    referrerPolicy: 'referrerpolicy',
+    renderingIntent: 'rendering-intent',
+    shapeRendering: 'shape-rendering',
+    stopColor: 'stop-color',
+    stopOpacity: 'stop-opacity',
+    strikethroughPosition: 'strikethrough-position',
+    strikethroughThickness: 'strikethrough-thickness',
+    strokeDashArray: 'stroke-dasharray',
+    strokeDashOffset: 'stroke-dashoffset',
+    strokeLineCap: 'stroke-linecap',
+    strokeLineJoin: 'stroke-linejoin',
+    strokeMiterLimit: 'stroke-miterlimit',
+    strokeOpacity: 'stroke-opacity',
+    strokeWidth: 'stroke-width',
+    tabIndex: 'tabindex',
+    textAnchor: 'text-anchor',
+    textDecoration: 'text-decoration',
+    textRendering: 'text-rendering',
+    transformOrigin: 'transform-origin',
+    typeOf: 'typeof',
+    underlinePosition: 'underline-position',
+    underlineThickness: 'underline-thickness',
+    unicodeBidi: 'unicode-bidi',
+    unicodeRange: 'unicode-range',
+    unitsPerEm: 'units-per-em',
+    vAlphabetic: 'v-alphabetic',
+    vHanging: 'v-hanging',
+    vIdeographic: 'v-ideographic',
+    vMathematical: 'v-mathematical',
+    vectorEffect: 'vector-effect',
+    vertAdvY: 'vert-adv-y',
+    vertOriginX: 'vert-origin-x',
+    vertOriginY: 'vert-origin-y',
+    wordSpacing: 'word-spacing',
+    writingMode: 'writing-mode',
+    xHeight: 'x-height',
     // These were camelcased in Tiny. Now lowercased in SVG 2
-    playbackOrder: "playbackorder",
-    timelineBegin: "timelinebegin"
+    playbackOrder: 'playbackorder',
+    timelineBegin: 'timelinebegin',
   },
   properties: {
     about: commaOrSpaceSeparated,
@@ -1226,10 +1236,10 @@ var svg = create({
     y2: null,
     yChannelSelector: null,
     z: null,
-    zoomAndPan: null
+    zoomAndPan: null,
   },
-  space: "svg",
-  transform: caseSensitiveTransform
+  space: 'svg',
+  transform: caseSensitiveTransform,
 });
 
 // node_modules/property-information/lib/xlink.js
@@ -1241,42 +1251,42 @@ var xlink = create({
     xLinkRole: null,
     xLinkShow: null,
     xLinkTitle: null,
-    xLinkType: null
+    xLinkType: null,
   },
-  space: "xlink",
+  space: 'xlink',
   transform(_, property) {
-    return "xlink:" + property.slice(5).toLowerCase();
-  }
+    return 'xlink:' + property.slice(5).toLowerCase();
+  },
 });
 
 // node_modules/property-information/lib/xmlns.js
 var xmlns = create({
-  attributes: { xmlnsxlink: "xmlns:xlink" },
+  attributes: { xmlnsxlink: 'xmlns:xlink' },
   properties: { xmlnsXLink: null, xmlns: null },
-  space: "xmlns",
-  transform: caseInsensitiveTransform
+  space: 'xmlns',
+  transform: caseInsensitiveTransform,
 });
 
 // node_modules/property-information/lib/xml.js
 var xml = create({
   properties: { xmlBase: null, xmlLang: null, xmlSpace: null },
-  space: "xml",
+  space: 'xml',
   transform(_, property) {
-    return "xml:" + property.slice(3).toLowerCase();
-  }
+    return 'xml:' + property.slice(3).toLowerCase();
+  },
 });
 
 // node_modules/property-information/index.js
-var html2 = merge([aria, html, xlink, xmlns, xml], "html");
-var svg2 = merge([aria, svg, xlink, xmlns, xml], "svg");
+var html2 = merge([aria, html, xlink, xmlns, xml], 'html');
+var svg2 = merge([aria, svg, xlink, xmlns, xml], 'svg');
 
 // node_modules/space-separated-tokens/index.js
 function parse2(value) {
-  const input = String(value || "").trim();
+  const input = String(value || '').trim();
   return input ? input.split(/[ \t\n\r\f]+/g) : [];
 }
 function stringify2(values) {
-  return values.join(" ").trim();
+  return values.join(' ').trim();
 }
 
 export {
@@ -1288,6 +1298,6 @@ export {
   html2 as html,
   svg2 as svg,
   parse2,
-  stringify2
+  stringify2,
 };
 //# sourceMappingURL=chunk-7IHLRR5V.js.map

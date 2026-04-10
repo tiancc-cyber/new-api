@@ -29,4 +29,3 @@ const ScenarioTutorialManage = () => {
 };
 
 export default ScenarioTutorialManage;
-

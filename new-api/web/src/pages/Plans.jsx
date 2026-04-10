@@ -20,4 +20,3 @@ For commercial licensing, please contact support@quantumnous.com
 import Plans from './Plans/index.jsx';
 
 export default Plans;
-

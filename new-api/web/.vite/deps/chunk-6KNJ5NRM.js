@@ -1,14 +1,11 @@
-import {
-  convert,
-  visitParents
-} from "./chunk-ZKVPYPB3.js";
+import { convert, visitParents } from './chunk-ZKVPYPB3.js';
 
 // node_modules/mdast-util-find-and-replace/node_modules/escape-string-regexp/index.js
 function escapeStringRegexp(string) {
-  if (typeof string !== "string") {
-    throw new TypeError("Expected a string");
+  if (typeof string !== 'string') {
+    throw new TypeError('Expected a string');
   }
-  return string.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
+  return string.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
 }
 
 // node_modules/mdast-util-find-and-replace/lib/index.js
@@ -18,7 +15,7 @@ function findAndReplace(tree, list, options) {
   const pairs = toPairs(list);
   let pairIndex = -1;
   while (++pairIndex < pairs.length) {
-    visitParents(tree, "text", visitor);
+    visitParents(tree, 'text', visitor);
   }
   function visitor(node, parents) {
     let index = -1;
@@ -26,11 +23,13 @@ function findAndReplace(tree, list, options) {
     while (++index < parents.length) {
       const parent = parents[index];
       const siblings = grandparent ? grandparent.children : void 0;
-      if (ignored(
-        parent,
-        siblings ? siblings.indexOf(parent) : void 0,
-        grandparent
-      )) {
+      if (
+        ignored(
+          parent,
+          siblings ? siblings.indexOf(parent) : void 0,
+          grandparent,
+        )
+      ) {
         return;
       }
       grandparent = parent;
@@ -55,19 +54,19 @@ function findAndReplace(tree, list, options) {
       const matchObject = {
         index: match.index,
         input: match.input,
-        stack: [...parents, node]
+        stack: [...parents, node],
       };
       let value = replace(...match, matchObject);
-      if (typeof value === "string") {
-        value = value.length > 0 ? { type: "text", value } : void 0;
+      if (typeof value === 'string') {
+        value = value.length > 0 ? { type: 'text', value } : void 0;
       }
       if (value === false) {
         find.lastIndex = position + 1;
       } else {
         if (start !== position) {
           nodes.push({
-            type: "text",
-            value: node.value.slice(start, position)
+            type: 'text',
+            value: node.value.slice(start, position),
           });
         }
         if (Array.isArray(value)) {
@@ -85,7 +84,7 @@ function findAndReplace(tree, list, options) {
     }
     if (change) {
       if (start < node.value.length) {
-        nodes.push({ type: "text", value: node.value.slice(start) });
+        nodes.push({ type: 'text', value: node.value.slice(start) });
       }
       parent.children.splice(index, 1, ...nodes);
     } else {
@@ -97,9 +96,12 @@ function findAndReplace(tree, list, options) {
 function toPairs(tupleOrList) {
   const result = [];
   if (!Array.isArray(tupleOrList)) {
-    throw new TypeError("Expected find and replace tuple or list of tuples");
+    throw new TypeError('Expected find and replace tuple or list of tuples');
   }
-  const list = !tupleOrList[0] || Array.isArray(tupleOrList[0]) ? tupleOrList : [tupleOrList];
+  const list =
+    !tupleOrList[0] || Array.isArray(tupleOrList[0])
+      ? tupleOrList
+      : [tupleOrList];
   let index = -1;
   while (++index < list.length) {
     const tuple = list[index];
@@ -108,15 +110,17 @@ function toPairs(tupleOrList) {
   return result;
 }
 function toExpression(find) {
-  return typeof find === "string" ? new RegExp(escapeStringRegexp(find), "g") : find;
+  return typeof find === 'string'
+    ? new RegExp(escapeStringRegexp(find), 'g')
+    : find;
 }
 function toFunction(replace) {
-  return typeof replace === "function" ? replace : function() {
-    return replace;
-  };
+  return typeof replace === 'function'
+    ? replace
+    : function () {
+        return replace;
+      };
 }
 
-export {
-  findAndReplace
-};
+export { findAndReplace };
 //# sourceMappingURL=chunk-6KNJ5NRM.js.map

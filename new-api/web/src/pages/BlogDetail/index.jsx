@@ -26,7 +26,10 @@ import MarkdownRenderer from '../../components/common/markdown/MarkdownRenderer'
 import GithubSlugger from 'github-slugger';
 import './blogDetail.css';
 
-import { isHtmlContent, sanitizeHtmlToSafePayload } from '../../helpers/safeHtml';
+import {
+  isHtmlContent,
+  sanitizeHtmlToSafePayload,
+} from '../../helpers/safeHtml';
 
 const { Text } = Typography;
 
@@ -271,7 +274,10 @@ const BlogDetail = () => {
           {/* Sidebar: fixed */}
           <aside className='blog-detail-sidebar'>
             {toc.length ? (
-              <nav className='blog-detail-toc blog-detail-toc--sidebar' aria-label='Table of contents'>
+              <nav
+                className='blog-detail-toc blog-detail-toc--sidebar'
+                aria-label='Table of contents'
+              >
                 <div className='blog-detail-toc-title'>{t('目录')}</div>
                 <div className='blog-detail-toc-list'>
                   {toc.map((item) => (
@@ -288,11 +294,7 @@ const BlogDetail = () => {
                       }}
                       style={{
                         paddingLeft:
-                          item.level === 2
-                            ? 0
-                            : item.level === 3
-                              ? 12
-                              : 22,
+                          item.level === 2 ? 0 : item.level === 3 ? 12 : 22,
                       }}
                     >
                       {item.text}
@@ -307,41 +309,43 @@ const BlogDetail = () => {
           <main className='blog-detail-article'>
             {/* Make the whole right column the scroll container */}
             <div className='blog-detail-article-scroll' ref={articleRef}>
-            <div className='blog-detail-hero-main'>
-              {post.image_url ? (
-                <div className='blog-detail-cover'>
-                  <img
-                    src={post.image_url}
-                    alt=''
-                    loading='lazy'
-                    decoding='async'
-                  />
-                </div>
-              ) : null}
+              <div className='blog-detail-hero-main'>
+                {post.image_url ? (
+                  <div className='blog-detail-cover'>
+                    <img
+                      src={post.image_url}
+                      alt=''
+                      loading='lazy'
+                      decoding='async'
+                    />
+                  </div>
+                ) : null}
 
-              <div className='blog-detail-meta'>{fmtDate(post.published_at)}</div>
-              <div className='blog-detail-tags'>
-                {tags.map((tag) => (
-                  <Tag key={tag} size='small' color='purple'>
-                    {tag}
-                  </Tag>
-                ))}
+                <div className='blog-detail-meta'>
+                  {fmtDate(post.published_at)}
+                </div>
+                <div className='blog-detail-tags'>
+                  {tags.map((tag) => (
+                    <Tag key={tag} size='small' color='purple'>
+                      {tag}
+                    </Tag>
+                  ))}
+                </div>
+
+                <div className='blog-detail-title'>{post.title}</div>
+                <div className='blog-detail-divider' />
               </div>
 
-              <div className='blog-detail-title'>{post.title}</div>
-              <div className='blog-detail-divider' />
-            </div>
-
-            <div className='blog-detail-content-card blog-detail-content-card--plain'>
-              {treatAsHtml ? (
-                <div
-                  className='markdown-body'
-                  dangerouslySetInnerHTML={{ __html: htmlWithHeadingIds }}
-                />
-              ) : (
-                <MarkdownRenderer content={post.content || ''} data-ct={ct} />
-              )}
-            </div>
+              <div className='blog-detail-content-card blog-detail-content-card--plain'>
+                {treatAsHtml ? (
+                  <div
+                    className='markdown-body'
+                    dangerouslySetInnerHTML={{ __html: htmlWithHeadingIds }}
+                  />
+                ) : (
+                  <MarkdownRenderer content={post.content || ''} data-ct={ct} />
+                )}
+              </div>
             </div>
           </main>
         </div>
@@ -351,4 +355,3 @@ const BlogDetail = () => {
 };
 
 export default BlogDetail;
-

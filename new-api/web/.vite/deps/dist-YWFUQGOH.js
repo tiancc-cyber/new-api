@@ -53,13 +53,13 @@ import {
   tokenizeWithTheme,
   tokensToHast,
   transformerDecorations,
-  warnDeprecated
-} from "./chunk-F64AUPJ6.js";
-import "./chunk-J23NEJSF.js";
-import "./chunk-BU3XFUIC.js";
-import "./chunk-SKNEHNFT.js";
-import "./chunk-7IHLRR5V.js";
-import "./chunk-UE53HML6.js";
+  warnDeprecated,
+} from './chunk-F64AUPJ6.js';
+import './chunk-J23NEJSF.js';
+import './chunk-BU3XFUIC.js';
+import './chunk-SKNEHNFT.js';
+import './chunk-7IHLRR5V.js';
+import './chunk-UE53HML6.js';
 export {
   ShikiError,
   addClassToHast,
@@ -115,6 +115,6 @@ export {
   tokenizeWithTheme,
   tokensToHast,
   transformerDecorations,
-  warnDeprecated
+  warnDeprecated,
 };
 //# sourceMappingURL=dist-YWFUQGOH.js.map

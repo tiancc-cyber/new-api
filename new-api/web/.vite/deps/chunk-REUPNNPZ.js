@@ -1,6 +1,4 @@
-import {
-  __publicField
-} from "./chunk-UE53HML6.js";
+import { __publicField } from './chunk-UE53HML6.js';
 
 // node_modules/devlop/lib/development.js
 var AssertionError = class extends Error {
@@ -25,15 +23,15 @@ var AssertionError = class extends Error {
     super(message);
     __publicField(
       this,
-      "name",
+      'name',
       /** @type {const} */
-      "Assertion"
+      'Assertion',
     );
     __publicField(
       this,
-      "code",
+      'code',
       /** @type {const} */
-      "ERR_ASSERTION"
+      'ERR_ASSERTION',
     );
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
@@ -49,28 +47,27 @@ function ok(value, message) {
     Boolean(value),
     false,
     true,
-    "ok",
-    "Expected value to be truthy",
-    message
+    'ok',
+    'Expected value to be truthy',
+    message,
   );
 }
 function unreachable(message) {
-  assert(false, false, true, "ok", "Unreachable", message);
+  assert(false, false, true, 'ok', 'Unreachable', message);
 }
 function assert(bool, actual, expected, operator, defaultMessage, userMessage) {
   if (!bool) {
-    throw userMessage instanceof Error ? userMessage : new AssertionError(
-      userMessage || defaultMessage,
-      actual,
-      expected,
-      operator,
-      !userMessage
-    );
+    throw userMessage instanceof Error
+      ? userMessage
+      : new AssertionError(
+          userMessage || defaultMessage,
+          actual,
+          expected,
+          operator,
+          !userMessage,
+        );
   }
 }
 
-export {
-  ok,
-  unreachable
-};
+export { ok, unreachable };
 //# sourceMappingURL=chunk-REUPNNPZ.js.map

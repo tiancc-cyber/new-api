@@ -12,9 +12,9 @@ import {
   renderToHTMLTree,
   renderToString,
   setFontMetrics,
-  version
-} from "./chunk-4643Z7TA.js";
-import "./chunk-UE53HML6.js";
+  version,
+} from './chunk-4643Z7TA.js';
+import './chunk-UE53HML6.js';
 export {
   ParseError,
   SETTINGS_SCHEMA,
@@ -29,6 +29,6 @@ export {
   katex as default,
   render,
   renderToString,
-  version
+  version,
 };
 //# sourceMappingURL=katex-ZVP3U3DI.js.map

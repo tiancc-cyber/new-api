@@ -1,32 +1,35 @@
-import "./chunk-UE53HML6.js";
+import './chunk-UE53HML6.js';
 
 // node_modules/sse.js/lib/sse.js
-var SSE = function(url, options) {
+var SSE = function (url, options) {
   if (!(this instanceof SSE)) {
     return new SSE(url, options);
   }
   this.url = url;
   options = options || {};
   this.headers = options.headers || {};
-  this.payload = options.payload !== void 0 ? options.payload : "";
-  this.method = options.method || this.payload && "POST" || "GET";
+  this.payload = options.payload !== void 0 ? options.payload : '';
+  this.method = options.method || (this.payload && 'POST') || 'GET';
   this.withCredentials = !!options.withCredentials;
   this.debug = !!options.debug;
-  this.autoReconnect = options.autoReconnect !== void 0 ? options.autoReconnect : false;
-  this.reconnectDelay = options.reconnectDelay !== void 0 ? options.reconnectDelay : 3e3;
+  this.autoReconnect =
+    options.autoReconnect !== void 0 ? options.autoReconnect : false;
+  this.reconnectDelay =
+    options.reconnectDelay !== void 0 ? options.reconnectDelay : 3e3;
   this.maxRetries = options.maxRetries !== void 0 ? options.maxRetries : null;
   this.retryCount = 0;
   this.reconnectTimer = null;
-  this.useLastEventId = options.useLastEventId !== void 0 ? options.useLastEventId : true;
-  this.FIELD_SEPARATOR = ":";
+  this.useLastEventId =
+    options.useLastEventId !== void 0 ? options.useLastEventId : true;
+  this.FIELD_SEPARATOR = ':';
   this.listeners = {};
   this.xhr = null;
   this.readyState = SSE.INITIALIZING;
   this.progress = 0;
-  this.chunk = "";
-  this.lastEventId = "";
+  this.chunk = '';
+  this.lastEventId = '';
   this._hasParsedBom = false;
-  this.addEventListener = function(type, listener) {
+  this.addEventListener = function (type, listener) {
     if (this.listeners[type] === void 0) {
       this.listeners[type] = [];
     }
@@ -34,12 +37,12 @@ var SSE = function(url, options) {
       this.listeners[type].push(listener);
     }
   };
-  this.removeEventListener = function(type, listener) {
+  this.removeEventListener = function (type, listener) {
     if (this.listeners[type] === void 0) {
       return;
     }
     const filtered = [];
-    this.listeners[type].forEach(function(element) {
+    this.listeners[type].forEach(function (element) {
       if (element !== listener) {
         filtered.push(element);
       }
@@ -50,7 +53,7 @@ var SSE = function(url, options) {
       this.listeners[type] = filtered;
     }
   };
-  this.dispatchEvent = function(e) {
+  this.dispatchEvent = function (e) {
     if (!e) {
       return true;
     }
@@ -58,7 +61,7 @@ var SSE = function(url, options) {
       console.debug(e);
     }
     e.source = this;
-    const onHandler = "on" + e.type;
+    const onHandler = 'on' + e.type;
     if (this.hasOwnProperty(onHandler)) {
       this[onHandler].call(this, e);
       if (e.defaultPrevented) {
@@ -66,23 +69,23 @@ var SSE = function(url, options) {
       }
     }
     if (this.listeners[e.type]) {
-      return this.listeners[e.type].every(function(callback) {
+      return this.listeners[e.type].every(function (callback) {
         callback(e);
         return !e.defaultPrevented;
       });
     }
     return true;
   };
-  this._markClosed = function() {
+  this._markClosed = function () {
     this.xhr = null;
     this.progress = 0;
-    this.chunk = "";
+    this.chunk = '';
     this._setReadyState(SSE.CLOSED);
     if (this.autoReconnect) {
       if (this.maxRetries !== null && this.retryCount >= this.maxRetries) {
         if (this.debug) {
           console.debug(
-            `SSE max retries (${this.maxRetries}) reached, stopping reconnection attempts`
+            `SSE max retries (${this.maxRetries}) reached, stopping reconnection attempts`,
           );
         }
         this.autoReconnect = false;
@@ -94,7 +97,7 @@ var SSE = function(url, options) {
       }
       if (this.debug) {
         console.debug(
-          `SSE will attempt to reconnect in ${this.reconnectDelay}ms (attempt ${this.retryCount + 1}${this.maxRetries ? "/" + this.maxRetries : ""})`
+          `SSE will attempt to reconnect in ${this.reconnectDelay}ms (attempt ${this.retryCount + 1}${this.maxRetries ? '/' + this.maxRetries : ''})`,
         );
       }
       this.reconnectTimer = setTimeout(() => {
@@ -104,24 +107,24 @@ var SSE = function(url, options) {
       }, this.reconnectDelay);
     }
   };
-  this._setReadyState = function(state) {
-    const event = new CustomEvent("readystatechange");
+  this._setReadyState = function (state) {
+    const event = new CustomEvent('readystatechange');
     event.readyState = state;
     this.readyState = state;
     this.dispatchEvent(event);
   };
-  this._onStreamFailure = function(e) {
-    const event = new CustomEvent("error");
+  this._onStreamFailure = function (e) {
+    const event = new CustomEvent('error');
     event.responseCode = e.currentTarget.status;
     event.data = e.currentTarget.response;
     this.dispatchEvent(event);
     this._markClosed();
   };
-  this._onStreamAbort = function() {
-    this.dispatchEvent(new CustomEvent("abort"));
+  this._onStreamAbort = function () {
+    this.dispatchEvent(new CustomEvent('abort'));
     this._markClosed();
   };
-  this._onStreamProgress = function(e) {
+  this._onStreamProgress = function (e) {
     if (!this.xhr) {
       return;
     }
@@ -141,21 +144,21 @@ var SSE = function(url, options) {
     const parts = (this.chunk + data).split(/(\r\n\r\n|\r\r|\n\n)/g);
     const lastPart = parts.pop();
     parts.forEach(
-      (function(part) {
+      function (part) {
         if (part.trim().length > 0) {
           this.dispatchEvent(this._parseEventChunk(part));
         }
-      }).bind(this)
+      }.bind(this),
     );
     this.chunk = lastPart;
   };
-  this._onStreamLoaded = function(e) {
+  this._onStreamLoaded = function (e) {
     this._onStreamProgress(e);
     this.dispatchEvent(this._parseEventChunk(this.chunk));
-    this.chunk = "";
+    this.chunk = '';
     this._markClosed();
   };
-  this._parseEventChunk = function(chunk) {
+  this._parseEventChunk = function (chunk) {
     if (!chunk || chunk.length === 0) {
       return null;
     }
@@ -164,30 +167,30 @@ var SSE = function(url, options) {
     }
     const e = { id: null, retry: null, data: null, event: null };
     chunk.split(/\n|\r\n|\r/).forEach(
-      (function(line) {
+      function (line) {
         const index = line.indexOf(this.FIELD_SEPARATOR);
         let field, value;
         if (index > 0) {
-          const skip = line[index + 1] === " " ? 2 : 1;
+          const skip = line[index + 1] === ' ' ? 2 : 1;
           field = line.substring(0, index);
           value = line.substring(index + skip);
         } else if (index < 0) {
           field = line;
-          value = "";
+          value = '';
         } else {
           return;
         }
         if (!(field in e)) {
           return;
         }
-        if (field === "data" && e[field] !== null) {
-          e["data"] += "\n" + value;
+        if (field === 'data' && e[field] !== null) {
+          e['data'] += '\n' + value;
         } else {
           e[field] = value;
         }
-      }).bind(this)
+      }.bind(this),
     );
-    if (e.id !== null && e.id.indexOf("\0") === -1) {
+    if (e.id !== null && e.id.indexOf('\0') === -1) {
       this.lastEventId = e.id;
     }
     if (e.retry !== null && /^[0-9]+$/.test(e.retry)) {
@@ -196,57 +199,58 @@ var SSE = function(url, options) {
     if (e.data === null) {
       return null;
     }
-    const event = new CustomEvent(e.event || "message");
+    const event = new CustomEvent(e.event || 'message');
     event.id = e.id;
-    event.data = e.data || "";
+    event.data = e.data || '';
     event.lastEventId = this.lastEventId;
     return event;
   };
-  this._onReadyStateChange = function() {
+  this._onReadyStateChange = function () {
     if (!this.xhr) {
       return;
     }
     if (this.xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
       const headers = {};
-      const headerPairs = this.xhr.getAllResponseHeaders().trim().split("\r\n");
+      const headerPairs = this.xhr.getAllResponseHeaders().trim().split('\r\n');
       for (const headerPair of headerPairs) {
-        const [key, ...valueParts] = headerPair.split(":");
-        const value = valueParts.join(":").trim();
-        headers[key.trim().toLowerCase()] = headers[key.trim().toLowerCase()] || [];
+        const [key, ...valueParts] = headerPair.split(':');
+        const value = valueParts.join(':').trim();
+        headers[key.trim().toLowerCase()] =
+          headers[key.trim().toLowerCase()] || [];
         headers[key.trim().toLowerCase()].push(value);
       }
-      const event = new CustomEvent("open");
+      const event = new CustomEvent('open');
       event.responseCode = this.xhr.status;
       event.headers = headers;
       this.dispatchEvent(event);
       this._setReadyState(SSE.OPEN);
     }
   };
-  this.stream = function() {
+  this.stream = function () {
     if (this.xhr) {
       return;
     }
     this._setReadyState(SSE.CONNECTING);
     this.xhr = new XMLHttpRequest();
-    this.xhr.addEventListener("progress", this._onStreamProgress.bind(this));
-    this.xhr.addEventListener("load", this._onStreamLoaded.bind(this));
+    this.xhr.addEventListener('progress', this._onStreamProgress.bind(this));
+    this.xhr.addEventListener('load', this._onStreamLoaded.bind(this));
     this.xhr.addEventListener(
-      "readystatechange",
-      this._onReadyStateChange.bind(this)
+      'readystatechange',
+      this._onReadyStateChange.bind(this),
     );
-    this.xhr.addEventListener("error", this._onStreamFailure.bind(this));
-    this.xhr.addEventListener("abort", this._onStreamAbort.bind(this));
+    this.xhr.addEventListener('error', this._onStreamFailure.bind(this));
+    this.xhr.addEventListener('abort', this._onStreamAbort.bind(this));
     this.xhr.open(this.method, this.url);
     for (let header in this.headers) {
       this.xhr.setRequestHeader(header, this.headers[header]);
     }
     if (this.useLastEventId && this.lastEventId.length > 0) {
-      this.xhr.setRequestHeader("Last-Event-ID", this.lastEventId);
+      this.xhr.setRequestHeader('Last-Event-ID', this.lastEventId);
     }
     this.xhr.withCredentials = this.withCredentials;
     this.xhr.send(this.payload);
   };
-  this.close = function() {
+  this.close = function () {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -264,7 +268,5 @@ SSE.INITIALIZING = -1;
 SSE.CONNECTING = 0;
 SSE.OPEN = 1;
 SSE.CLOSED = 2;
-export {
-  SSE
-};
+export { SSE };
 //# sourceMappingURL=sse__js.js.map

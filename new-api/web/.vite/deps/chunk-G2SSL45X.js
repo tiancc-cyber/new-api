@@ -1,35 +1,26 @@
-import {
-  require_dist
-} from "./chunk-O5N4F7PX.js";
-import {
-  lineBreakRegex
-} from "./chunk-LQLXUK6X.js";
-import {
-  __name,
-  select_default
-} from "./chunk-OQUVF2X3.js";
-import {
-  __toESM
-} from "./chunk-UE53HML6.js";
+import { require_dist } from './chunk-O5N4F7PX.js';
+import { lineBreakRegex } from './chunk-LQLXUK6X.js';
+import { __name, select_default } from './chunk-OQUVF2X3.js';
+import { __toESM } from './chunk-UE53HML6.js';
 
 // node_modules/mermaid/dist/chunks/mermaid.core/chunk-JSJVCQXG.mjs
 var import_sanitize_url = __toESM(require_dist(), 1);
 var drawRect = __name((element, rectData) => {
-  const rectElement = element.append("rect");
-  rectElement.attr("x", rectData.x);
-  rectElement.attr("y", rectData.y);
-  rectElement.attr("fill", rectData.fill);
-  rectElement.attr("stroke", rectData.stroke);
-  rectElement.attr("width", rectData.width);
-  rectElement.attr("height", rectData.height);
+  const rectElement = element.append('rect');
+  rectElement.attr('x', rectData.x);
+  rectElement.attr('y', rectData.y);
+  rectElement.attr('fill', rectData.fill);
+  rectElement.attr('stroke', rectData.stroke);
+  rectElement.attr('width', rectData.width);
+  rectElement.attr('height', rectData.height);
   if (rectData.name) {
-    rectElement.attr("name", rectData.name);
+    rectElement.attr('name', rectData.name);
   }
   if (rectData.rx) {
-    rectElement.attr("rx", rectData.rx);
+    rectElement.attr('rx', rectData.rx);
   }
   if (rectData.ry) {
-    rectElement.attr("ry", rectData.ry);
+    rectElement.attr('ry', rectData.ry);
   }
   if (rectData.attrs !== void 0) {
     for (const attrKey in rectData.attrs) {
@@ -37,10 +28,10 @@ var drawRect = __name((element, rectData) => {
     }
   }
   if (rectData.class) {
-    rectElement.attr("class", rectData.class);
+    rectElement.attr('class', rectData.class);
   }
   return rectElement;
-}, "drawRect");
+}, 'drawRect');
 var drawBackgroundRect = __name((element, bounds) => {
   const rectData = {
     x: bounds.startx,
@@ -49,76 +40,89 @@ var drawBackgroundRect = __name((element, bounds) => {
     height: bounds.stopy - bounds.starty,
     fill: bounds.fill,
     stroke: bounds.stroke,
-    class: "rect"
+    class: 'rect',
   };
   const rectElement = drawRect(element, rectData);
   rectElement.lower();
-}, "drawBackgroundRect");
+}, 'drawBackgroundRect');
 var drawText = __name((element, textData) => {
-  const nText = textData.text.replace(lineBreakRegex, " ");
-  const textElem = element.append("text");
-  textElem.attr("x", textData.x);
-  textElem.attr("y", textData.y);
-  textElem.attr("class", "legend");
-  textElem.style("text-anchor", textData.anchor);
+  const nText = textData.text.replace(lineBreakRegex, ' ');
+  const textElem = element.append('text');
+  textElem.attr('x', textData.x);
+  textElem.attr('y', textData.y);
+  textElem.attr('class', 'legend');
+  textElem.style('text-anchor', textData.anchor);
   if (textData.class) {
-    textElem.attr("class", textData.class);
+    textElem.attr('class', textData.class);
   }
-  const tspan = textElem.append("tspan");
-  tspan.attr("x", textData.x + textData.textMargin * 2);
+  const tspan = textElem.append('tspan');
+  tspan.attr('x', textData.x + textData.textMargin * 2);
   tspan.text(nText);
   return textElem;
-}, "drawText");
+}, 'drawText');
 var drawImage = __name((elem, x, y, link) => {
-  const imageElement = elem.append("image");
-  imageElement.attr("x", x);
-  imageElement.attr("y", y);
+  const imageElement = elem.append('image');
+  imageElement.attr('x', x);
+  imageElement.attr('y', y);
   const sanitizedLink = (0, import_sanitize_url.sanitizeUrl)(link);
-  imageElement.attr("xlink:href", sanitizedLink);
-}, "drawImage");
+  imageElement.attr('xlink:href', sanitizedLink);
+}, 'drawImage');
 var drawEmbeddedImage = __name((element, x, y, link) => {
-  const imageElement = element.append("use");
-  imageElement.attr("x", x);
-  imageElement.attr("y", y);
+  const imageElement = element.append('use');
+  imageElement.attr('x', x);
+  imageElement.attr('y', y);
   const sanitizedLink = (0, import_sanitize_url.sanitizeUrl)(link);
-  imageElement.attr("xlink:href", `#${sanitizedLink}`);
-}, "drawEmbeddedImage");
+  imageElement.attr('xlink:href', `#${sanitizedLink}`);
+}, 'drawEmbeddedImage');
 var getNoteRect = __name(() => {
   const noteRectData = {
     x: 0,
     y: 0,
     width: 100,
     height: 100,
-    fill: "#EDF2AE",
-    stroke: "#666",
-    anchor: "start",
+    fill: '#EDF2AE',
+    stroke: '#666',
+    anchor: 'start',
     rx: 0,
-    ry: 0
+    ry: 0,
   };
   return noteRectData;
-}, "getNoteRect");
+}, 'getNoteRect');
 var getTextObj = __name(() => {
   const testObject = {
     x: 0,
     y: 0,
     width: 100,
     height: 100,
-    "text-anchor": "start",
-    style: "#666",
+    'text-anchor': 'start',
+    style: '#666',
     textMargin: 0,
     rx: 0,
     ry: 0,
-    tspan: true
+    tspan: true,
   };
   return testObject;
-}, "getTextObj");
+}, 'getTextObj');
 var createTooltip = __name(() => {
-  let tooltipElem = select_default(".mermaidTooltip");
+  let tooltipElem = select_default('.mermaidTooltip');
   if (tooltipElem.empty()) {
-    tooltipElem = select_default("body").append("div").attr("class", "mermaidTooltip").style("opacity", 0).style("position", "absolute").style("text-align", "center").style("max-width", "200px").style("padding", "2px").style("font-size", "12px").style("background", "#ffffde").style("border", "1px solid #333").style("border-radius", "2px").style("pointer-events", "none").style("z-index", "100");
+    tooltipElem = select_default('body')
+      .append('div')
+      .attr('class', 'mermaidTooltip')
+      .style('opacity', 0)
+      .style('position', 'absolute')
+      .style('text-align', 'center')
+      .style('max-width', '200px')
+      .style('padding', '2px')
+      .style('font-size', '12px')
+      .style('background', '#ffffde')
+      .style('border', '1px solid #333')
+      .style('border-radius', '2px')
+      .style('pointer-events', 'none')
+      .style('z-index', '100');
   }
   return tooltipElem;
-}, "createTooltip");
+}, 'createTooltip');
 
 export {
   drawRect,
@@ -128,6 +132,6 @@ export {
   drawEmbeddedImage,
   getNoteRect,
   getTextObj,
-  createTooltip
+  createTooltip,
 };
 //# sourceMappingURL=chunk-G2SSL45X.js.map

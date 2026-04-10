@@ -106,7 +106,12 @@ const AddEditBlogManageModal = ({
       footer={
         <Space>
           <Button onClick={handleClose}>{t('取消')}</Button>
-          <Button type='primary' theme='solid' loading={submitting} onClick={submit}>
+          <Button
+            type='primary'
+            theme='solid'
+            loading={submitting}
+            onClick={submit}
+          >
             {t('保存')}
           </Button>
         </Space>
@@ -175,4 +180,3 @@ const AddEditBlogManageModal = ({
 };
 
 export default AddEditBlogManageModal;
-

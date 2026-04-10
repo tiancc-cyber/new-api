@@ -21,7 +21,12 @@ import React from 'react';
 import { Button, Space, Switch } from '@douyinfe/semi-ui';
 import { IconPlusCircle } from '@douyinfe/semi-icons';
 
-const ScenarioTutorialsActions = ({ openCreate, compactMode, setCompactMode, t }) => {
+const ScenarioTutorialsActions = ({
+  openCreate,
+  compactMode,
+  setCompactMode,
+  t,
+}) => {
   return (
     <Space spacing={12}>
       <Switch
@@ -43,4 +48,3 @@ const ScenarioTutorialsActions = ({ openCreate, compactMode, setCompactMode, t }
 };
 
 export default ScenarioTutorialsActions;
-

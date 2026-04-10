@@ -80,8 +80,14 @@ const About = () => {
       const obj = JSON.parse(remoteAbout);
       if (!obj || typeof obj !== 'object') return defaults;
       return {
-        email: typeof obj.email === 'string' && obj.email ? obj.email : defaults.email,
-        phone: typeof obj.phone === 'string' && obj.phone ? obj.phone : defaults.phone,
+        email:
+          typeof obj.email === 'string' && obj.email
+            ? obj.email
+            : defaults.email,
+        phone:
+          typeof obj.phone === 'string' && obj.phone
+            ? obj.phone
+            : defaults.phone,
         online_time:
           typeof obj.online_time === 'string' && obj.online_time
             ? obj.online_time
@@ -95,9 +101,7 @@ const About = () => {
   return (
     <div className='pt-[84px] pb-10 px-3 w-full max-w-6xl mx-auto'>
       {/* 顶部标题区域：参考首页的渐变/光晕氛围 */}
-      <div
-        className='contact-hero-panel relative overflow-hidden rounded-3xl border border-semi-color-border bg-semi-color-bg-1 px-6 py-6 mb-6'
-      >
+      <div className='contact-hero-panel relative overflow-hidden rounded-3xl border border-semi-color-border bg-semi-color-bg-1 px-6 py-6 mb-6'>
         <div
           className='absolute -top-24 -right-16 w-[320px] h-[320px] rounded-full'
           style={{

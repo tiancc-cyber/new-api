@@ -1,13 +1,14 @@
-import {
-  visitParents
-} from "./chunk-ZKVPYPB3.js";
+import { visitParents } from './chunk-ZKVPYPB3.js';
 
 // node_modules/unist-util-visit/lib/index.js
 function visit(tree, testOrVisitor, visitorOrReverse, maybeReverse) {
   let reverse;
   let test;
   let visitor;
-  if (typeof testOrVisitor === "function" && typeof visitorOrReverse !== "function") {
+  if (
+    typeof testOrVisitor === 'function' &&
+    typeof visitorOrReverse !== 'function'
+  ) {
     test = void 0;
     visitor = testOrVisitor;
     reverse = visitorOrReverse;
@@ -24,7 +25,5 @@ function visit(tree, testOrVisitor, visitorOrReverse, maybeReverse) {
   }
 }
 
-export {
-  visit
-};
+export { visit };
 //# sourceMappingURL=chunk-4EXITWLB.js.map

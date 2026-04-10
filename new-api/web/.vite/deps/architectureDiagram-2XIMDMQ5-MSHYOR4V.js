@@ -7409,13 +7409,11 @@ var require_cose_base = __commonJS({
                     dag2.forEach(function (value, key) {
                       value.forEach(function (adjacent) {
                         undirected.get(key).push(adjacent);
-                        undirected
-                          .get(adjacent.id)
-                          .push({
-                            id: key,
-                            gap: adjacent.gap,
-                            direction: adjacent.direction,
-                          });
+                        undirected.get(adjacent.id).push({
+                          id: key,
+                          gap: adjacent.gap,
+                          direction: adjacent.direction,
+                        });
                       });
                     });
                     return undirected;
@@ -7427,13 +7425,11 @@ var require_cose_base = __commonJS({
                     });
                     dag2.forEach(function (value, key) {
                       value.forEach(function (adjacent) {
-                        reversed
-                          .get(adjacent.id)
-                          .push({
-                            id: key,
-                            gap: adjacent.gap,
-                            direction: adjacent.direction,
-                          });
+                        reversed.get(adjacent.id).push({
+                          id: key,
+                          gap: adjacent.gap,
+                          direction: adjacent.direction,
+                        });
                       });
                     });
                     return reversed;
@@ -7458,13 +7454,11 @@ var require_cose_base = __commonJS({
                       function (constraint) {
                         if (constraint.left) {
                           if (dag.has(constraint.left)) {
-                            dag
-                              .get(constraint.left)
-                              .push({
-                                id: constraint.right,
-                                gap: constraint.gap,
-                                direction: 'horizontal',
-                              });
+                            dag.get(constraint.left).push({
+                              id: constraint.right,
+                              gap: constraint.gap,
+                              direction: 'horizontal',
+                            });
                           } else {
                             dag.set(constraint.left, [
                               {
@@ -7479,13 +7473,11 @@ var require_cose_base = __commonJS({
                           }
                         } else {
                           if (dag.has(constraint.top)) {
-                            dag
-                              .get(constraint.top)
-                              .push({
-                                id: constraint.bottom,
-                                gap: constraint.gap,
-                                direction: 'vertical',
-                              });
+                            dag.get(constraint.top).push({
+                              id: constraint.bottom,
+                              gap: constraint.gap,
+                              direction: 'vertical',
+                            });
                           } else {
                             dag.set(constraint.top, [
                               {

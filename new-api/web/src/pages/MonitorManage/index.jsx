@@ -25,6 +25,7 @@ import {
   DatePicker,
   Input,
   InputNumber,
+  Popover,
   Row,
   Col,
   Radio,
@@ -34,6 +35,7 @@ import {
   Typography,
   Switch,
 } from '@douyinfe/semi-ui';
+import { IconInfoCircle } from '@douyinfe/semi-icons';
 import { API, showError, showSuccess } from '../../helpers';
 import { ResponsiveBar } from '@nivo/bar';
 
@@ -819,9 +821,47 @@ export default function MonitorManage() {
               </Col>
             </Row>
             <div style={{ marginTop: 8 }}>
-              <Text type='tertiary'>
-                {t('提示：留空表示不过滤；点击“查询”后按条件分页查看全站告警记录。')}
-              </Text>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                <Text type='tertiary'>
+                  {t('提示：留空表示不过滤；点击“查询”后按条件分页查看全站告警记录。')}
+                </Text>
+                <Popover
+                    position='top'
+                    trigger='hover'
+                    showArrow
+                    content={
+                      <div style={{ maxWidth: 520, lineHeight: '20px' }}>
+                        <div style={{ fontWeight: 600, marginBottom: 6 }}>{t('口径与说明')}</div>
+                        <div style={{ marginBottom: 8 }}>
+                          <div>{t('tokens 是“用量统计单位”（模型侧的输入/输出 token 数）。')}</div>
+                          <div>{t('quota 是“计费单位”（按价格/倍率把 tokens 折算出来的扣费量）。')}</div>
+                        </div>
+                        <div style={{ marginBottom: 8 }}>
+                          <div style={{ fontWeight: 600 }}>{t('本页字段口径')}</div>
+                          <div>
+                            {t('本页“使用量/阈值”单位为 quota。用户使用量告警（user_quota）计算公式：用户窗口内使用量（quota）= Σ logs.quota（窗口内所有消费日志 quota 求和）。')}
+                          </div>
+                        </div>
+                        <div style={{ marginBottom: 8 }}>
+                          <div style={{ fontWeight: 600 }}>{t('Tokens 来源')}</div>
+                          <div>
+                            {t('tokens 通常来自上游返回的 usage（prompt_tokens/completion_tokens/total_tokens）；若上游未返回则可能由系统估算。页面/邮件中展示的 tokens 来自日志 logs.prompt_tokens 与 logs.completion_tokens。')}
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{t('令牌ID')}</div>
+                          <div>
+                            {t('当指标为 user_quota 时统计对象为用户聚合，因此令牌ID 可能为 0；启用 token_quota 告警时会记录真实令牌ID。')}
+                          </div>
+                        </div>
+                      </div>
+                    }
+                >
+                  <Button theme='borderless' type='tertiary' icon={<IconInfoCircle />}>
+                    {t('口径/公式')}
+                  </Button>
+                </Popover>
+              </div>
             </div>
           </div>
           <Table

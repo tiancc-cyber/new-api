@@ -177,8 +177,7 @@ export default function MonitorManage() {
   const [alertPage, setAlertPage] = useState(1);
   const [alertPageSize, setAlertPageSize] = useState(20);
   const [alertFilters, setAlertFilters] = useState({
-    user_id: '',
-    token_id: '',
+    username: '',
     metric: '',
     status: '',
     dateRange: null,
@@ -200,6 +199,16 @@ export default function MonitorManage() {
     topUsageTopRef.current = topUsageTop;
   }, [topUsageTop]);
 
+  const formatUnixSeconds = (val) => {
+    if (val === 0) return '1970-01-01 00:00:00';
+    const n = Number(val);
+    if (!Number.isFinite(n) || n <= 0) return '-';
+    // Keep a stable date-time format instead of locale-dependent toLocaleString
+    const d = new Date(n * 1000);
+    const pad = (x) => String(x).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -214,9 +223,8 @@ export default function MonitorManage() {
       },
       { title: t('用户ID'), dataIndex: 'user_id' },
       { title: t('用户名'), dataIndex: 'username' },
-      { title: t('令牌ID'), dataIndex: 'token_id' },
-      { title: t('窗口开始'), dataIndex: 'period_start' },
-      { title: t('窗口结束'), dataIndex: 'period_end' },
+      { title: t('窗口开始'), dataIndex: 'period_start', render: (val) => formatUnixSeconds(val) },
+      { title: t('窗口结束'), dataIndex: 'period_end', render: (val) => formatUnixSeconds(val) },
       { title: t('使用量'), dataIndex: 'used_quota' },
       { title: t('阈值'), dataIndex: 'threshold_quota' },
       { title: t('收件人'), dataIndex: 'recipients' },
@@ -421,6 +429,9 @@ export default function MonitorManage() {
     const now = Date.now();
     const defaultRange = [new Date(now - 24 * 3600 * 1000), new Date(now)];
     setTopUsageRange(defaultRange);
+
+    // Default alert time range: last 24h (same as Top chart)
+    setAlertFilters((prev) => ({ ...prev, dateRange: defaultRange }));
     // do not call loadTopUsersModelUsage here with defaultRange to avoid racing with user interaction;
     // the polling effect below will pick up the latest range.
 
@@ -704,16 +715,58 @@ export default function MonitorManage() {
             </div>
           }
         >
+          <div style={{ marginTop: 8 }}>
+            <Text type='tertiary'>
+              {t('说明：数据来自“使用日志”汇总表（quota_data），按用户汇总后取 Top N，并按模型堆叠展示；页面每分钟自动刷新。')}
+            </Text>
+            <Popover
+                position='top'
+                trigger='hover'
+                showArrow
+                content={
+                  <div style={{ maxWidth: 560, lineHeight: '20px' }}>
+                    <div style={{ fontWeight: 600, marginBottom: 8 }}>{t('口径与说明')}</div>
+
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontWeight: 600, marginBottom: 6 }}>{t('指标含义')}</div>
+                      <ul style={{ paddingLeft: 18, margin: 0 }}>
+                        <li>{t('tokens：用量统计单位（模型侧输入/输出 token 数）。')}</li>
+                        <li>{t('quota：计费单位（把 tokens 按模型价格/倍率折算后的扣费量）。')}</li>
+                      </ul>
+                    </div>
+
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontWeight: 600, marginBottom: 6 }}>{t('Tokens 来源')}</div>
+                      <ul style={{ paddingLeft: 18, margin: 0 }}>
+                        <li>
+                          {t('优先来自上游返回的 usage（prompt_tokens/completion_tokens/total_tokens）；若上游未返回则可能由系统估算。')}
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <div style={{ fontWeight: 600, marginBottom: 6 }}>{t('Quota 来源')}</div>
+                      <ul style={{ paddingLeft: 18, margin: 0 }}>
+                        <li>
+                          {t('写入“使用日志”（logs）时生成：系统会根据模型价格、倍率等配置把 tokens 折算为 quota。')}
+                        </li>
+                        <li>{t('本图展示的数据来自汇总表（quota_data），按用户与模型聚合后用于 Top N 堆叠展示。')}</li>
+                      </ul>
+                    </div>
+                  </div>
+                }
+            >
+              <Button theme='borderless' type='tertiary' icon={<IconInfoCircle />}>
+                {t('口径说明')}
+              </Button>
+            </Popover>
+          </div>
           <Spin spinning={topUsageLoading}>
             <div style={{ height: 360 }}>
               <TopUsersStackedBar data={topUsageItems} t={t} metric={topUsageMetric} />
             </div>
           </Spin>
-          <div style={{ marginTop: 8 }}>
-            <Text type='tertiary'>
-              {t('说明：数据来自“使用日志”汇总表（quota_data），按用户汇总后取 Top N，并按模型堆叠展示；页面每分钟自动刷新。')}
-            </Text>
-          </div>
+
         </Card>
 
         <Card
@@ -733,12 +786,13 @@ export default function MonitorManage() {
               <Button
                 type='tertiary'
                 onClick={() => {
+                  const now = Date.now();
+                  const defaultRange = [new Date(now - 24 * 3600 * 1000), new Date(now)];
                   const cleared = {
-                    user_id: '',
-                    token_id: '',
+                    username: '',
                     metric: '',
                     status: '',
-                    dateRange: null,
+                    dateRange: defaultRange,
                   };
                   setAlertFilters(cleared);
                   setAlertPage(1);
@@ -761,9 +815,8 @@ export default function MonitorManage() {
         >
           <div style={{ marginBottom: 12 }}>
             <Row gutter={12}>
-              <Col xs={24} sm={24} md={8}>
+              <Col xs={24} md={10}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <Text type='tertiary'>{t('时间范围')}</Text>
                   <DatePicker
                     value={alertFilters.dateRange}
                     onChange={(v) => setAlertFilters((prev) => ({ ...prev, dateRange: v }))}
@@ -779,21 +832,15 @@ export default function MonitorManage() {
                   />
                 </div>
               </Col>
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={24} sm={12} md={5}>
                 <Input
-                  value={alertFilters.user_id}
-                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, user_id: v }))}
-                  placeholder={t('用户ID')}
+                  value={alertFilters.username}
+                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, username: v }))}
+                  placeholder={t('用户名')}
+                  showClear
                 />
               </Col>
-              <Col xs={24} sm={12} md={6}>
-                <Input
-                  value={alertFilters.token_id}
-                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, token_id: v }))}
-                  placeholder={t('令牌ID')}
-                />
-              </Col>
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={24} sm={12} md={5}>
                 <Select
                   value={alertFilters.metric}
                   onChange={(v) => setAlertFilters((prev) => ({ ...prev, metric: v || '' }))}
@@ -805,7 +852,7 @@ export default function MonitorManage() {
                   ]}
                 />
               </Col>
-              <Col xs={24} sm={12} md={6}>
+              <Col xs={24} sm={12} md={4}>
                 <Select
                   value={alertFilters.status}
                   onChange={(v) => setAlertFilters((prev) => ({ ...prev, status: v || '' }))}
@@ -830,29 +877,25 @@ export default function MonitorManage() {
                     trigger='hover'
                     showArrow
                     content={
-                      <div style={{ maxWidth: 520, lineHeight: '20px' }}>
-                        <div style={{ fontWeight: 600, marginBottom: 6 }}>{t('口径与说明')}</div>
-                        <div style={{ marginBottom: 8 }}>
-                          <div>{t('tokens 是“用量统计单位”（模型侧的输入/输出 token 数）。')}</div>
-                          <div>{t('quota 是“计费单位”（按价格/倍率把 tokens 折算出来的扣费量）。')}</div>
+                      <div style={{ maxWidth: 620, lineHeight: '20px' }}>
+                        <div style={{ fontWeight: 600, marginBottom: 8 }}>{t('口径/公式')}</div>
+
+                        <div style={{ marginBottom: 10 }}>
+                          <div style={{ fontWeight: 600, marginBottom: 6 }}>{t('字段口径')}</div>
+                          <ul style={{ paddingLeft: 18, margin: 0 }}>
+                            <li>{t('“使用量/阈值”的单位为 quota（计费单位）。')}</li>
+                            <li>{t('窗口开始/窗口结束：本次统计窗口的起止时间（秒级时间戳），用于限定消费日志范围。')}</li>
+                          </ul>
                         </div>
-                        <div style={{ marginBottom: 8 }}>
-                          <div style={{ fontWeight: 600 }}>{t('本页字段口径')}</div>
-                          <div>
-                            {t('本页“使用量/阈值”单位为 quota。用户使用量告警（user_quota）计算公式：用户窗口内使用量（quota）= Σ logs.quota（窗口内所有消费日志 quota 求和）。')}
-                          </div>
-                        </div>
-                        <div style={{ marginBottom: 8 }}>
-                          <div style={{ fontWeight: 600 }}>{t('Tokens 来源')}</div>
-                          <div>
-                            {t('tokens 通常来自上游返回的 usage（prompt_tokens/completion_tokens/total_tokens）；若上游未返回则可能由系统估算。页面/邮件中展示的 tokens 来自日志 logs.prompt_tokens 与 logs.completion_tokens。')}
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{t('令牌ID')}</div>
-                          <div>
-                            {t('当指标为 user_quota 时统计对象为用户聚合，因此令牌ID 可能为 0；启用 token_quota 告警时会记录真实令牌ID。')}
-                          </div>
+
+                        <div style={{ marginBottom: 10 }}>
+                          <div style={{ fontWeight: 600, marginBottom: 6 }}>{t('告警计算公式')}</div>
+                          <ul style={{ paddingLeft: 18, margin: 0 }}>
+                            <li>
+                              {t('用户使用量告警（user_quota）：用户窗口内使用量（quota）= Σ logs.quota（窗口内该用户所有消费日志 quota 求和）。')}
+                            </li>
+                            <li>{t('当用户窗口内使用量 > 配置阈值（quota）时触发告警记录，并尝试发送邮件。')}</li>
+                          </ul>
                         </div>
                       </div>
                     }

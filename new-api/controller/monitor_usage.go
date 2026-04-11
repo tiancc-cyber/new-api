@@ -2,6 +2,7 @@ package controller
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/QuantumNous/new-api/common"
@@ -18,6 +19,7 @@ import (
 //   - page_size (default 20, max 200)
 //   - limit (legacy; if provided, overrides page/page_size and returns latest N, max 500)
 //   - user_id
+//   - username
 //   - token_id
 //   - metric: user_quota|token_quota
 //   - status: sent|failed|skipped
@@ -84,6 +86,24 @@ func applyMonitorUsageAlertFilters(c *gin.Context, tx *gorm.DB) *gorm.DB {
 	if v := c.Query("user_id"); v != "" {
 		if id, err := strconv.Atoi(v); err == nil && id > 0 {
 			tx = tx.Where("user_id = ?", id)
+		}
+	}
+	if v := c.Query("username"); v != "" {
+		// Case-insensitive match across SQLite/MySQL/PostgreSQL.
+		// Default: exact match to ensure admin filtering is deterministic.
+		// Optional: username_mode=prefix | contains to relax matching.
+		name := strings.TrimSpace(v)
+		if name != "" {
+			mode := strings.TrimSpace(c.Query("username_mode"))
+			s := strings.ToLower(name)
+			switch mode {
+			case "prefix":
+				tx = tx.Where("LOWER(username) LIKE ?", s+"%")
+			case "contains":
+				tx = tx.Where("LOWER(username) LIKE ?", "%"+s+"%")
+			default:
+				tx = tx.Where("LOWER(username) = ?", s)
+			}
 		}
 	}
 	if v := c.Query("token_id"); v != "" {

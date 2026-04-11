@@ -48,6 +48,7 @@ const OPTION_KEYS = {
   enabled: 'usage_monitor.enabled',
   recipients: 'usage_monitor.recipients',
   userThreshold: 'usage_monitor.user_quota_threshold',
+  userRequestThreshold: 'usage_monitor.user_request_threshold',
   intervalMinutes: 'usage_monitor.check_interval_minutes',
   alertAutoRefresh: 'usage_monitor.alert_auto_refresh',
   alertRefreshSeconds: 'usage_monitor.alert_refresh_seconds',
@@ -59,6 +60,7 @@ const DEFAULTS = {
   enabled: false,
   recipients: '',
   userThreshold: 1000000,
+  userRequestThreshold: -1,
   intervalMinutes: 30,
   alertAutoRefresh: false,
   alertRefreshSeconds: 300,
@@ -78,8 +80,7 @@ const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {
         user: u?.username ? `${u.username} (#${u.user_id})` : `#${u?.user_id ?? '-'}`,
       };
       Object.entries(models).forEach(([modelName, mm]) => {
-        const v = metric === 'token_used' ? Number(mm?.token_used || 0) : Number(mm?.quota || 0);
-        row[modelName] = v;
+        row[modelName] = metric === 'token_used' ? Number(mm?.token_used || 0) : Number(mm?.quota || 0);
       });
       return row;
     });
@@ -164,6 +165,7 @@ export default function MonitorManage() {
     enabled: DEFAULTS.enabled,
     recipients: DEFAULTS.recipients,
     userThreshold: DEFAULTS.userThreshold,
+    userRequestThreshold: DEFAULTS.userRequestThreshold,
     intervalMinutes: DEFAULTS.intervalMinutes,
     alertAutoRefresh: DEFAULTS.alertAutoRefresh,
     alertRefreshSeconds: DEFAULTS.alertRefreshSeconds,
@@ -175,7 +177,7 @@ export default function MonitorManage() {
   const [alerts, setAlerts] = useState([]);
   const [alertTotal, setAlertTotal] = useState(0);
   const [alertPage, setAlertPage] = useState(1);
-  const [alertPageSize, setAlertPageSize] = useState(20);
+  const [alertPageSize, setAlertPageSize] = useState(10);
   const [alertFilters, setAlertFilters] = useState({
     username: '',
     metric: '',
@@ -219,7 +221,11 @@ export default function MonitorManage() {
       {
         title: t('指标'),
         dataIndex: 'metric',
-        render: (val) => (val === 'user_quota' ? t('用户使用量') : val),
+        render: (val) => {
+          if (val === 'user_quota') return t('用户使用量');
+          if (val === 'user_request_count') return t('用户调用次数');
+          return val;
+        },
       },
       { title: t('用户ID'), dataIndex: 'user_id' },
       { title: t('用户名'), dataIndex: 'username' },
@@ -314,6 +320,7 @@ export default function MonitorManage() {
       const enabledRaw = map[OPTION_KEYS.enabled];
       const recipientsRaw = map[OPTION_KEYS.recipients];
       const thresholdRaw = map[OPTION_KEYS.userThreshold];
+      const userReqThresholdRaw = map[OPTION_KEYS.userRequestThreshold];
       const intervalRaw = map[OPTION_KEYS.intervalMinutes];
       const alertAutoRefreshRaw = map[OPTION_KEYS.alertAutoRefresh];
       const refreshRaw = map[OPTION_KEYS.alertRefreshSeconds];
@@ -325,6 +332,10 @@ export default function MonitorManage() {
         recipients: recipientsRaw === undefined || recipientsRaw === null ? DEFAULTS.recipients : String(recipientsRaw),
         userThreshold:
           thresholdRaw === undefined || thresholdRaw === '' ? DEFAULTS.userThreshold : Number(thresholdRaw || 0),
+        userRequestThreshold:
+          userReqThresholdRaw === undefined || userReqThresholdRaw === ''
+            ? DEFAULTS.userRequestThreshold
+            : Number(userReqThresholdRaw || 0),
         intervalMinutes:
           intervalRaw === undefined || intervalRaw === '' ? DEFAULTS.intervalMinutes : Number(intervalRaw || 0),
         alertAutoRefresh:
@@ -357,6 +368,10 @@ export default function MonitorManage() {
           { key: OPTION_KEYS.enabled, value: String(!!monitorOptions.enabled) },
           { key: OPTION_KEYS.recipients, value: String(monitorOptions.recipients || '') },
           { key: OPTION_KEYS.userThreshold, value: String(Number(monitorOptions.userThreshold || 0)) },
+          {
+            key: OPTION_KEYS.userRequestThreshold,
+            value: String(Number(monitorOptions.userRequestThreshold ?? DEFAULTS.userRequestThreshold)),
+          },
           { key: OPTION_KEYS.intervalMinutes, value: String(Math.max(1, Number(monitorOptions.intervalMinutes || 1))) },
           { key: OPTION_KEYS.alertAutoRefresh, value: String(!!monitorOptions.alertAutoRefresh) },
           { key: OPTION_KEYS.alertRefreshSeconds, value: String(Math.max(10, Number(monitorOptions.alertRefreshSeconds || 10))) },
@@ -420,18 +435,22 @@ export default function MonitorManage() {
   useEffect(() => {
     (async () => {
       await loadMonitorOptions();
-      loadAlerts();
+
+      // Default time range: last 24h
+      const now = Date.now();
+      const defaultRange = [new Date(now - 24 * 3600 * 1000), new Date(now)];
+      setTopUsageRange(defaultRange);
+
+      // Default alert time range: last 24h
+      // IMPORTANT: also pass it to loadAlerts immediately so the first query is filtered.
+      const nextFilters = { ...alertFilters, dateRange: defaultRange };
+      setAlertFilters(nextFilters);
+      setAlertPage(1);
+      loadAlerts({ page: 1, page_size: alertPageSize, ...nextFilters });
     })();
 
     // alert polling is handled by a dedicated effect below (depends on loaded options)
 
-    // Default top usage time range: last 24h
-    const now = Date.now();
-    const defaultRange = [new Date(now - 24 * 3600 * 1000), new Date(now)];
-    setTopUsageRange(defaultRange);
-
-    // Default alert time range: last 24h (same as Top chart)
-    setAlertFilters((prev) => ({ ...prev, dateRange: defaultRange }));
     // do not call loadTopUsersModelUsage here with defaultRange to avoid racing with user interaction;
     // the polling effect below will pick up the latest range.
 
@@ -534,14 +553,12 @@ export default function MonitorManage() {
                       checked={!!monitorOptions.enabled}
                       onChange={(v) => setMonitorOptions((prev) => ({ ...prev, enabled: !!v }))}
                     />
-                    <Text type='tertiary'>
-                      {monitorOptions.enabled ? t('已启用') : t('已关闭')}
-                    </Text>
+                    <Text type='tertiary'>{monitorOptions.enabled ? t('已启用') : t('已关闭')}</Text>
                   </div>
                 </div>
               </Col>
 
-              <Col xs={24} md={10}>
+              <Col xs={24} md={18}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('告警收件人（多个邮箱用 ; 或 , 分隔，空则不发送）')}</Text>
                   <Input
@@ -552,8 +569,10 @@ export default function MonitorManage() {
                   />
                 </div>
               </Col>
+            </Row>
 
-              <Col xs={12} md={4}>
+            <Row gutter={[12, 12]} align='middle' style={{ marginTop: 10 }}>
+              <Col xs={24} sm={8} md={8}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('用户使用量阈值（quota）')}</Text>
                   <InputNumber
@@ -566,7 +585,26 @@ export default function MonitorManage() {
                 </div>
               </Col>
 
-              <Col xs={12} md={4}>
+              <Col xs={24} sm={8} md={8}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Text type='tertiary'>{t('用户调用次数阈值（次数）')}</Text>
+                  <InputNumber
+                    value={Number(monitorOptions.userRequestThreshold ?? DEFAULTS.userRequestThreshold)}
+                    min={-1}
+                    step={1}
+                    onChange={(v) =>
+                      setMonitorOptions((prev) => ({
+                        ...prev,
+                        userRequestThreshold: Number(v ?? DEFAULTS.userRequestThreshold),
+                      }))
+                    }
+                    style={{ width: '100%' }}
+                    suffix={t('次')}
+                  />
+                </div>
+              </Col>
+
+              <Col xs={24} sm={8} md={8}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Text type='tertiary'>{t('定时统计间隔（分钟）')}</Text>
                   <InputNumber
@@ -581,6 +619,12 @@ export default function MonitorManage() {
                 </div>
               </Col>
             </Row>
+
+            <div style={{ marginTop: 8 }}>
+              <Text type='tertiary' style={{ fontSize: 12 }}>
+                {t('提示：用户调用次数阈值设置为 -1 表示关闭此项监控；调用次数告警收件人与“告警收件人”一致（上方配置）。')}
+              </Text>
+            </div>
 
             <div style={{ marginTop: 10 }}>
               <Row gutter={[12, 12]} align='middle'>
@@ -843,12 +887,17 @@ export default function MonitorManage() {
               <Col xs={24} sm={12} md={5}>
                 <Select
                   value={alertFilters.metric}
-                  onChange={(v) => setAlertFilters((prev) => ({ ...prev, metric: v || '' }))}
+                  onChange={(v) => {
+                    // Semi Select may return option object; normalize to metric string.
+                    const metric = typeof v === 'string' ? v : v?.value;
+                    setAlertFilters((prev) => ({ ...prev, metric: metric || '' }));
+                  }}
                   placeholder={t('指标')}
                   style={{ width: '100%' }}
                   optionList={[
                     { label: t('全部'), value: '' },
                     { label: t('用户使用量'), value: 'user_quota' },
+                    { label: t('用户调用次数'), value: 'user_request_count' },
                   ]}
                 />
               </Col>

@@ -114,7 +114,7 @@ func applyMonitorUsageAlertFilters(c *gin.Context, tx *gorm.DB) *gorm.DB {
 	}
 	if v := c.Query("metric"); v != "" {
 		// allow only known metrics
-		if v == "user_quota" || v == "token_quota" {
+		if v == "user_quota" || v == "user_request_count" {
 			tx = tx.Where("metric = ?", v)
 		}
 	}

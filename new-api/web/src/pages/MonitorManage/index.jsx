@@ -56,14 +56,14 @@ const OPTION_KEYS = {
 };
 
 const DEFAULTS = {
-  enabled: true,
+  enabled: false,
   recipients: '',
-  userThreshold: 0,
-  intervalMinutes: 10,
-  alertAutoRefresh: true,
-  alertRefreshSeconds: 120,
-  topUsageAutoRefresh: true,
-  topUsageRefreshSeconds: 60,
+  userThreshold: 1000000,
+  intervalMinutes: 30,
+  alertAutoRefresh: false,
+  alertRefreshSeconds: 300,
+  topUsageAutoRefresh: false,
+  topUsageRefreshSeconds: 300,
 };
 
 const TopUsersStackedBar = ({ data, t, metric = 'quota' }) => {

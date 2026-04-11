@@ -17,7 +17,6 @@ const (
 	monitorUsageSettingKeyUserRecipients  = "usage_monitor.recipients"
 	monitorUsageSettingKeyUserThreshold   = "usage_monitor.user_quota_threshold"
 	monitorUsageSettingKeyCheckIntervalM  = "usage_monitor.check_interval_minutes"
-	monitorUsageSettingKeyWindowM         = "usage_monitor.window_minutes"
 	monitorUsageSettingKeyMode            = "usage_monitor.mode"
 	monitorUsageSettingKeyAlsoNotifyUser  = "usage_monitor.also_notify_user"
 	monitorUsageSettingKeyTokenThreshold  = "usage_monitor.token_quota_threshold"
@@ -81,13 +80,12 @@ func OnUsageConsumed(userId int, tokenId int) {
 		return
 	}
 
-	windowM := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyWindowM], 60)
-	if windowM <= 0 {
-		windowM = 60
-	}
+	intervalM := getEffectiveCheckIntervalMinutes()
+	windowM := intervalM
+
 	end := time.Now().Unix()
 	start := end - int64(windowM)*60
-	periodKeyEnd := end - (end % 60)
+	periodKeyEnd := bucketPeriodEndByInterval(end, intervalM)
 
 	userThreshold := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyUserThreshold], 0)
 	tokenThreshold := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyTokenThreshold], 0)
@@ -171,13 +169,12 @@ type userQuotaAggRow struct {
 }
 
 func scanOnceAndAlertUsers() {
-	windowM := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyWindowM], 60)
-	if windowM <= 0 {
-		windowM = 60
-	}
+	intervalM := getEffectiveCheckIntervalMinutes()
+	windowM := intervalM
+
 	end := time.Now().Unix()
 	start := end - int64(windowM)*60
-	periodKeyEnd := end - (end % 60)
+	periodKeyEnd := bucketPeriodEndByInterval(end, intervalM)
 
 	threshold := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyUserThreshold], 0)
 	// threshold == 0 means "alert on any usage".
@@ -436,4 +433,28 @@ func getOrDefaultInt(val string, def int) int {
 		return def
 	}
 	return i
+}
+
+// getEffectiveCheckIntervalMinutes returns the configured usage monitor scan interval.
+// It also provides a single place to enforce sane defaults.
+func getEffectiveCheckIntervalMinutes() int {
+	intervalM := getOrDefaultInt(common.OptionMap[monitorUsageSettingKeyCheckIntervalM], 10)
+	if intervalM <= 0 {
+		intervalM = 10
+	}
+	return intervalM
+}
+
+// bucketPeriodEndByInterval buckets the period_end key to the scan interval, so de-duplication
+// works correctly when interval != 1 minute.
+func bucketPeriodEndByInterval(endUnixSec int64, intervalM int) int64 {
+	bucketSec := int64(intervalM) * 60
+	if bucketSec <= 0 {
+		bucketSec = 60
+	}
+	// Ensure minimum 60s so period_key remains stable and readable.
+	if bucketSec < 60 {
+		bucketSec = 60
+	}
+	return endUnixSec - (endUnixSec % bucketSec)
 }

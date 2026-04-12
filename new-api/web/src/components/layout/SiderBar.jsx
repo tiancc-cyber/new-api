@@ -27,6 +27,7 @@ import { useSidebar } from '../../hooks/common/useSidebar';
 import { useMinimumLoadingTime } from '../../hooks/common/useMinimumLoadingTime';
 import { isAdmin, isRoot, showError } from '../../helpers';
 import SkeletonWrapper from './components/SkeletonWrapper';
+import { normalizeLanguage } from '../../i18n/language';
 
 import { Nav, Divider, Button } from '@douyinfe/semi-ui';
 
@@ -56,7 +57,7 @@ const routerMap = {
 };
 
 const SiderBar = ({ onNavigate = () => {} }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [collapsed, toggleCollapsed] = useSidebarCollapsed();
   const {
     isModuleVisible,
@@ -71,6 +72,16 @@ const SiderBar = ({ onNavigate = () => {} }) => {
   const [openedKeys, setOpenedKeys] = useState([]);
   const location = useLocation();
   const [routerMapState, setRouterMapState] = useState(routerMap);
+
+  // Some environments may store language as "en"/"zh" or non-normalized values.
+  // Normalize it to match our supportedLngs (zh-CN/zh-TW/en/...), otherwise i18next may
+  // fall back and cause mixed Chinese/English menu labels.
+  useEffect(() => {
+    const normalized = normalizeLanguage(i18n.language);
+    if (normalized && normalized !== i18n.language) {
+      i18n.changeLanguage(normalized);
+    }
+  }, [i18n]);
 
   const workspaceItems = useMemo(() => {
     const items = [

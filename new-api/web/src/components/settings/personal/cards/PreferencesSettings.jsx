@@ -64,20 +64,21 @@ const PreferencesSettings = ({ t }) => {
   }, [userState?.user?.setting, i18n]);
 
   const handleLanguagePreferenceChange = async (lang) => {
-    if (lang === currentLanguage) return;
+    const normalizedLang = normalizeLanguage(lang) || lang;
+    if (normalizedLang === currentLanguage) return;
 
     setLoading(true);
     const previousLang = currentLanguage;
 
     try {
       // Update language immediately for responsive UX
-      setCurrentLanguage(lang);
-      i18n.changeLanguage(lang);
-      localStorage.setItem('i18nextLng', lang);
+      setCurrentLanguage(normalizedLang);
+      i18n.changeLanguage(normalizedLang);
+      localStorage.setItem('i18nextLng', normalizedLang);
 
       // Save to backend
       const res = await API.put('/api/user/self', {
-        language: lang,
+        language: normalizedLang,
       });
 
       if (res.data.success) {
@@ -91,7 +92,7 @@ const PreferencesSettings = ({ t }) => {
             settings = {};
           }
         }
-        settings.language = lang;
+        settings.language = normalizedLang;
         const nextUser = {
           ...userState.user,
           setting: JSON.stringify(settings),

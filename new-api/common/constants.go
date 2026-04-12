@@ -13,6 +13,10 @@ import (
 var StartTime = time.Now().Unix() // unit: second
 var Version = "v0.0.0"            // this hard coding will be replaced automatically when building, no need to manually change
 var SystemName = "词元视界"
+
+// SystemNameEn is the English display name of the system, mainly used by the web UI when language is English.
+// It is configurable via the option key "SystemNameEn".
+var SystemNameEn = "tokenviz"
 var Footer = ""
 var Logo = "/logo-icon.svg"
 var TopUpLink = ""

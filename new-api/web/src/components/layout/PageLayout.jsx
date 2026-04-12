@@ -92,7 +92,7 @@ const PageLayout = () => {
       if (success) {
         statusDispatch({ type: 'set', payload: data });
         setStatusData(data);
-        document.title = '词元视界';
+        document.title = getSystemName();
         const linkElement = document.querySelector("link[rel~='icon']");
         if (linkElement) {
           linkElement.href = '/logo-icon.svg';
@@ -124,7 +124,15 @@ const PageLayout = () => {
   useEffect(() => {
     let preferredLang;
 
-    if (userState?.user?.setting) {
+    // Highest priority: the current UI language stored locally (e.g. chosen on /login).
+    // This avoids switching back to zh-CN immediately after login when the backend
+    // user setting has an older/default value.
+    const savedLang = localStorage.getItem('i18nextLng');
+    if (savedLang) {
+      preferredLang = normalizeLanguage(savedLang);
+    }
+
+    if (!preferredLang && userState?.user?.setting) {
       try {
         const settings = JSON.parse(userState.user.setting);
         preferredLang = normalizeLanguage(settings.language);
@@ -133,12 +141,6 @@ const PageLayout = () => {
       }
     }
 
-    if (!preferredLang) {
-      const savedLang = localStorage.getItem('i18nextLng');
-      if (savedLang) {
-        preferredLang = normalizeLanguage(savedLang);
-      }
-    }
 
     if (preferredLang) {
       localStorage.setItem('i18nextLng', preferredLang);

@@ -29,6 +29,7 @@ import {
   Card,
 } from '@douyinfe/semi-ui';
 import { API, showError, showSuccess, timestamp2string } from '../../helpers';
+import { setStatusData } from '../../helpers/data';
 import { marked } from 'marked';
 import { useTranslation } from 'react-i18next';
 import { StatusContext } from '../../context/Status';
@@ -44,6 +45,7 @@ const OtherSetting = () => {
     [LEGAL_USER_AGREEMENT_KEY]: '',
     [LEGAL_PRIVACY_POLICY_KEY]: '',
     SystemName: '',
+    SystemNameEn: '',
     Logo: '',
     Footer: '',
     About: '',
@@ -66,6 +68,29 @@ const OtherSetting = () => {
     const { success, message } = res.data;
     if (success) {
       setInputs((inputs) => ({ ...inputs, [key]: value }));
+
+      // These options are used by the UI via /api/status -> localStorage.
+      // Refresh status so changes (e.g. SystemNameEn) apply immediately.
+      if (
+        key === 'SystemName' ||
+        key === 'SystemNameEn' ||
+        key === 'Logo' ||
+        key === 'Footer'
+      ) {
+        try {
+          const statusRes = await API.get('/api/status');
+          if (statusRes.data?.success) {
+            const data = statusRes.data.data;
+            statusDispatch({ type: 'set', payload: data });
+            setStatusData(data);
+            if (key === 'SystemName' || key === 'SystemNameEn') {
+              document.title = data?.system_name_en || data?.system_name || '';
+            }
+          }
+        } catch (e) {
+          // Best-effort refresh; ignore failures to avoid blocking option save.
+        }
+      }
     } else {
       showError(message);
     }
@@ -165,6 +190,26 @@ const OtherSetting = () => {
       setLoadingInput((loadingInput) => ({
         ...loadingInput,
         SystemName: false,
+      }));
+    }
+  };
+
+  // 个性化设置 - SystemNameEn
+  const submitSystemNameEn = async () => {
+    try {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        SystemNameEn: true,
+      }));
+      await updateOption('SystemNameEn', inputs.SystemNameEn);
+      showSuccess(t('系统英文名称已更新'));
+    } catch (error) {
+      console.error(t('系统英文名称更新失败'), error);
+      showError(t('系统英文名称更新失败'));
+    } finally {
+      setLoadingInput((loadingInput) => ({
+        ...loadingInput,
+        SystemNameEn: false,
       }));
     }
   };
@@ -434,6 +479,19 @@ const OtherSetting = () => {
                 loading={loadingInput['SystemName']}
               >
                 {t('设置系统名称')}
+              </Button>
+
+              <Form.Input
+                label={t('系统英文名称')}
+                placeholder={t('在此输入系统英文名称')}
+                field={'SystemNameEn'}
+                onChange={handleInputChange}
+              />
+              <Button
+                onClick={submitSystemNameEn}
+                loading={loadingInput['SystemNameEn']}
+              >
+                {t('设置系统英文名称')}
               </Button>
               <Form.Input
                 label={t('Logo 图片地址')}

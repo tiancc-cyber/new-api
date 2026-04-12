@@ -21,6 +21,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
+import { normalizeLanguage } from '../../i18n/language';
 import {
   API,
   getLogo,
@@ -68,6 +69,7 @@ import MarkdownRenderer from '../common/markdown/MarkdownRenderer';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
 import openiapiUserAgreementZhCN from '../../assets/legal/openiapi_user_agreement_zh-CN.md?raw';
+import openiapiUserAgreementEn from '../../assets/legal/openiapi_user_agreement_en.md?raw';
 
 const { Text, Title } = Typography;
 
@@ -87,18 +89,69 @@ const sanitizeHtml = (html) => {
   return bodyContent ? bodyContent.innerHTML : html;
 };
 
+const resolveUiLang = (lang) => {
+  const uiLang = String(lang || '').toLowerCase();
+  if (!uiLang) return 'zh';
+  if (uiLang.startsWith('zh')) return 'zh';
+  if (uiLang.startsWith('en')) return 'en';
+  if (uiLang.startsWith('fr')) return 'fr';
+  if (uiLang.startsWith('ru')) return 'ru';
+  if (uiLang.startsWith('ja')) return 'ja';
+  if (uiLang.startsWith('vi')) return 'vi';
+  return uiLang;
+};
+
+// Allows admins to store multi-language agreements in ONE field by using
+// simple markers, e.g.
+// [lang:en]\n...\n[lang:zh]\n...
+// If no marker is found, treat the whole content as a single-language document.
+const pickAgreementByLang = (content, lang) => {
+  if (!content || typeof content !== 'string') return '';
+
+  const markerRe = /\[lang:([a-zA-Z-]+)\]/g;
+  const matches = [...content.matchAll(markerRe)];
+  if (matches.length === 0) {
+    return content;
+  }
+
+  const sections = [];
+  for (let i = 0; i < matches.length; i++) {
+    const m = matches[i];
+    const sectionLang = String(m[1] || '').toLowerCase();
+    const start = m.index + m[0].length;
+    const end = i + 1 < matches.length ? matches[i + 1].index : content.length;
+    sections.push({ lang: sectionLang, body: content.slice(start, end).trim() });
+  }
+
+  const normalized = String(lang || '').toLowerCase();
+  const exact = sections.find((s) => s.lang === normalized);
+  if (exact) return exact.body;
+
+  // For zh-* variants, fall back to zh.
+  if (normalized.startsWith('zh')) {
+    const zh = sections.find((s) => s.lang === 'zh' || s.lang === 'zh-cn');
+    if (zh) return zh.body;
+  }
+
+  // Prefer en as the common fallback when present.
+  const en = sections.find((s) => s.lang === 'en');
+  if (en) return en.body;
+
+  return sections[0]?.body || '';
+};
+
 const UnifiedAuthForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [, userDispatch] = useContext(UserContext);
   const [statusState] = useContext(StatusContext);
 
   const githubButtonTextKeyByState = {
-    idle: '使用 GitHub 继续',
-    redirecting: '正在跳转 GitHub...',
-    timeout: '请求超时，请刷新页面后重新发起 GitHub 登录',
+    idle: t('使用 GitHub 继续'),
+    redirecting: t('正在跳转 GitHub...'),
+    timeout: t('请求超时，请刷新页面后重新发起 GitHub 登录'),
   };
 
   const [inputs, setInputs] = useState({
@@ -153,13 +206,13 @@ const UnifiedAuthForm = () => {
   const consentGrantedRef = useRef(false);
 
   const logo = getLogo();
-  const systemName = '词元视界中转API';
+  const systemName = getSystemName();
   const affCode = searchParams.get('aff');
   const desiredMode = searchParams.get('mode') || '';
   const desiredMethod = searchParams.get('method') || '';
   const isRegisterPage =
     location.pathname === '/register' || desiredMode === 'signup';
-  const githubButtonText = t(githubButtonTextKeyByState[githubButtonState]);
+  const githubButtonText = githubButtonTextKeyByState[githubButtonState];
 
   if (affCode) {
     localStorage.setItem('aff', affCode);
@@ -358,27 +411,41 @@ const UnifiedAuthForm = () => {
   };
 
   const agreementFallbackContent = useMemo(() => {
-    // Kept in a dedicated markdown file for maintainability.
-    // Note: the file is zh-CN content and not run through i18n.
-    return openiapiUserAgreementZhCN || t('加载用户协议内容失败...');
-  }, [t]);
+    // Kept in dedicated markdown files for maintainability.
+    // Note: these files are not run through i18n.
+    const uiLang = String(i18n.language || '').toLowerCase();
+    const fallback = uiLang.startsWith('en')
+      ? openiapiUserAgreementEn
+      : openiapiUserAgreementZhCN;
+    return fallback || t('加载用户协议内容失败...');
+  }, [i18n.language, t]);
+
+  // When UI language changes, ensure agreement content is reloaded based on the
+  // new language (including marker selection and cache key).
+  useEffect(() => {
+    setAgreementContent('');
+  }, [i18n.language]);
 
   const buildAgreementContent = (remoteContent = '') => {
-    if (!remoteContent) {
-      return agreementFallbackContent;
+    // If admin configured content exists, it may contain language markers.
+    // Pick the right language section; otherwise treat as single-language.
+    if (remoteContent) {
+      const picked = pickAgreementByLang(
+        remoteContent,
+        resolveUiLang(i18n.language),
+      );
+      return picked || remoteContent;
     }
-    // If the remote content already contains a header, don't duplicate.
-    if (remoteContent.includes('OpenIAPI用户协议')) {
-      return remoteContent;
-    }
-    return `${agreementFallbackContent}\n\n${remoteContent}`;
+    return agreementFallbackContent;
   };
 
   const loadAgreementContent = async () => {
     if (agreementContent) {
       return agreementContent;
     }
-    const cachedContent = localStorage.getItem('user_agreement') || '';
+    const cachedContent =
+      localStorage.getItem(`user_agreement:${resolveUiLang(i18n.language)}`) ||
+      '';
     if (cachedContent) {
       const merged = buildAgreementContent(cachedContent);
       setAgreementContent(merged);
@@ -397,7 +464,10 @@ const UnifiedAuthForm = () => {
       if (success) {
         const merged = buildAgreementContent(data || '');
         setAgreementContent(merged);
-        localStorage.setItem('user_agreement', merged);
+        localStorage.setItem(
+          `user_agreement:${resolveUiLang(i18n.language)}`,
+          merged,
+        );
         return merged;
       }
       showError(message || t('加载用户协议内容失败...'));
@@ -496,11 +566,43 @@ const UnifiedAuthForm = () => {
     : loginTabConfig.find((item) => item.key === authMethod)?.label ||
       t('登录');
 
-  const finishAuth = (data, successMessage = '登录成功！') => {
-    userDispatch({ type: 'login', payload: data });
-    setUserData(data);
+  const finishAuth = async (data, successMessage = t('登录成功！')) => {
+    const currentLang = normalizeLanguage(i18n.language) || i18n.language;
+
+    // Parse existing settings (if any).
+    let settings = {};
+    if (data?.setting) {
+      try {
+        settings = JSON.parse(data.setting) || {};
+      } catch {
+        settings = {};
+      }
+    }
+
+    // Policy: keep login-page language stable after login.
+    // Always persist the current UI language as the user's preference (best-effort),
+    // otherwise UserProvider/PageLayout may overwrite i18n using server-stored zh-CN.
+    const shouldPersistLanguage =
+      Boolean(currentLang) && settings.language !== currentLang;
+
+    let nextUser = data;
+    if (shouldPersistLanguage) {
+      try {
+        await API.put('/api/user/self', { language: currentLang });
+        settings.language = currentLang;
+        nextUser = { ...data, setting: JSON.stringify(settings) };
+        localStorage.setItem('i18nextLng', currentLang);
+      } catch {
+        // Best-effort: do not block login flow on preference save.
+      }
+    }
+
+    // Important: dispatch login AFTER nextUser is finalized so downstream
+    // effects (UserProvider/PageLayout) won't override the language.
+    userDispatch({ type: 'login', payload: nextUser });
+    setUserData(nextUser);
     updateAPI();
-    showSuccess(t(successMessage));
+    showSuccess(successMessage);
     navigate('/console');
   };
 
@@ -546,7 +648,7 @@ const UnifiedAuthForm = () => {
           setShowTwoFA(true);
           return;
         }
-        const authMessage = isRegisterPage ? '注册成功！' : '登录成功！';
+        const authMessage = t(isRegisterPage ? '注册成功！' : '登录成功！');
         finishAuth(data, authMessage);
       } else {
         handleAuthFailure(message, data);
@@ -583,7 +685,7 @@ const UnifiedAuthForm = () => {
       );
       const { success, message, data } = res.data;
       if (success) {
-        finishAuth(data, '登录成功！');
+        finishAuth(data, t('登录成功！'));
       } else {
         handleAuthFailure(message, data);
       }
@@ -620,7 +722,7 @@ const UnifiedAuthForm = () => {
       );
       const { success, message, data } = res.data;
       if (success) {
-        finishAuth(data, '登录成功！');
+        finishAuth(data, t('登录成功！'));
       } else {
         handleAuthFailure(message, data);
       }

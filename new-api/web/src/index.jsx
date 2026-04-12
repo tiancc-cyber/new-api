@@ -32,6 +32,7 @@ import { LocaleProvider } from '@douyinfe/semi-ui';
 import { useTranslation } from 'react-i18next';
 import zh_CN from '@douyinfe/semi-ui/lib/es/locale/source/zh_CN';
 import en_GB from '@douyinfe/semi-ui/lib/es/locale/source/en_GB';
+import { normalizeLanguage } from './i18n/language';
 
 // 欢迎信息（二次开发者未经允许不准将此移除）
 // Welcome message (Do not remove this without permission from the original developer)
@@ -45,10 +46,16 @@ if (typeof window !== 'undefined') {
 
 function SemiLocaleWrapper({ children }) {
   const { i18n } = useTranslation();
-  const semiLocale = React.useMemo(
-    () => ({ zh: zh_CN, en: en_GB })[i18n.language] || zh_CN,
-    [i18n.language],
-  );
+
+  const semiLocale = React.useMemo(() => {
+    // Semi UI locale packs are limited; map all non-Chinese languages to English.
+    // This prevents Semi components (e.g. Pagination) from showing Chinese after language switch.
+    const lang = normalizeLanguage(i18n.language);
+    if (lang === 'zh-CN' || lang === 'zh-TW') {
+      return zh_CN;
+    }
+    return en_GB;
+  }, [i18n.language]);
   return <LocaleProvider locale={semiLocale}>{children}</LocaleProvider>;
 }
 

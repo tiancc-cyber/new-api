@@ -33,6 +33,15 @@ export const UserProvider = ({ children }) => {
 
   // Sync language preference when user data is loaded
   useEffect(() => {
+    // If the UI language was already chosen (e.g. on /login), keep it as the
+    // highest priority to avoid switching back to zh-CN right after login.
+    const savedLang = localStorage.getItem('i18nextLng');
+    const normalizedSaved = normalizeLanguage(savedLang);
+    if (normalizedSaved && normalizedSaved !== i18n.language) {
+      i18n.changeLanguage(normalizedSaved);
+      return;
+    }
+
     if (state.user?.setting) {
       try {
         const settings = JSON.parse(state.user.setting);

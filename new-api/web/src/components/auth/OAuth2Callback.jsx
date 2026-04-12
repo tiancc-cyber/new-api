@@ -31,10 +31,23 @@ import { UserContext } from '../../context/User';
 import Loading from '../common/ui/Loading';
 
 const OAuth2Callback = (props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams] = useSearchParams();
   const [, userDispatch] = useContext(UserContext);
   const navigate = useNavigate();
+
+  const normalizeLanguage = (lang) => {
+    const raw = String(lang || '').trim();
+    if (!raw) return '';
+    const lower = raw.toLowerCase();
+    if (lower.startsWith('zh')) return 'zh';
+    if (lower.startsWith('en')) return 'en';
+    if (lower.startsWith('fr')) return 'fr';
+    if (lower.startsWith('ru')) return 'ru';
+    if (lower.startsWith('ja')) return 'ja';
+    if (lower.startsWith('vi')) return 'vi';
+    return lower;
+  };
 
   // 防止 React 18 Strict Mode 下重复执行
   const hasExecuted = useRef(false);
@@ -60,9 +73,35 @@ const OAuth2Callback = (props) => {
         showSuccess(t('绑定成功！'));
         navigate('/console/personal');
       } else {
-        userDispatch({ type: 'login', payload: data });
-        localStorage.setItem('user', JSON.stringify(data));
-        setUserData(data);
+        const currentLang = normalizeLanguage(i18n.language) || i18n.language;
+
+        // Keep language consistent: ONLY seed user's language preference when
+        // it's empty, so we don't unexpectedly override an existing preference.
+        let nextUser = data;
+        try {
+          let settings = {};
+          if (data?.setting) {
+            try {
+              settings = JSON.parse(data.setting) || {};
+            } catch {
+              settings = {};
+            }
+          }
+          const shouldPersistLanguage =
+            Boolean(currentLang) && settings.language !== currentLang;
+          if (shouldPersistLanguage) {
+            await API.put('/api/user/self', { language: currentLang });
+            settings.language = currentLang;
+            nextUser = { ...data, setting: JSON.stringify(settings) };
+            localStorage.setItem('i18nextLng', currentLang);
+          }
+        } catch {
+          // Best-effort: ignore preference save failures.
+        }
+
+        userDispatch({ type: 'login', payload: nextUser });
+        localStorage.setItem('user', JSON.stringify(nextUser));
+        setUserData(nextUser);
         updateAPI();
         showSuccess(t('登录成功！'));
         navigate('/console/token');

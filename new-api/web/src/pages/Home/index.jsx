@@ -26,6 +26,7 @@ import React, {
 } from 'react';
 import { Button } from '@douyinfe/semi-ui';
 import { API, showError, copy, showSuccess } from '../../helpers';
+import { getSystemName } from '../../helpers/utils';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
 import { StatusContext } from '../../context/Status';
 import { useActualTheme } from '../../context/Theme';
@@ -238,9 +239,7 @@ const Home = () => {
   const heroProofs = [
     {
       title: t('统一模型接入'),
-      desc: t(
-        '一个 Base URL 连接 OpenAI、Claude、Gemini、Azure、AWS Bedrock 等上游能力。',
-      ),
+      desc: t('一个 Base URL 连接 OpenAI、Claude、Gemini、Azure、AWS Bedrock 等上游能力。'),
     },
     {
       title: t('稳定路由调度'),
@@ -792,7 +791,9 @@ func main() {
   };
 
   const displayHomePageContent = async () => {
-    setHomePageContent(localStorage.getItem('home_page_content') || '');
+    const homePageContentCacheKey = `home_page_content_${i18n.language}`;
+    const legacyCachedContent = localStorage.getItem('home_page_content') || '';
+    setHomePageContent(localStorage.getItem(homePageContentCacheKey) || legacyCachedContent);
     const res = await API.get('/api/home_page_content');
     const { success, message, data } = res.data;
 
@@ -802,6 +803,8 @@ func main() {
         content = marked.parse(data);
       }
       setHomePageContent(content);
+      localStorage.setItem(homePageContentCacheKey, content);
+      // Backward compatibility for older versions.
       localStorage.setItem('home_page_content', content);
 
       if (data.startsWith('https://')) {
@@ -815,7 +818,7 @@ func main() {
       }
     } else {
       showError(message);
-      setHomePageContent('加载首页内容失败...');
+      setHomePageContent(t('加载首页内容失败...'));
     }
 
     setHomePageContentLoaded(true);
@@ -1007,7 +1010,7 @@ func main() {
                       isChinese ? 'lg:tracking-[-0.04em]' : ''
                     }`}
                   >
-                    {t('词元视界')}
+                    {getSystemName()}
                     <br />
                     <span className='home-gradient-text'>
                       {t('更强模型 更低价格 更易落地')}

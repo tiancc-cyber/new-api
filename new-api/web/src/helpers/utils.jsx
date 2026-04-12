@@ -47,9 +47,15 @@ export function isRoot() {
 }
 
 export function getSystemName() {
-  let system_name = localStorage.getItem('system_name');
-  if (!system_name) return '词元视界';
-  return system_name;
+  const uiLang = String(localStorage.getItem('i18nextLng') || '').toLowerCase();
+  const systemName = localStorage.getItem('system_name') || '词元视界';
+  const systemNameEn = localStorage.getItem('system_name_en');
+
+  // If English UI is selected, prefer the configured English system name.
+  if (uiLang === 'en' && systemNameEn) {
+    return systemNameEn;
+  }
+  return systemName;
 }
 
 export function getLogo() {

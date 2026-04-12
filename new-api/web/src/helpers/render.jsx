@@ -76,6 +76,9 @@ import {
   Server,
   CalendarClock,
   FileSearch,
+  FileText,
+  BookOpen,
+  Activity,
 } from 'lucide-react';
 import {
   SiAtlassian,
@@ -147,6 +150,12 @@ export function getLucideIcon(key, selected = false) {
       return <CalendarClock {...commonProps} color={iconColor} />;
     case 'token_request_audit':
       return <FileSearch {...commonProps} color={iconColor} />;
+    case 'blog_manage':
+      return <FileText {...commonProps} color={iconColor} />;
+    case 'scenario_tutorial_manage':
+      return <BookOpen {...commonProps} color={iconColor} />;
+    case 'monitor':
+      return <Activity {...commonProps} color={iconColor} />;
     case 'setting':
       return <Settings {...commonProps} color={iconColor} />;
     default:

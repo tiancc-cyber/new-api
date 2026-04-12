@@ -68,8 +68,7 @@ import TwoFAVerification from './TwoFAVerification';
 import MarkdownRenderer from '../common/markdown/MarkdownRenderer';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
-import openiapiUserAgreementZhCN from '../../assets/legal/openiapi_user_agreement_zh-CN.md?raw';
-import openiapiUserAgreementEn from '../../assets/legal/openiapi_user_agreement_en.md?raw';
+import userAgreementFallback from '../../assets/legal/user_agreement.md?raw';
 
 const { Text, Title } = Typography;
 
@@ -411,13 +410,13 @@ const UnifiedAuthForm = () => {
   };
 
   const agreementFallbackContent = useMemo(() => {
-    // Kept in dedicated markdown files for maintainability.
-    // Note: these files are not run through i18n.
-    const uiLang = String(i18n.language || '').toLowerCase();
-    const fallback = uiLang.startsWith('en')
-      ? openiapiUserAgreementEn
-      : openiapiUserAgreementZhCN;
-    return fallback || t('加载用户协议内容失败...');
+    // Local fallback: bundled multi-language markdown with [lang:*] markers.
+    // This is used only when the system setting (via /api/user-agreement) is empty.
+    const picked = pickAgreementByLang(
+      userAgreementFallback,
+      resolveUiLang(i18n.language),
+    );
+    return picked || userAgreementFallback || t('加载用户协议内容失败...');
   }, [i18n.language, t]);
 
   // When UI language changes, ensure agreement content is reloaded based on the
@@ -427,9 +426,10 @@ const UnifiedAuthForm = () => {
   }, [i18n.language]);
 
   const buildAgreementContent = (remoteContent = '') => {
-    // If admin configured content exists, it may contain language markers.
-    // Pick the right language section; otherwise treat as single-language.
-    if (remoteContent) {
+    // Priority:
+    // 1) System setting → 个性化设置 → 用户协议 (served by /api/user-agreement)
+    // 2) Local bundled fallback assets/legal/user_agreement.md
+    if (remoteContent && String(remoteContent).trim()) {
       const picked = pickAgreementByLang(
         remoteContent,
         resolveUiLang(i18n.language),

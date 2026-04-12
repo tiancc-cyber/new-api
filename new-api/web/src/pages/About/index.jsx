@@ -133,7 +133,7 @@ const About = () => {
         </div>
       </div>
 
-      {/* 4 区块布局：企业微信 / 邮箱 / 电话 / 在线时间 */}
+      {/* 4 区块布局：微信 / 邮箱 / 电话 / 在线时间 */}
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
         <Card className='!rounded-2xl !border-0 bg-semi-color-bg-1 h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(20,7,37,0.10)]'>
           <div className='space-y-3'>
@@ -142,7 +142,7 @@ const About = () => {
                 <IconScan />
               </div>
               <div>
-                <Text strong>{t('企业微信')}</Text>
+                <Text strong>{t('微信')}</Text>
                 <div>
                   <Text type='tertiary' size='small'>
                     {t('扫码添加')}
@@ -158,12 +158,12 @@ const About = () => {
             >
               <img
                 src='/qrcode.jpg'
-                alt={t('企业微信二维码')}
+                alt={t('微信二维码')}
                 style={{ width: 140, height: 140, objectFit: 'contain' }}
               />
             </button>
             <Text type='tertiary' size='small'>
-              {t('扫码添加企业微信')}
+              {t('扫码添加微信')}
             </Text>
           </div>
         </Card>
@@ -262,7 +262,7 @@ const About = () => {
       </div>
 
       <Modal
-        title={t('企业微信二维码')}
+        title={t('微信二维码')}
         visible={qrPreviewVisible}
         centered
         footer={null}
@@ -271,7 +271,7 @@ const About = () => {
         <div className='flex justify-center'>
           <img
             src='/qrcode.jpg'
-            alt={t('企业微信二维码')}
+            alt={t('微信二维码')}
             style={{ width: 320, height: 320, objectFit: 'contain' }}
           />
         </div>

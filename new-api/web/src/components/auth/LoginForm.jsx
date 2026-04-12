@@ -66,10 +66,11 @@ import LinuxDoIcon from '../common/logo/LinuxDoIcon';
 import TwoFAVerification from './TwoFAVerification';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
+import { normalizeLanguage } from '../../i18n/language';
 
 const LoginForm = () => {
   let navigate = useNavigate();
-  const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
   const githubButtonTextKeyByState = {
     idle: '使用 GitHub 继续',
     redirecting: '正在跳转 GitHub...',
@@ -242,6 +243,14 @@ const LoginForm = () => {
             setShowTwoFA(true);
             setLoginLoading(false);
             return;
+          }
+
+          // Persist the chosen UI language before navigating.
+          // This makes prod (3000) and dev (5173) behave consistently and
+          // prevents falling back to zh-CN right after login.
+          const currentLang = normalizeLanguage(i18n.language);
+          if (currentLang) {
+            localStorage.setItem('i18nextLng', currentLang);
           }
 
           userDispatch({ type: 'login', payload: data });

@@ -28,7 +28,7 @@ import zhTWTranslation from './locales/zh-TW.json';
 import ruTranslation from './locales/ru.json';
 import jaTranslation from './locales/ja.json';
 import viTranslation from './locales/vi.json';
-import { supportedLanguages } from './language';
+import { normalizeLanguage, supportedLanguages } from './language';
 
 i18n
   .use(LanguageDetector)
@@ -36,6 +36,15 @@ i18n
   .init({
     load: 'currentOnly',
     supportedLngs: supportedLanguages,
+    detection: {
+      // Be explicit to avoid dev/prod differences.
+      // We want the user's in-app choice (localStorage) to win.
+      order: ['localStorage', 'cookie', 'querystring', 'navigator', 'htmlTag'],
+      lookupLocalStorage: 'i18nextLng',
+      caches: ['localStorage'],
+      // Normalize detector outputs (e.g. zh, zh_Hans, en-US) into supportedLngs.
+      convertDetectedLanguage: (lng) => normalizeLanguage(lng),
+    },
     resources: {
       en: enTranslation,
       'zh-CN': zhCNTranslation,

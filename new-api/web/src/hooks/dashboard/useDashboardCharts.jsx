@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { initVChartSemiTheme } from '@visactor/vchart-semi-theme';
 import {
   modelColorMap,
@@ -47,217 +47,248 @@ export const useDashboardCharts = (
   setModelColors,
   t,
 ) => {
-  // ========== 图表规格状态 ==========
-  const [spec_pie, setSpecPie] = useState({
-    type: 'pie',
-    data: [
-      {
-        id: 'id0',
-        values: [{ type: 'null', value: '0' }],
-      },
-    ],
-    outerRadius: 0.8,
-    innerRadius: 0.5,
-    padAngle: 0.6,
-    valueField: 'value',
-    categoryField: 'type',
-    pie: {
-      style: {
-        cornerRadius: 10,
-      },
-      state: {
-        hover: {
-          outerRadius: 0.85,
-          stroke: '#000',
-          lineWidth: 1,
+  // Recreate base spec templates when language changes.
+  // VChart spec.title.text is a plain string; if we only set it once in initial
+  // state, it won't update after i18n.changeLanguage().
+  const baseSpecPie = useMemo(
+    () => ({
+      type: 'pie',
+      data: [
+        {
+          id: 'id0',
+          values: [{ type: 'null', value: '0' }],
         },
-        selected: {
-          outerRadius: 0.85,
-          stroke: '#000',
-          lineWidth: 1,
+      ],
+      outerRadius: 0.8,
+      innerRadius: 0.5,
+      padAngle: 0.6,
+      valueField: 'value',
+      categoryField: 'type',
+      pie: {
+        style: {
+          cornerRadius: 10,
         },
-      },
-    },
-    title: {
-      visible: true,
-      text: t('模型调用次数占比'),
-      subtext: `${t('总计')}：${renderNumber(0)}`,
-    },
-    legends: {
-      visible: true,
-      orient: 'left',
-    },
-    label: {
-      visible: true,
-    },
-    tooltip: {
-      mark: {
-        content: [
-          {
-            key: (datum) => datum['type'],
-            value: (datum) => renderNumber(datum['value']),
+        state: {
+          hover: {
+            outerRadius: 0.85,
+            stroke: '#000',
+            lineWidth: 1,
           },
-        ],
+          selected: {
+            outerRadius: 0.85,
+            stroke: '#000',
+            lineWidth: 1,
+          },
+        },
       },
-    },
-    color: {
-      specified: modelColorMap,
-    },
-  });
+      title: {
+        visible: true,
+        text: t('模型调用次数占比'),
+        subtext: `${t('总计')}：${renderNumber(0)}`,
+      },
+      legends: {
+        visible: true,
+        orient: 'left',
+      },
+      label: {
+        visible: true,
+      },
+      tooltip: {
+        mark: {
+          content: [
+            {
+              key: (datum) => datum['type'],
+              value: (datum) => renderNumber(datum['value']),
+            },
+          ],
+        },
+      },
+      color: {
+        specified: modelColorMap,
+      },
+    }),
+    [t],
+  );
 
-  const [spec_line, setSpecLine] = useState({
-    type: 'bar',
-    data: [
-      {
-        id: 'barData',
-        values: [],
+  const baseSpecLine = useMemo(
+    () => ({
+      type: 'bar',
+      data: [
+        {
+          id: 'barData',
+          values: [],
+        },
+      ],
+      xField: 'Time',
+      yField: 'Usage',
+      seriesField: 'Model',
+      stack: true,
+      legends: {
+        visible: true,
+        selectMode: 'single',
       },
-    ],
-    xField: 'Time',
-    yField: 'Usage',
-    seriesField: 'Model',
-    stack: true,
-    legends: {
-      visible: true,
-      selectMode: 'single',
-    },
-    title: {
-      visible: true,
-      text: t('模型消耗分布'),
-      subtext: `${t('总计')}：${renderQuota(0, 2)}`,
-    },
-    bar: {
-      state: {
-        hover: {
-          stroke: '#000',
-          lineWidth: 1,
+      title: {
+        visible: true,
+        text: t('模型消耗分布'),
+        subtext: `${t('总计')}：${renderQuota(0, 2)}`,
+      },
+      bar: {
+        state: {
+          hover: {
+            stroke: '#000',
+            lineWidth: 1,
+          },
         },
       },
-    },
-    tooltip: {
-      mark: {
-        content: [
-          {
-            key: (datum) => datum['Model'],
-            value: (datum) => renderQuota(datum['rawQuota'] || 0, 4),
+      tooltip: {
+        mark: {
+          content: [
+            {
+              key: (datum) => datum['Model'],
+              value: (datum) => renderQuota(datum['rawQuota'] || 0, 4),
+            },
+          ],
+        },
+        dimension: {
+          content: [
+            {
+              key: (datum) => datum['Model'],
+              value: (datum) => datum['rawQuota'] || 0,
+            },
+          ],
+          updateContent: (array) => {
+            array.sort((a, b) => b.value - a.value);
+            let sum = 0;
+            for (let i = 0; i < array.length; i++) {
+              if (array[i].key == '其他') {
+                continue;
+              }
+              let value = parseFloat(array[i].value);
+              if (isNaN(value)) {
+                value = 0;
+              }
+              if (array[i].datum && array[i].datum.TimeSum) {
+                sum = array[i].datum.TimeSum;
+              }
+              array[i].value = renderQuota(value, 4);
+            }
+            array.unshift({
+              key: t('总计'),
+              value: renderQuota(sum, 4),
+            });
+            return array;
           },
-        ],
-      },
-      dimension: {
-        content: [
-          {
-            key: (datum) => datum['Model'],
-            value: (datum) => datum['rawQuota'] || 0,
-          },
-        ],
-        updateContent: (array) => {
-          array.sort((a, b) => b.value - a.value);
-          let sum = 0;
-          for (let i = 0; i < array.length; i++) {
-            if (array[i].key == '其他') {
-              continue;
-            }
-            let value = parseFloat(array[i].value);
-            if (isNaN(value)) {
-              value = 0;
-            }
-            if (array[i].datum && array[i].datum.TimeSum) {
-              sum = array[i].datum.TimeSum;
-            }
-            array[i].value = renderQuota(value, 4);
-          }
-          array.unshift({
-            key: t('总计'),
-            value: renderQuota(sum, 4),
-          });
-          return array;
         },
       },
-    },
-    color: {
-      specified: modelColorMap,
-    },
-  });
+      color: {
+        specified: modelColorMap,
+      },
+    }),
+    [t],
+  );
+
+  const baseSpecModelLine = useMemo(
+    () => ({
+      type: 'line',
+      data: [
+        {
+          id: 'lineData',
+          values: [],
+        },
+      ],
+      xField: 'Time',
+      yField: 'Count',
+      seriesField: 'Model',
+      legends: {
+        visible: true,
+        selectMode: 'single',
+      },
+      title: {
+        visible: true,
+        text: t('模型消耗趋势'),
+        subtext: '',
+      },
+      tooltip: {
+        mark: {
+          content: [
+            {
+              key: (datum) => datum['Model'],
+              value: (datum) => renderNumber(datum['Count']),
+            },
+          ],
+        },
+      },
+      color: {
+        specified: modelColorMap,
+      },
+    }),
+    [t],
+  );
+
+  const baseSpecRankBar = useMemo(
+    () => ({
+      type: 'bar',
+      data: [
+        {
+          id: 'rankData',
+          values: [],
+        },
+      ],
+      xField: 'Model',
+      yField: 'Count',
+      seriesField: 'Model',
+      legends: {
+        visible: true,
+        selectMode: 'single',
+      },
+      title: {
+        visible: true,
+        text: t('模型调用次数排行'),
+        subtext: '',
+      },
+      bar: {
+        state: {
+          hover: {
+            stroke: '#000',
+            lineWidth: 1,
+          },
+        },
+      },
+      tooltip: {
+        mark: {
+          content: [
+            {
+              key: (datum) => datum['Model'],
+              value: (datum) => renderNumber(datum['Count']),
+            },
+          ],
+        },
+      },
+      color: {
+        specified: modelColorMap,
+      },
+    }),
+    [t],
+  );
+
+  // ========== 图表规格状态 ==========
+  const [spec_pie, setSpecPie] = useState(baseSpecPie);
+
+  const [spec_line, setSpecLine] = useState(baseSpecLine);
 
   // 模型消耗趋势折线图
-  const [spec_model_line, setSpecModelLine] = useState({
-    type: 'line',
-    data: [
-      {
-        id: 'lineData',
-        values: [],
-      },
-    ],
-    xField: 'Time',
-    yField: 'Count',
-    seriesField: 'Model',
-    legends: {
-      visible: true,
-      selectMode: 'single',
-    },
-    title: {
-      visible: true,
-      text: t('模型消耗趋势'),
-      subtext: '',
-    },
-    tooltip: {
-      mark: {
-        content: [
-          {
-            key: (datum) => datum['Model'],
-            value: (datum) => renderNumber(datum['Count']),
-          },
-        ],
-      },
-    },
-    color: {
-      specified: modelColorMap,
-    },
-  });
+  const [spec_model_line, setSpecModelLine] = useState(baseSpecModelLine);
 
   // 模型调用次数排行柱状图
-  const [spec_rank_bar, setSpecRankBar] = useState({
-    type: 'bar',
-    data: [
-      {
-        id: 'rankData',
-        values: [],
-      },
-    ],
-    xField: 'Model',
-    yField: 'Count',
-    seriesField: 'Model',
-    legends: {
-      visible: true,
-      selectMode: 'single',
-    },
-    title: {
-      visible: true,
-      text: t('模型调用次数排行'),
-      subtext: '',
-    },
-    bar: {
-      state: {
-        hover: {
-          stroke: '#000',
-          lineWidth: 1,
-        },
-      },
-    },
-    tooltip: {
-      mark: {
-        content: [
-          {
-            key: (datum) => datum['Model'],
-            value: (datum) => renderNumber(datum['Count']),
-          },
-        ],
-      },
-    },
-    color: {
-      specified: modelColorMap,
-    },
-  });
+  const [spec_rank_bar, setSpecRankBar] = useState(baseSpecRankBar);
+
+  // When language changes, swap base specs while keeping current data.
+  useEffect(() => {
+    setSpecPie((prev) => ({ ...baseSpecPie, data: prev?.data ?? baseSpecPie.data }));
+    setSpecLine((prev) => ({ ...baseSpecLine, data: prev?.data ?? baseSpecLine.data }));
+    setSpecModelLine((prev) => ({ ...baseSpecModelLine, data: prev?.data ?? baseSpecModelLine.data }));
+    setSpecRankBar((prev) => ({ ...baseSpecRankBar, data: prev?.data ?? baseSpecRankBar.data }));
+  }, [baseSpecPie, baseSpecLine, baseSpecModelLine, baseSpecRankBar]);
 
   // ========== 数据处理函数 ==========
   const generateModelColors = useCallback((uniqueModels, modelColors) => {

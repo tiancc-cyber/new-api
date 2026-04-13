@@ -345,11 +345,11 @@ const RechargeCard = ({
                                 }
                                 key={payMethod.type}
                               >
-                                {buttonEl}
+                                {/*{buttonEl}*/}
                               </Tooltip>
                             ) : (
                               <React.Fragment key={payMethod.type}>
-                                {buttonEl}
+                                {/*{buttonEl}*/}
                               </React.Fragment>
                             );
                           })}

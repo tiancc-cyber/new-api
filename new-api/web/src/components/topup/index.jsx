@@ -30,6 +30,7 @@ import {
 } from '../../helpers';
 import { Modal, Toast } from '@douyinfe/semi-ui';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 
@@ -37,11 +38,11 @@ import RechargeCard from './RechargeCard';
 import InvitationCard from './InvitationCard';
 import TransferModal from './modals/TransferModal';
 import PaymentConfirmModal from './modals/PaymentConfirmModal';
-import TopupHistoryModal from './modals/TopupHistoryModal';
 import WeChatPayModal from './modals/WeChatPayModal';
 
 const TopUp = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [userState, userDispatch] = useContext(UserContext);
   const [statusState] = useContext(StatusContext);
 
@@ -84,9 +85,6 @@ const TopUp = () => {
   const [affLink, setAffLink] = useState('');
   const [openTransfer, setOpenTransfer] = useState(false);
   const [transferAmount, setTransferAmount] = useState(0);
-
-  // 账单Modal状态
-  const [openHistory, setOpenHistory] = useState(false);
 
   // 微信支付二维码弹窗状态
   const [wxPayModalVisible, setWxPayModalVisible] = useState(false);
@@ -684,11 +682,7 @@ const TopUp = () => {
   };
 
   const handleOpenHistory = () => {
-    setOpenHistory(true);
-  };
-
-  const handleHistoryCancel = () => {
-    setOpenHistory(false);
+    navigate('/console/billing');
   };
 
   const handleCreemCancel = () => {
@@ -751,13 +745,6 @@ const TopUp = () => {
         payMethods={payMethods}
         amountNumber={amount}
         discountRate={topupInfo?.discount?.[topUpCount] || 1.0}
-      />
-
-      {/* 充值账单模态框 */}
-      <TopupHistoryModal
-        visible={openHistory}
-        onCancel={handleHistoryCancel}
-        t={t}
       />
 
       {/* 微信支付二维码弹窗 */}

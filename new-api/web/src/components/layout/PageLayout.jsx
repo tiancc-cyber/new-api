@@ -58,6 +58,7 @@ const PageLayout = () => {
     '/console/midjourney',
     '/console/task',
     '/console/models',
+    '/console/billing',
     '/pricing',
   ];
 
@@ -70,6 +71,7 @@ const PageLayout = () => {
 
   const isConsoleRoute = location.pathname.startsWith('/console');
   const showSider = isConsoleRoute && (!isMobile || drawerOpen);
+  const shouldDisableOuterScroll = location.pathname === '/console/billing';
 
   useEffect(() => {
     if (isMobile && drawerOpen && collapsed) {
@@ -141,7 +143,6 @@ const PageLayout = () => {
       }
     }
 
-
     if (preferredLang) {
       localStorage.setItem('i18nextLng', preferredLang);
       if (preferredLang !== i18n.language) {
@@ -178,7 +179,7 @@ const PageLayout = () => {
       </Header>
       <Layout
         style={{
-          overflow: isMobile ? 'visible' : 'auto',
+          overflow: shouldDisableOuterScroll ? 'hidden' : isMobile ? 'visible' : 'auto',
           display: 'flex',
           flexDirection: 'column',
         }}

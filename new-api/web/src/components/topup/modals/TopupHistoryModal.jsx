@@ -37,6 +37,7 @@ import { IconSearch } from '@douyinfe/semi-icons';
 import { API, timestamp2string } from '../../../helpers';
 import { isAdmin } from '../../../helpers/utils';
 import { useIsMobile } from '../../../hooks/common/useIsMobile';
+import { useNavigate } from 'react-router-dom';
 
 const { Text } = Typography;
 
@@ -57,12 +58,17 @@ const PAYMENT_METHOD_MAP = {
 };
 
 const TopupHistoryModal = ({ visible, onCancel, t }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [topups, setTopups] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [keyword, setKeyword] = useState('');
+
+  // 批量选择（用于批量开票）
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const isMobile = useIsMobile();
 
@@ -79,6 +85,10 @@ const TopupHistoryModal = ({ visible, onCancel, t }) => {
       if (success) {
         setTopups(data.items || []);
         setTotal(data.total || 0);
+
+        // 数据源变化时，清空选择，避免跨页/跨筛选误操作
+        setSelectedRowKeys([]);
+        setSelectedRows([]);
       } else {
         Toast.error({ content: message || t('加载失败') });
       }
@@ -134,6 +144,42 @@ const TopupHistoryModal = ({ visible, onCancel, t }) => {
       content: t('是否将该订单标记为成功并为用户入账？'),
       onOk: () => handleAdminComplete(tradeNo),
     });
+  };
+
+  const canInvoiceTopup = (record) => {
+    // MVP：仅允许已支付成功的充值记录开票；订阅套餐充值不提供开票入口
+    if (!record) return false;
+    if (isSubscriptionTopup(record)) return false;
+    return record.status === 'success';
+  };
+
+  // 单笔开票：统一跳转到「账单与发票」页面执行（避免重复维护多套开票流程）
+  const handleInvoiceSingle = async (record) => {
+    if (!canInvoiceTopup(record)) {
+      Toast.warning({ content: t('仅支持已支付账单开票') });
+      return;
+    }
+
+    Toast.info({ content: t('请前往账单与发票页面完成开票') });
+    onCancel?.();
+    navigate('/console/billing');
+  };
+
+  const handleInvoiceBatch = () => {
+    const invoiceable = selectedRows.filter((r) => canInvoiceTopup(r));
+    if (invoiceable.length === 0) {
+      Toast.warning({ content: t('请先选择可开票的账单') });
+      return;
+    }
+
+    // 若混入不可开票记录，提示并仅对可开票记录执行
+    if (invoiceable.length !== selectedRows.length) {
+      Toast.warning({ content: t('已自动忽略不可开票的账单') });
+    }
+
+    Toast.info({ content: t('请前往账单与发票页面完成开票') });
+    onCancel?.();
+    navigate('/console/billing');
   };
 
   // 渲染状态徽章
@@ -209,26 +255,38 @@ const TopupHistoryModal = ({ visible, onCancel, t }) => {
       },
     ];
 
-    // 管理员才显示操作列
-    if (userIsAdmin) {
-      baseColumns.push({
-        title: t('操作'),
-        key: 'action',
-        render: (_, record) => {
-          if (record.status !== 'pending') return null;
-          return (
+    // 操作列：普通用户显示开票；管理员额外显示补单
+    baseColumns.push({
+      title: t('操作'),
+      key: 'action',
+      render: (_, record) => {
+        const showAdminComplete = userIsAdmin && record.status === 'pending';
+        const invoiceDisabled = !canInvoiceTopup(record);
+        return (
+          <div className='flex items-center gap-2'>
             <Button
               size='small'
               type='primary'
               theme='outline'
-              onClick={() => confirmAdminComplete(record.trade_no)}
+              disabled={invoiceDisabled}
+              onClick={() => handleInvoiceSingle(record)}
             >
-              {t('补单')}
+              {t('开票')}
             </Button>
-          );
-        },
-      });
-    }
+            {showAdminComplete ? (
+              <Button
+                size='small'
+                type='primary'
+                theme='outline'
+                onClick={() => confirmAdminComplete(record.trade_no)}
+              >
+                {t('补单')}
+              </Button>
+            ) : null}
+          </div>
+        );
+      },
+    });
 
     baseColumns.push({
       title: t('创建时间'),
@@ -240,6 +298,18 @@ const TopupHistoryModal = ({ visible, onCancel, t }) => {
     return baseColumns;
   }, [t, userIsAdmin]);
 
+  const rowSelection = useMemo(
+    () => ({
+      selectedRowKeys,
+      onChange: (keys, rows) => {
+        setSelectedRowKeys(keys);
+        setSelectedRows(rows);
+      },
+      // 保留默认的全选/反选行为；若需要“仅选可开票”可后续加对应 action
+    }),
+    [selectedRowKeys],
+  );
+
   return (
     <Modal
       title={t('充值账单')}
@@ -248,7 +318,7 @@ const TopupHistoryModal = ({ visible, onCancel, t }) => {
       footer={null}
       size={isMobile ? 'full-width' : 'large'}
     >
-      <div className='mb-3'>
+      <div className='mb-3 flex items-center gap-2'>
         <Input
           prefix={<IconSearch />}
           placeholder={t('订单号')}
@@ -256,12 +326,21 @@ const TopupHistoryModal = ({ visible, onCancel, t }) => {
           onChange={handleKeywordChange}
           showClear
         />
+        <Button
+          type='primary'
+          theme='solid'
+          onClick={handleInvoiceBatch}
+          disabled={selectedRowKeys.length === 0}
+        >
+          {t('批量开票')}
+        </Button>
       </div>
       <Table
         columns={columns}
         dataSource={topups}
         loading={loading}
         rowKey='id'
+        rowSelection={rowSelection}
         pagination={{
           currentPage: page,
           pageSize: pageSize,

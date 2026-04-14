@@ -141,6 +141,47 @@ func SetApiRouter(router *gin.Engine) {
 			}
 		}
 
+		// Invoice (billing)
+		// Using /api/invoice/* avoids conflicts with /api/user/:id admin routes.
+		invoiceRoute := apiRouter.Group("/invoice")
+		invoiceRoute.Use(middleware.UserAuth())
+		{
+			invoiceRoute.GET("/subjects", controller.ListInvoiceSubjects)
+			invoiceRoute.POST("/subjects", controller.CreateInvoiceSubject)
+			invoiceRoute.DELETE("/subjects/:unique_key", controller.DeleteInvoiceSubject)
+			invoiceRoute.GET("/", controller.ListInvoices)
+			invoiceRoute.POST("/", controller.CreateInvoice)
+			invoiceRoute.POST("/with_subject", controller.CreateInvoiceWithSubject)
+		}
+
+		// Invoice (billing, admin proxy)
+		// Admin can create/list invoices on behalf of a user.
+		invoiceAdminRoute := apiRouter.Group("/invoice/admin")
+		invoiceAdminRoute.Use(middleware.AdminAuth())
+		{
+			// Admin global views: list all subjects/invoices across users
+			invoiceAdminRoute.GET("/subjects", controller.AdminListAllInvoiceSubjects)
+			invoiceAdminRoute.GET("/invoices", controller.AdminListAllInvoices)
+			// Backfill invoice status from external invoicing system
+			invoiceAdminRoute.PATCH("/invoices/:id/status", controller.AdminUpdateInvoiceStatus)
+
+			invoiceAdminRoute.GET("/users/:id/subjects", controller.AdminListInvoiceSubjects)
+			invoiceAdminRoute.POST("/users/:id/subjects", controller.AdminCreateInvoiceSubject)
+			invoiceAdminRoute.DELETE("/users/:id/subjects/:unique_key", controller.AdminDeleteInvoiceSubject)
+
+			invoiceAdminRoute.GET("/users/:id", controller.AdminListInvoices)
+			invoiceAdminRoute.POST("/users/:id", controller.AdminCreateInvoice)
+			invoiceAdminRoute.POST("/users/:id/with_subject", controller.AdminCreateInvoiceWithSubject)
+		}
+
+		// Invoice (billing, admin flat)
+		// Admin creates invoice by specifying user_id in request body.
+		adminInvoiceRoute := apiRouter.Group("/admin")
+		adminInvoiceRoute.Use(middleware.AdminAuth())
+		{
+			adminInvoiceRoute.POST("/invoice/with_subject", controller.AdminCreateInvoiceWithSubjectFlat)
+		}
+
 		// Subscription billing (plans, purchase, admin management)
 		subscriptionRoute := apiRouter.Group("/subscription")
 		subscriptionRoute.Use(middleware.UserAuth())

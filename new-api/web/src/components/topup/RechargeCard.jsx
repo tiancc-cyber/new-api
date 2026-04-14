@@ -96,6 +96,8 @@ const RechargeCard = ({
   allSubscriptions = [],
   reloadSubscriptionSelf,
 }) => {
+  // 兼容旧 props 命名：历史账单入口现已迁移到「账单与发票」页面。
+  const onOpenBills = onOpenHistory;
   const onlineFormApiRef = useRef(null);
   const redeemFormApiRef = useRef(null);
   const initialTabSetRef = useRef(false);
@@ -583,7 +585,7 @@ const RechargeCard = ({
         <Button
           icon={<Receipt size={16} />}
           theme='solid'
-          onClick={onOpenHistory}
+          onClick={onOpenBills}
         >
           {t('账单')}
         </Button>

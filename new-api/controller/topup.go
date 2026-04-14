@@ -330,14 +330,15 @@ func GetUserTopUps(c *gin.Context) {
 	userId := c.GetInt("id")
 	pageInfo := common.GetPageQuery(c)
 	keyword := c.Query("keyword")
+	invoiceFilter := c.Query("invoice_filter")
 
 	var (
 		topups []*model.TopUp
 		total  int64
 		err    error
 	)
-	if keyword != "" {
-		topups, total, err = model.SearchUserTopUps(userId, keyword, pageInfo)
+	if keyword != "" || invoiceFilter != "" {
+		topups, total, err = model.GetUserTopUpsWithFilters(userId, keyword, invoiceFilter, pageInfo)
 	} else {
 		topups, total, err = model.GetUserTopUps(userId, pageInfo)
 	}
@@ -346,8 +347,45 @@ func GetUserTopUps(c *gin.Context) {
 		return
 	}
 
+	// 补充开票状态（topup_id -> invoice_id）
+	ids := make([]int, 0, len(topups))
+	for _, it := range topups {
+		if it != nil {
+			ids = append(ids, it.Id)
+		}
+	}
+	invoiceMap, err := model.GetInvoiceIDByTopUpIDs(ids)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	items := make([]map[string]any, 0, len(topups))
+	for _, it := range topups {
+		if it == nil {
+			continue
+		}
+		m := map[string]any{
+			"id":             it.Id,
+			"user_id":        it.UserId,
+			"amount":         it.Amount,
+			"money":          it.Money,
+			"trade_no":       it.TradeNo,
+			"payment_method": it.PaymentMethod,
+			"create_time":    it.CreateTime,
+			"complete_time":  it.CompleteTime,
+			"status":         it.Status,
+		}
+		if invID, ok := invoiceMap[it.Id]; ok && invID > 0 {
+			m["invoiced"] = true
+			m["invoice_id"] = invID
+		} else {
+			m["invoiced"] = false
+		}
+		items = append(items, m)
+	}
+
 	pageInfo.SetTotal(int(total))
-	pageInfo.SetItems(topups)
+	pageInfo.SetItems(items)
 	common.ApiSuccess(c, pageInfo)
 }
 
@@ -355,14 +393,15 @@ func GetUserTopUps(c *gin.Context) {
 func GetAllTopUps(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	keyword := c.Query("keyword")
+	invoiceFilter := c.Query("invoice_filter")
 
 	var (
 		topups []*model.TopUp
 		total  int64
 		err    error
 	)
-	if keyword != "" {
-		topups, total, err = model.SearchAllTopUps(keyword, pageInfo)
+	if keyword != "" || invoiceFilter != "" {
+		topups, total, err = model.GetAllTopUpsWithFilters(keyword, invoiceFilter, pageInfo)
 	} else {
 		topups, total, err = model.GetAllTopUps(pageInfo)
 	}
@@ -371,8 +410,45 @@ func GetAllTopUps(c *gin.Context) {
 		return
 	}
 
+	// 补充开票状态（topup_id -> invoice_id）
+	ids := make([]int, 0, len(topups))
+	for _, it := range topups {
+		if it != nil {
+			ids = append(ids, it.Id)
+		}
+	}
+	invoiceMap, err := model.GetInvoiceIDByTopUpIDs(ids)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	items := make([]map[string]any, 0, len(topups))
+	for _, it := range topups {
+		if it == nil {
+			continue
+		}
+		m := map[string]any{
+			"id":             it.Id,
+			"user_id":        it.UserId,
+			"amount":         it.Amount,
+			"money":          it.Money,
+			"trade_no":       it.TradeNo,
+			"payment_method": it.PaymentMethod,
+			"create_time":    it.CreateTime,
+			"complete_time":  it.CompleteTime,
+			"status":         it.Status,
+		}
+		if invID, ok := invoiceMap[it.Id]; ok && invID > 0 {
+			m["invoiced"] = true
+			m["invoice_id"] = invID
+		} else {
+			m["invoiced"] = false
+		}
+		items = append(items, m)
+	}
+
 	pageInfo.SetTotal(int(total))
-	pageInfo.SetItems(topups)
+	pageInfo.SetItems(items)
 	common.ApiSuccess(c, pageInfo)
 }
 

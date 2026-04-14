@@ -79,6 +79,7 @@ const NotificationSettings = ({
     },
     personal: {
       enabled: true,
+      billing: true,
       topup: true,
       personal: true,
     },
@@ -165,7 +166,7 @@ const NotificationSettings = ({
         midjourney: true,
         task: true,
       },
-      personal: { enabled: true, topup: true, personal: true },
+      personal: { enabled: true, billing: true, topup: true, personal: true },
       admin: {
         enabled: true,
         channel: true,
@@ -278,6 +279,11 @@ const NotificationSettings = ({
       title: t('个人中心区域'),
       description: t('用户个人功能'),
       modules: [
+        {
+          key: 'billing',
+          title: t('账单与发票'),
+          description: t('充值账单与发票管理'),
+        },
         { key: 'topup', title: t('钱包管理'), description: t('余额充值管理') },
         {
           key: 'personal',

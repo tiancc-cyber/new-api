@@ -20,6 +20,62 @@ type TopUp struct {
 	CreateTime    int64   `json:"create_time"`
 	CompleteTime  int64   `json:"complete_time"`
 	Status        string  `json:"status"`
+
+	// 一个发票可以包含多条充值记录（TopUp），通过 join table invoice_topups 关联
+	Invoices []Invoice `gorm:"many2many:invoice_topups;joinForeignKey:TopUpID;joinReferences:InvoiceID" json:"invoices,omitempty"`
+}
+
+// ---- Billing / invoice filters ----
+
+type TopUpInvoiceFilter string
+
+const (
+	TopUpInvoiceFilterAll         TopUpInvoiceFilter = "all"
+	TopUpInvoiceFilterInvoiceable TopUpInvoiceFilter = "invoiceable"
+	TopUpInvoiceFilterInvoiced    TopUpInvoiceFilter = "invoiced"
+)
+
+func normalizeTopUpInvoiceFilter(v string) TopUpInvoiceFilter {
+	switch v {
+	case string(TopUpInvoiceFilterInvoiceable):
+		return TopUpInvoiceFilterInvoiceable
+	case string(TopUpInvoiceFilterInvoiced):
+		return TopUpInvoiceFilterInvoiced
+	default:
+		return TopUpInvoiceFilterAll
+	}
+}
+
+func applyTopUpInvoiceFilter(q *gorm.DB, f TopUpInvoiceFilter) *gorm.DB {
+	// NOTE: TopUp is linked to Invoice via join table invoice_topups:
+	// invoice_topups(top_up_id, invoice_id)
+	//
+	// Cross-DB compatible strategy:
+	// - invoiced: INNER JOIN invoice_topups
+	// - invoiceable: LEFT JOIN invoice_topups + invoice_id IS NULL
+	//
+	// Do NOT select extra fields to avoid breaking existing TopUp JSON.
+	switch f {
+	case TopUpInvoiceFilterInvoiced:
+		return q.Joins("JOIN invoice_topups it ON it.top_up_id = top_ups.id")
+	case TopUpInvoiceFilterInvoiceable:
+		return q.
+			Joins("LEFT JOIN invoice_topups it ON it.top_up_id = top_ups.id").
+			Where("it.invoice_id IS NULL")
+	default:
+		return q
+	}
+}
+
+func applyTopUpInvoiceableBusinessRules(q *gorm.DB) *gorm.DB {
+	// Frontend defines invoiceable as:
+	// - status = success
+	// - not subscription topup: NOT (amount = 0 AND trade_no starts with 'sub')
+	// Implemented in SQL for correct pagination.
+	//
+	// trade_no prefix check: use LIKE 'sub%'
+	return q.Where("status = ?", common.TopUpStatusSuccess).
+		Where("NOT (amount = 0 AND trade_no LIKE ?)", "sub%")
 }
 
 func getTopUpTradeNoColumn() string {
@@ -216,6 +272,47 @@ func GetUserTopUps(userId int, pageInfo *common.PageInfo) (topups []*TopUp, tota
 	return topups, total, nil
 }
 
+// GetUserTopUpsWithFilters returns paginated topups for a user with keyword and invoice_filter applied.
+func GetUserTopUpsWithFilters(userId int, keyword string, invoiceFilter string, pageInfo *common.PageInfo) (topups []*TopUp, total int64, err error) {
+	tx := DB.Begin()
+	if tx.Error != nil {
+		return nil, 0, tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	q := tx.Model(&TopUp{}).Where("user_id = ?", userId)
+	if keyword != "" {
+		like := "%%" + keyword + "%%"
+		q = q.Where("trade_no LIKE ?", like)
+	}
+
+	f := normalizeTopUpInvoiceFilter(invoiceFilter)
+	q = applyTopUpInvoiceFilter(q, f)
+	if f == TopUpInvoiceFilterInvoiceable {
+		q = applyTopUpInvoiceableBusinessRules(q)
+	}
+
+	if err = q.Count(&total).Error; err != nil {
+		tx.Rollback()
+		return nil, 0, err
+	}
+	if err = q.Order("top_ups.id desc").
+		Limit(pageInfo.GetPageSize()).
+		Offset(pageInfo.GetStartIdx()).
+		Find(&topups).Error; err != nil {
+		tx.Rollback()
+		return nil, 0, err
+	}
+	if err = tx.Commit().Error; err != nil {
+		return nil, 0, err
+	}
+	return topups, total, nil
+}
+
 // GetAllTopUps 获取全平台的充值记录（管理员使用）
 func GetAllTopUps(pageInfo *common.PageInfo) (topups []*TopUp, total int64, err error) {
 	tx := DB.Begin()
@@ -238,6 +335,47 @@ func GetAllTopUps(pageInfo *common.PageInfo) (topups []*TopUp, total int64, err 
 		return nil, 0, err
 	}
 
+	if err = tx.Commit().Error; err != nil {
+		return nil, 0, err
+	}
+
+	return topups, total, nil
+}
+
+// GetAllTopUpsWithFilters returns paginated topups across all users with keyword and invoice_filter applied.
+func GetAllTopUpsWithFilters(keyword string, invoiceFilter string, pageInfo *common.PageInfo) (topups []*TopUp, total int64, err error) {
+	tx := DB.Begin()
+	if tx.Error != nil {
+		return nil, 0, tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	q := tx.Model(&TopUp{})
+	if keyword != "" {
+		like := "%%" + keyword + "%%"
+		q = q.Where("trade_no LIKE ?", like)
+	}
+	f := normalizeTopUpInvoiceFilter(invoiceFilter)
+	q = applyTopUpInvoiceFilter(q, f)
+	if f == TopUpInvoiceFilterInvoiceable {
+		q = applyTopUpInvoiceableBusinessRules(q)
+	}
+
+	if err = q.Count(&total).Error; err != nil {
+		tx.Rollback()
+		return nil, 0, err
+	}
+	if err = q.Order("top_ups.id desc").
+		Limit(pageInfo.GetPageSize()).
+		Offset(pageInfo.GetStartIdx()).
+		Find(&topups).Error; err != nil {
+		tx.Rollback()
+		return nil, 0, err
+	}
 	if err = tx.Commit().Error; err != nil {
 		return nil, 0, err
 	}
